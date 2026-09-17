@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "malware-hybrid-attention"
-version = "0.1.0"
-description = "Hybrid temporal-graph attention for CAPE malware reports"
+version = "0.2.0"
+description = "Independent multimodal attention for multi-label malware-family classification"
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.23",
@@ -15,7 +15,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
-dashboard = ["streamlit>=1.24", "pandas>=1.5"]
+dashboard = ["streamlit>=1.24", "pandas>=1.5", "plotly>=5.0"]
+fuzzy = ["py-tlsh>=4.12", "ppdeep>=20200505"]
 
 [project.scripts]
 malware-hybrid = "malware_hybrid.cli:main"

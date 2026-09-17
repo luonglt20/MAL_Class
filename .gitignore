@@ -3,7 +3,9 @@ __pycache__/
 .pytest_cache/
 .venv/
 *.egg-info/
-*.pt
-*.pth
 prepared_reports*.jsonl
 prepared_reports*.manifest.json
+artifacts/
+*.pt
+*.pth
+*.ckpt

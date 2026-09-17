@@ -1,5 +1,7 @@
 {
   "mapping_version": "2026-09-course-project-v1",
+  "attack_version": "19.2",
+  "navigator_layer_version": "4.5",
   "notice": "Research crosswalk. Relationships are informative, not claims of equivalence.",
   "techniques": {
     "T1055": {
@@ -33,6 +35,102 @@
       "nist_sp_800_53_r5": ["CM-3", "CM-5", "SI-4"],
       "relationship": "supports",
       "evidence": "Autorun registry modification relates to configuration change control and monitoring."
+    },
+    "T1057": {
+      "attack_name": "Process Discovery",
+      "mbc": ["E1057"],
+      "nist_csf_2_0": ["DE.CM-09", "RS.AN-03"],
+      "nist_sp_800_53_r5": ["SI-4", "AU-6"],
+      "relationship": "related-to",
+      "evidence": "Correlated process enumeration events are relevant to runtime monitoring and event analysis."
+    },
+    "T1082": {
+      "attack_name": "System Information Discovery",
+      "mbc": ["E1082"],
+      "nist_csf_2_0": ["DE.CM-09", "RS.AN-03"],
+      "nist_sp_800_53_r5": ["SI-4", "AU-6"],
+      "relationship": "related-to",
+      "evidence": "Multiple host-information queries are relevant to runtime monitoring and event analysis."
+    },
+    "T1083": {
+      "attack_name": "File and Directory Discovery",
+      "mbc": ["E1083"],
+      "nist_csf_2_0": ["DE.CM-09", "RS.AN-03"],
+      "nist_sp_800_53_r5": ["SI-4", "AU-6"],
+      "relationship": "related-to",
+      "evidence": "Ordered filesystem enumeration is relevant to host monitoring and analysis."
+    },
+    "T1112": {
+      "attack_name": "Modify Registry",
+      "mbc": ["E1112"],
+      "nist_csf_2_0": ["PR.PS-01", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["CM-3", "CM-5", "SI-4"],
+      "relationship": "supports",
+      "evidence": "Registry change chains support configuration-change and runtime monitoring use cases."
+    },
+    "T1071.001": {
+      "attack_name": "Web Protocols",
+      "mbc": ["C0002"],
+      "nist_csf_2_0": ["DE.CM-01", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["SC-7", "SI-4"],
+      "relationship": "related-to",
+      "evidence": "Web-stack initialization, connection and data exchange are relevant to network boundary monitoring."
+    },
+    "T1543.003": {
+      "attack_name": "Windows Service",
+      "mbc": ["F0010"],
+      "nist_csf_2_0": ["PR.PS-01", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["CM-3", "CM-5", "SI-4"],
+      "relationship": "supports",
+      "evidence": "Service creation or reconfiguration supports change-control and monitoring analysis."
+    },
+    "T1569.002": {
+      "attack_name": "Service Execution",
+      "mbc": ["E1569.002"],
+      "nist_csf_2_0": ["PR.PS-05", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["CM-7", "SI-4"],
+      "relationship": "related-to",
+      "evidence": "Opening and starting a service is relevant to least-functionality and runtime monitoring."
+    },
+    "T1056.001": {
+      "attack_name": "Keylogging",
+      "mbc": ["B0002"],
+      "nist_csf_2_0": ["PR.DS-01", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["SI-4", "AC-3"],
+      "relationship": "related-to",
+      "evidence": "Keyboard-hook and key-state collection chains are relevant to data and endpoint monitoring controls."
+    },
+    "T1113": {
+      "attack_name": "Screen Capture",
+      "mbc": ["B0029"],
+      "nist_csf_2_0": ["PR.DS-01", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["SI-4", "AC-3"],
+      "relationship": "related-to",
+      "evidence": "Screen-context acquisition and pixel-copy operations are relevant to endpoint monitoring."
+    },
+    "T1087.001": {
+      "attack_name": "Local Account",
+      "mbc": ["E1087.001"],
+      "nist_csf_2_0": ["DE.CM-09", "RS.AN-03"],
+      "nist_sp_800_53_r5": ["SI-4", "AU-6"],
+      "relationship": "related-to",
+      "evidence": "Account enumeration and follow-up inspection are relevant to host monitoring and analysis."
+    },
+    "T1016": {
+      "attack_name": "System Network Configuration Discovery",
+      "mbc": ["E1016"],
+      "nist_csf_2_0": ["DE.CM-09", "RS.AN-03"],
+      "nist_sp_800_53_r5": ["SI-4", "AU-6"],
+      "relationship": "related-to",
+      "evidence": "Adapter and route-state enumeration are relevant to host monitoring and event analysis."
+    },
+    "T1486": {
+      "attack_name": "Data Encrypted for Impact",
+      "mbc": ["B0027"],
+      "nist_csf_2_0": ["PR.DS-01", "PR.DS-11", "RC.RP-03"],
+      "nist_sp_800_53_r5": ["CP-9", "SC-28", "SI-4"],
+      "relationship": "supports",
+      "evidence": "Crypto initialization, key creation, encryption and file-write chains support protection, backup and monitoring analysis."
     }
   }
 }

@@ -14,6 +14,11 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(behavior["status"], "confirmed")
         self.assertIn("SI-4", behavior["nist"]["sp_800_53_r5"])
         self.assertEqual(len(behavior["evidence_chain"]), 4)
+        self.assertEqual(result["family"]["label"], "UNKNOWN")
+        self.assertEqual(result["family"]["source"], "no_model_checkpoint")
+        layer = result["attack_navigator_layer"]
+        self.assertEqual(layer["versions"]["layer"], "4.5")
+        self.assertIn("T1055", [item["techniqueID"] for item in layer["techniques"]])
 
 
 if __name__ == "__main__":

@@ -24,6 +24,14 @@ class NormalizationTests(unittest.TestCase):
         self.assertEqual(normalise_scalar("192.0.2.10"), "<IP_ADDRESS>")
         self.assertEqual(normalise_scalar("https://evil.example/a.dll"), "<URL:https:.dll>")
 
+    def test_multiple_reference_families_are_preserved(self):
+        report = CapeReportParser().parse({
+            "id": "multi",
+            "avclass_detection": {"families": ["AgentTesla", "FormBook", "unknown"]},
+        })
+        self.assertEqual(report.families, ["agenttesla", "formbook"])
+        self.assertEqual(report.family, "agenttesla")
+
 
 if __name__ == "__main__":
     unittest.main()

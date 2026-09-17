@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-18",
+  "sources": {
+    "attack_enterprise": {
+      "format": "stix-2.1",
+      "version": "19.2",
+      "url": "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/v19.2/enterprise-attack/enterprise-attack.json",
+      "sha256": "dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4",
+      "filename": "enterprise-attack-19.2.json"
+    },
+    "nist_sp_800_53": {
+      "format": "oscal-json",
+      "version": "rev5.1.1-oscal-content-1.2.1",
+      "url": "https://raw.githubusercontent.com/usnistgov/oscal-content/v1.2.1/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+      "sha256": "136386a3572bc2167b4a8407aaeff91aa93e52a13b0ab79fa75fe1d9d88f8559",
+      "filename": "NIST_SP-800-53_rev5_catalog.json"
+    }
+  }
+}

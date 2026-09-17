@@ -1,30 +1,13 @@
-# Requirements - PE Windows Malware Detection XAI
-# Cài đặt: pip install -r requirements.txt
-
-# Deep Learning
-tensorflow>=2.12.0
-keras>=2.12.0
-
-# XAI Libraries
-shap>=0.41.0
-lime>=0.2.0.1
-
-# Data Science
-numpy>=1.23.0
-pandas>=1.5.0
-scikit-learn>=1.1.0
-
-# Web Dashboard
-streamlit>=1.24.0
-
-# Visualization
-matplotlib>=3.6.0
-seaborn>=0.12.0
-
-# Utilities
-scipy>=1.9.0
-
-# Hybrid Temporal-Graph Attention pipeline
-torch>=2.1.0
+# MAL_Class — independent Hybrid Attention pipeline
+numpy>=1.23
 PyYAML>=6.0
+torch>=2.1
+
+# Dashboard and graph visualisation
+streamlit>=1.24
+pandas>=1.5
+plotly>=5.0
 networkx>=3.0
+
+# Optional fuzzy-hash backends are intentionally not mandatory:
+#   pip install -e '.[fuzzy]'

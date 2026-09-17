@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 
 from malware_hybrid.pipeline import HybridInferencePipeline
@@ -21,6 +22,58 @@ st.caption("Static evidence + sandbox execution flow + provenance graph")
 checkpoint = st.sidebar.text_input("Checkpoint (optional)", "")
 device = st.sidebar.selectbox("Device", ["cpu", "mps", "cuda"])
 uploaded = st.file_uploader("CAPE/WinMET JSON report", type=["json"])
+
+
+def execution_graph_dot(report, limit: int = 120) -> str:
+    graph = report.graph
+    if graph is None:
+        return "digraph G {}"
+    nodes = graph.nodes[:limit]
+    allowed = {node.index for node in nodes}
+    lines = ["digraph G {", "rankdir=LR;", 'node [shape=box, fontsize=9];']
+    colors = {
+        "process": "#fdae61", "event": "#abd9e9", "file": "#d9ef8b",
+        "registry": "#ffffbf", "socket": "#d73027", "service": "#9970ab",
+    }
+    for node in nodes:
+        label = f"{node.node_type}: {node.value}".replace('"', "'")[:80]
+        lines.append(
+            f'n{node.index} [label="{label}", style=filled, fillcolor="{colors.get(node.node_type, "#eeeeee")}"];'
+        )
+    for edge in graph.edges:
+        if edge.source in allowed and edge.target in allowed:
+            color = "#1a9850" if edge.success else "#d73027"
+            lines.append(
+                f'n{edge.source} -> n{edge.target} [label="{edge.edge_type}", color="{color}"];'
+            )
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def attention_sankey(trace: dict):
+    modalities = ["static/signature", "temporal flow", "provenance graph"]
+    labels, sources, targets, values = list(modalities), [], [], []
+    modality_keys = ["static_signature", "temporal", "graph"]
+    targets_with_attention = []
+    for family, weights in trace.get("family_to_modality", {}).items():
+        targets_with_attention.append((f"family:{family}", weights))
+    for technique, weights in trace.get("behavior_to_modality", {}).items():
+        targets_with_attention.append((f"ATT&CK:{technique}", weights))
+    for target_label, weights in targets_with_attention:
+        target_index = len(labels)
+        labels.append(target_label)
+        for source_index, key in enumerate(modality_keys):
+            value = max(0.0, float(weights.get(key, 0.0)))
+            if value:
+                sources.append(source_index)
+                targets.append(target_index)
+                values.append(value)
+    if not values:
+        return None
+    return go.Figure(go.Sankey(
+        node={"label": labels, "pad": 18, "thickness": 18},
+        link={"source": sources, "target": targets, "value": values},
+    ))
 
 
 @st.cache_resource(show_spinner=False)
@@ -39,9 +92,13 @@ if uploaded is not None:
 
     family = result["family"]
     left, middle, right = st.columns(3)
-    left.metric("Family", family["label"])
+    left.metric("Primary family", family["label"])
     middle.metric("Confidence", f"{family['confidence']:.1%}")
     right.metric("Analysis", result["analysis_mode"])
+
+    if family.get("families"):
+        st.subheader("Multi-label malware families")
+        st.dataframe(pd.DataFrame(family["families"]), use_container_width=True)
 
     st.subheader("Behavior/TTP evidence")
     for behavior in result["behaviors"]:
@@ -61,8 +118,13 @@ if uploaded is not None:
     trace = result["attention_trace"]
     if "family_to_modality" in trace:
         st.subheader("Attention flow by modality")
-        modality = pd.Series(trace["family_to_modality"], name="attention")
-        st.bar_chart(modality)
+        family_attention = pd.DataFrame(trace["family_to_modality"]).T
+        if not family_attention.empty:
+            st.dataframe(family_attention, use_container_width=True)
+            st.bar_chart(family_attention)
+        sankey = attention_sankey(trace)
+        if sankey is not None:
+            st.plotly_chart(sankey, use_container_width=True)
         st.subheader("Important execution events")
         rows = []
         for item in trace.get("temporal", {}).get("important_events", []):
@@ -75,6 +137,17 @@ if uploaded is not None:
             st.dataframe(pd.DataFrame(alignments), use_container_width=True)
     else:
         st.info("No neural checkpoint loaded; showing conservative evidence-engine output.")
+
+    st.subheader("Execution provenance graph")
+    st.graphviz_chart(execution_graph_dot(report), use_container_width=True)
+
+    navigator_json = json.dumps(result["attack_navigator_layer"], ensure_ascii=False, indent=2)
+    st.download_button(
+        "Download ATT&CK Navigator layer",
+        navigator_json,
+        file_name=f"{result['sample_hash'][:12]}-attack-navigator.json",
+        mime="application/json",
+    )
 
     with st.expander("Full machine-readable result"):
         st.json(result)
