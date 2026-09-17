@@ -1,4 +1,8 @@
-# Hybrid Temporal–Graph Attention for Malware Classification
+# MAL_Class
+
+Chuyên đề nghiên cứu phân loại mã độc bằng Hybrid Temporal–Graph Attention.
+
+## Hybrid Temporal–Graph Attention for Malware Classification
 
 Nhánh triển khai mới mở rộng dự án từ phân loại nhị phân bằng 100 API call sang
 phân loại đa nhiệm dựa trên toàn bộ luồng thực thi CAPE/WinMET:
