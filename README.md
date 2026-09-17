@@ -1,3 +1,67 @@
+# Hybrid Temporal–Graph Attention for Malware Classification
+
+Nhánh triển khai mới mở rộng dự án từ phân loại nhị phân bằng 100 API call sang
+phân loại đa nhiệm dựa trên toàn bộ luồng thực thi CAPE/WinMET:
+
+- static/signature evidence chỉ đóng vai trò tín hiệu nhỏ;
+- hierarchical attention học thứ tự API theo event → window → process;
+- temporal graph attention học quan hệ process → event → resource;
+- cross-modal và label-aware attention sinh family, ATT&CK/MBC behavior và
+  evidence chain;
+- lớp quyết định bảo thủ không cho một import, entropy hoặc hash đơn lẻ tạo
+  kết luận `confirmed`;
+- ATT&CK được ánh xạ có phiên bản sang NIST CSF 2.0 và SP 800-53 Rev.5.
+
+## Cài đặt và chạy nhanh
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+
+# Kiểm tra parser trên một CAPE report
+malware-hybrid inspect-schema tests/fixtures/cape_process_injection.json
+
+# Chạy evidence engine không cần checkpoint
+malware-hybrid predict tests/fixtures/cape_process_injection.json
+
+# Huấn luyện trên thư mục chứa CAPE/WinMET JSON
+malware-hybrid train /path/to/cape-reports \
+  --output hybrid_attention.pt --epochs 10 --device cpu
+
+# Suy luận bằng checkpoint
+malware-hybrid predict report.json \
+  --checkpoint hybrid_attention.pt --device cpu
+
+# Chứng minh mô hình phụ thuộc vào thứ tự, target và graph edge
+malware-hybrid ablate report.json --checkpoint hybrid_attention.pt
+
+# Dashboard chỉ nhận CAPE JSON, không nhận/chạy file PE
+streamlit run Source_Code/hybrid_attention_dashboard.py
+```
+
+Chạy kiểm thử:
+
+```bash
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+```
+
+## Kiến trúc mã nguồn mới
+
+- `src/malware_hybrid/normalization.py`: parser CAPE và ẩn danh tham số.
+- `src/malware_hybrid/graph.py`: temporal provenance graph.
+- `src/malware_hybrid/evidence.py`: evidence-chain validation.
+- `src/malware_hybrid/model.py`: static, temporal, graph và label-aware attention.
+- `src/malware_hybrid/calibration.py`: threshold, abstention và Wilson interval.
+- `src/malware_hybrid/pipeline.py`: inference, attention trace và mapping framework.
+- `mappings/attack_mbc_nist.json`: crosswalk có version và loại quan hệ.
+
+Lưu ý: attention weight là tín hiệu chẩn đoán, không mặc nhiên là giải thích
+nhân quả. `evaluation.py` cung cấp flow ablation, deletion AOPC và top-k
+stability để kiểm chứng attention.
+
+---
+
 # Project Final Submission: XAI for Behavioral Malware Detection
 
 Thư mục này chứa toàn bộ các thành phần quan trọng của dự án "Giải thích mô hình học sâu trong phát hiện mã độc dựa trên hành vi (XAI)".

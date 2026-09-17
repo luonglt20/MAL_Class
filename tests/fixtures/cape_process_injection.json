@@ -1,0 +1,33 @@
+{
+  "info": {"id": 7},
+  "target": {"file": {"sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}},
+  "avclass_detection": "agenttesla",
+  "static": {
+    "pe": {
+      "imports": [
+        {"dll": "kernel32.dll", "imports": [{"name": "OpenProcess"}, {"name": "WriteProcessMemory"}]}
+      ],
+      "sections": [
+        {"name": ".text", "entropy": 6.2, "characteristics": "MEM_EXECUTE|MEM_READ"},
+        {"name": ".packed", "entropy": 7.8, "characteristics": "MEM_READ|MEM_WRITE"}
+      ],
+      "peid_signatures": ["UPX"],
+      "imphash": "0123456789abcdef0123456789abcdef",
+      "digital_signers": []
+    }
+  },
+  "behavior": {
+    "processes": [
+      {
+        "process_id": 100,
+        "parent_id": 10,
+        "calls": [
+          {"timestamp": 1.0, "thread_id": 1, "api": "OpenProcess", "category": "process", "return_value": "0x44", "arguments": [{"name": "target_pid", "value": 900}]},
+          {"timestamp": 2.0, "thread_id": 1, "api": "VirtualAllocEx", "category": "process", "return_value": "0x1000", "arguments": [{"name": "target_pid", "value": 900}]},
+          {"timestamp": 3.0, "thread_id": 1, "api": "WriteProcessMemory", "category": "process", "return_value": true, "arguments": [{"name": "target_pid", "value": 900}]},
+          {"timestamp": 4.0, "thread_id": 1, "api": "CreateRemoteThread", "category": "process", "return_value": "0x88", "arguments": [{"name": "target_pid", "value": 900}]}
+        ]
+      }
+    ]
+  }
+}

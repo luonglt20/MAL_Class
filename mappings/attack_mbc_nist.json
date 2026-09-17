@@ -1,0 +1,38 @@
+{
+  "mapping_version": "2026-09-course-project-v1",
+  "notice": "Research crosswalk. Relationships are informative, not claims of equivalence.",
+  "techniques": {
+    "T1055": {
+      "attack_name": "Process Injection",
+      "mbc": ["E1055"],
+      "nist_csf_2_0": ["DE.CM-09", "RS.AN-03"],
+      "nist_sp_800_53_r5": ["SI-4", "SC-39", "AC-6"],
+      "relationship": "supports",
+      "evidence": "Runtime process and memory activity supports monitoring, process isolation and least-privilege controls."
+    },
+    "T1059.001": {
+      "attack_name": "PowerShell",
+      "mbc": ["B0032"],
+      "nist_csf_2_0": ["PR.PS-05", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["CM-7", "SI-4"],
+      "relationship": "supports",
+      "evidence": "Script execution evidence is relevant to least functionality and system monitoring."
+    },
+    "T1105": {
+      "attack_name": "Ingress Tool Transfer",
+      "mbc": ["B0030"],
+      "nist_csf_2_0": ["DE.CM-01", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["SC-7", "SI-4"],
+      "relationship": "supports",
+      "evidence": "Network receive followed by file creation informs boundary and system monitoring."
+    },
+    "T1547.001": {
+      "attack_name": "Registry Run Keys / Startup Folder",
+      "mbc": ["F0012"],
+      "nist_csf_2_0": ["PR.PS-01", "DE.CM-09"],
+      "nist_sp_800_53_r5": ["CM-3", "CM-5", "SI-4"],
+      "relationship": "supports",
+      "evidence": "Autorun registry modification relates to configuration change control and monitoring."
+    }
+  }
+}

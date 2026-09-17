@@ -1,0 +1,35 @@
+data:
+  max_events: 2048
+  max_static_tokens: 256
+  max_graph_nodes: 1024
+  max_graph_edges: 4096
+  window_size: 256
+  window_overlap: 128
+  family_min_support: 50
+  behavior_min_support: 30
+
+model:
+  d_model: 128
+  n_heads: 4
+  dropout: 0.2
+  static_layers: 2
+  temporal_layers: 2
+  fusion_layers: 2
+  graph_layers: 2
+
+training:
+  batch_size: 64
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  max_epochs: 50
+  early_stopping_patience: 7
+  gradient_clip: 1.0
+  seeds: [42, 43, 44]
+  modality_dropout: 0.15
+  evidence_dropout: 0.10
+
+decision:
+  suspected_threshold: 0.35
+  confirmed_threshold: 0.75
+  family_abstain_threshold: 0.45
+  require_complete_chain_for_confirmed: true
