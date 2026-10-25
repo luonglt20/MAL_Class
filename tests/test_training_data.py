@@ -30,7 +30,7 @@ class EmberReservoirSamplingTests(unittest.TestCase):
     def test_reservoir_memory_bound_is_enforced(self):
         with self.assertRaisesRegex(ValueError, "reservoir memory bound"):
             load_ember_win32_archive(
-                "unused.zip", rows_per_week=200, max_samples=200,
+                "unused.zip", rows_per_week=600, max_samples=600,
                 maximum_json_line_bytes=4 * 1024 * 1024,
             )
 

@@ -240,7 +240,7 @@ with training_tab:
     min_family = col_d.number_input("Family min support", min_value=1, value=2)
     min_behavior = col_e.number_input("Behavior min support", min_value=1, value=2)
     max_samples = col_f.number_input("EMBER sample cap", min_value=100, max_value=100000, value=7000)
-    rows_per_week = st.number_input("EMBER rows tối đa mỗi tuần", min_value=1, max_value=170, value=128)
+    rows_per_week = st.number_input("EMBER rows tối đa mỗi tuần", min_value=1, max_value=512, value=128)
     checkpoint_output = st.text_input("Lưu checkpoint vào", value="models/mal_class_hybrid.pt")
 
     if st.button(
