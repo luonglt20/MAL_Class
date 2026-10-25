@@ -53,10 +53,24 @@ Normalization preserves a report-local anonymous identity for each named
 file/registry/network/service resource. Semantically similar but different
 paths remain separate graph nodes; repeated access to the same path remains
 one entity. IDs are used only for equality/edges, not learned graph tokens.
-Handles are scoped by process but are not yet resolved to underlying named
-objects; handle aliases, handle reuse and complex socket endpoints remain
-limitations. Event truncation selects globally earliest calls across all
-processes before repeat compression, not a prefix of the first process.
+For common process APIs, successful `OpenProcess`/`NtOpenProcess` calls bind a
+handle to an explicit target PID within the owning process; successful close
+invalidates that binding, and reuse replaces it. Failed acquisition, unknown
+owners, conflicting PIDs, unknown handles, and unresolved file/key/socket
+handles stay unknown. Duplicate/inherited handles, thread-handle-to-process
+resolution and complex socket endpoints remain limitations. The current
+`T1547.001` evidence guard covers the standard registry `Run`/`RunOnce` path
+subset (including `WOW6432Node`) and same-key open/write chains; it does not
+cover startup folders or every autorun location. These behaviors have synthetic
+counterexample tests but await validation against actual WinMET report shapes.
+Event truncation selects globally earliest calls across all processes before
+repeat compression, not a prefix of the first process.
+
+The process-handle argument conventions were cross-checked against the
+[CAPEv2 process injection signatures](https://github.com/kevoreilly/CAPEv2/blob/master/modules/signatures/CAPE.py)
+and Microsoft's documentation for [OpenProcess](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openprocess),
+[process handles and identifiers](https://learn.microsoft.com/en-us/windows/win32/procthread/process-handles-and-identifiers),
+and [NTSTATUS success values](https://learn.microsoft.com/en-us/windows-hardware/drivers/kernel/using-ntstatus-values).
 
 After inspecting a prepared cohort, the ordinary `train` command accepts its
 JSONL path. Do not report an accuracy based only on this small diagnostic prefix.

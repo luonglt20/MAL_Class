@@ -11,6 +11,42 @@ FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
 
 
 class NormalizationTests(unittest.TestCase):
+    def test_unresolved_file_handles_do_not_become_named_entities(self):
+        report = CapeReportParser().parse({"behavior": {"processes": [{"process_id": 100, "calls": [
+            {"api": "WriteFile", "category": "file", "arguments": {"FileHandle": 68}},
+            {"api": "WriteFile", "category": "file", "arguments": {
+                "FileHandle": 68, "FileName": r"C:\Temp\payload.bin"}},
+        ]}]}})
+        self.assertTrue(report.events[0].target.startswith("<"))
+        self.assertTrue(report.events[1].target.startswith("entity:"))
+
+    def test_unknown_process_owners_remain_distinct(self):
+        report = CapeReportParser().parse({"behavior": {"processes": [
+            {"calls": [{"api": "One", "timestamp": 1}]},
+            {"calls": [{"api": "Two", "timestamp": 2}]},
+        ]}})
+        self.assertNotEqual(report.events[0].process_id, report.events[1].process_id)
+        self.assertTrue(all(event.parent_process_id == "unknown" for event in report.events))
+
+    def test_return_semantics_preserve_failure_and_unknown_status(self):
+        cases = [
+            ("NtAllocateVirtualMemory", "0x0", True),
+            ("NtAllocateVirtualMemory", "0xc0000022", False),
+            ("NtAllocateVirtualMemory", "0x80000005", False),
+            ("RegOpenKeyExW", 0, True),
+            ("RegOpenKeyExW", 5, False),
+            ("WriteProcessMemory", 0, False),
+            ("WriteProcessMemory", True, True),
+            ("WriteProcessMemory", "unknown", False),
+            ("WriteProcessMemory", None, False),
+        ]
+        for api, returned, expected in cases:
+            with self.subTest(api=api, returned=returned):
+                report = CapeReportParser().parse({"behavior": {"processes": [
+                    {"process_id": 100, "calls": [{"api": api, "return": returned}]}
+                ]}})
+                self.assertEqual(report.events[0].success, expected)
+
     def test_datetime_call_timestamps_preserve_elapsed_time(self):
         report = CapeReportParser().parse({"behavior": {"processes": [
             {"process_id": 1, "calls": [
@@ -71,6 +107,19 @@ class NormalizationTests(unittest.TestCase):
         self.assertEqual(normalise_scalar("C:\\Users\\alice\\payload.exe"), "<PATH:.exe>")
         self.assertEqual(normalise_scalar("192.0.2.10"), "<IP_ADDRESS>")
         self.assertEqual(normalise_scalar("https://evil.example/a.dll"), "<URL:https:.dll>")
+
+    def test_only_standard_registry_run_keys_receive_autorun_marker(self):
+        cases = {
+            r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run": "<REGISTRY:HKCU:AUTORUN>",
+            r"HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\RunOnce": "<REGISTRY:HKLM:AUTORUN>",
+            r"\Registry\Machine\Software\Microsoft\Windows\CurrentVersion\Run": "<REGISTRY:HKLM:AUTORUN>",
+            r"HKCU\Software\Microsoft\Windows\CurrentVersion\RunServices": "<REGISTRY:HKCU>",
+            r"HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnceExtra": "<REGISTRY:HKCU>",
+            r"HKCU\Software\Vendor\AutorunConfig": "<REGISTRY:HKCU>",
+        }
+        for path, expected in cases.items():
+            with self.subTest(path=path):
+                self.assertEqual(normalise_scalar(path), expected)
 
     def test_multiple_reference_families_are_preserved(self):
         report = CapeReportParser().parse({

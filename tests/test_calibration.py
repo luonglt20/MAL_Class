@@ -10,6 +10,28 @@ from malware_hybrid.evidence import EvidenceMatch
 
 
 class CalibrationTests(unittest.TestCase):
+    def test_non_alert_is_unknown_and_does_not_suppress_family_classification(self):
+        policy = DecisionPolicy(malware_threshold=.9997)
+        for probability in (.01, .99):
+            verdict = policy.malware_decision(probability)
+            self.assertEqual(verdict["label"], "UNKNOWN")
+            self.assertEqual(verdict["confidence"], 0.)
+        family = policy.family_multilabel_decision(
+            ["alpha"], np.array([.9]), malware_probability=.99
+        )
+        self.assertEqual(family["label"], "alpha")
+        self.assertEqual(family["verdict"], "unknown")
+
+    def test_benign_requires_separate_bound_and_confidence_matches_label(self):
+        policy = DecisionPolicy(malware_threshold=.9, malware_benign_threshold=.1)
+        self.assertEqual(policy.malware_decision(.05)["label"], "BENIGN")
+        self.assertAlmostEqual(policy.malware_decision(.05)["confidence"], .95)
+        self.assertEqual(policy.malware_decision(.5)["label"], "UNKNOWN")
+        self.assertEqual(policy.malware_decision(.95)["label"], "MALICIOUS")
+        self.assertAlmostEqual(policy.malware_decision(.95)["confidence"], .95)
+        with self.assertRaises(ValueError):
+            DecisionPolicy(malware_threshold=.9, malware_benign_threshold=.95).malware_decision(.5)
+
     def test_high_model_score_without_chain_is_only_suspected(self):
         status, reasons = DecisionPolicy().behavior_status(
             "T1055", 0.99, EvidenceMatch("T1055", "Process Injection", "suspected", 0.5)

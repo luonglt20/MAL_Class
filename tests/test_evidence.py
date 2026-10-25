@@ -57,6 +57,13 @@ class EvidenceTests(unittest.TestCase):
         match = self.engine.evaluate(events)["T1055"]
         self.assertNotEqual(match.status, "confirmed")
 
+    def test_generic_process_placeholder_is_not_a_shared_target(self):
+        for target in ("<PROCESS>", "<NONE>", "pid:unknown"):
+            events = copy.deepcopy(self.report.events)
+            for event in events:
+                event.target = target
+            self.assertNotEqual(self.engine.evaluate(events)["T1055"].status, "confirmed")
+
     def test_discovery_requires_ordered_combination_not_one_api(self):
         def event(index, api):
             return ExecutionEvent(
@@ -72,6 +79,43 @@ class EvidenceTests(unittest.TestCase):
         ])["T1057"]
         self.assertNotEqual(single.status, "confirmed")
         self.assertEqual(complete.status, "confirmed")
+
+    @staticmethod
+    def registry_trace(open_path, write_path=None, value_name="Updater"):
+        write_path = open_path if write_path is None else write_path
+        return {"behavior": {"processes": [{"process_id": 42, "calls": [
+            {"timestamp": 1, "api": "RegOpenKeyExW", "category": "registry", "return": 0,
+             "arguments": {"RegistryKey": open_path}},
+            {"timestamp": 2, "api": "RegSetValueExW", "category": "registry", "return": 0,
+             "arguments": {"RegistryKey": write_path, "ValueName": value_name}},
+        ]}]}}
+
+    def test_run_key_open_and_write_confirms_persistence_chain(self):
+        path = r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
+        report = CapeReportParser().parse(self.registry_trace(path))
+        match = self.engine.evaluate(report.events)["T1547.001"]
+        self.assertEqual(match.status, "confirmed")
+        self.assertEqual(len(match.events), 2)
+        self.assertTrue(all(":autorun>" in event.target.lower() for event in match.events))
+
+    def test_ordinary_registry_modification_is_not_run_key_persistence(self):
+        path = r"HKCU\Software\Vendor\Settings"
+        report = CapeReportParser().parse(self.registry_trace(path, value_name="AutorunConfig"))
+        matches = self.engine.evaluate(report.events)
+        self.assertEqual(matches["T1547.001"].status, "not_detected")
+        self.assertEqual(matches["T1112"].status, "confirmed")
+
+    def test_open_and_write_to_different_autorun_keys_do_not_confirm(self):
+        run_key = r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
+        run_once_key = r"HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce"
+        report = CapeReportParser().parse(self.registry_trace(run_key, write_path=run_once_key))
+        self.assertNotEqual(self.engine.evaluate(report.events)["T1547.001"].status, "confirmed")
+
+    def test_single_autorun_registry_call_is_not_confirmed(self):
+        path = r"HKLM\Software\Microsoft\Windows\CurrentVersion\Run"
+        report = CapeReportParser().parse(self.registry_trace(path))
+        match = self.engine.evaluate(report.events[:1])["T1547.001"]
+        self.assertEqual(match.status, "suspected")
 
 
 if __name__ == "__main__":

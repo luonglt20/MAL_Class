@@ -140,6 +140,10 @@ with analysis_tab:
                 family = result["family"]
                 left, middle, right = st.columns(3)
                 left.metric("Verdict", result["verdict"]["label"])
+                st.warning(
+                    "Mô hình đang nghiên cứu: không có cảnh báo không có nghĩa là file an toàn. "
+                    "Không chạy file trên máy thật dựa vào kết quả này."
+                )
                 middle.metric("Họ mã độc chính", family["label"])
                 right.metric("Độ tin cậy", f"{family['confidence']:.1%}")
                 st.caption(
@@ -166,7 +170,15 @@ with analysis_tab:
 
                 st.subheader("Behavior/TTP evidence")
                 if not result["behaviors"]:
-                    st.info("Report này không có event động; không suy diễn ATT&CK từ static indicator đơn lẻ.")
+                    st.info(
+                        "Chưa đủ chuỗi bằng chứng và ngữ cảnh để kết luận behavior."
+                        if report.events else
+                        "Report này không có event động; không suy diễn ATT&CK từ static indicator đơn lẻ."
+                    )
+                if report.events:
+                    with st.expander("Luồng thực thi chuẩn hóa và nguồn phân giải target"):
+                        st.dataframe(pd.DataFrame([event.public_dict() for event in report.events]),
+                                     use_container_width=True)
                 for behavior in result["behaviors"]:
                     title = (
                         f"{behavior['attack']['technique_id']} · "

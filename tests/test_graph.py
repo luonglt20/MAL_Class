@@ -22,6 +22,15 @@ def event(index: int, api: str, target: str, success: bool = True) -> ExecutionE
 
 
 class GraphTests(unittest.TestCase):
+    def test_unresolved_resources_do_not_invent_shared_graph_entities(self):
+        graph = ExecutionGraphBuilder().build([
+            event(0, "WriteProcessMemory", "<PROCESS_HANDLE_UNKNOWN>"),
+            event(1, "CreateRemoteThread", "<PROCESS_HANDLE_UNKNOWN>"),
+        ])
+        self.assertFalse(any(node.value == "<PROCESS_HANDLE_UNKNOWN>" for node in graph.nodes))
+        self.assertEqual(sum(edge.edge_type == "invoke" for edge in graph.edges), 2)
+        self.assertEqual(sum(edge.edge_type == "next" for edge in graph.edges), 1)
+
     def test_parent_process_relation_is_not_duplicated_per_event(self):
         graph = ExecutionGraphBuilder().build([
             event(0, "OpenProcess", "pid:40"),
