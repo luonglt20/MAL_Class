@@ -1,20 +1,62 @@
 import unittest
 import copy
+import tempfile
 from pathlib import Path
 
 import torch
 
 from malware_hybrid.dataset import ReportTensorizer, collate_samples
 from malware_hybrid.evaluation import ablate_report
-from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel
+from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel, LabelwiseFamilyHead
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
+from malware_hybrid.training import load_checkpoint, save_checkpoint
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
 
 
 class ModelTests(unittest.TestCase):
+    def test_family_head_checkpoint_layouts_roundtrip(self):
+        report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit([report])
+        batch = collate_samples([tensorizer.encode(report)])
+        with tempfile.TemporaryDirectory() as directory:
+            for variant in ("legacy_shared", "labelwise"):
+                with self.subTest(variant=variant):
+                    config = HybridAttentionConfig(
+                        token_vocab_size=len(tensorizer.token_vocab),
+                        edge_vocab_size=len(tensorizer.edge_vocab),
+                        node_type_vocab_size=len(tensorizer.node_type_vocab),
+                        n_families=len(tensorizer.family_vocab),
+                        behavior_ids=tensorizer.behavior_ids,
+                        d_model=16, dropout=0., family_head_variant=variant,
+                    )
+                    model = HybridAttentionModel(config).eval()
+                    path = Path(directory) / f"{variant}.pt"
+                    save_checkpoint(path, model, tensorizer)
+                    if variant == "legacy_shared":
+                        payload = torch.load(path, weights_only=False)
+                        del payload["model_config"]["family_head_variant"]
+                        torch.save(payload, path)
+                    loaded, _ = load_checkpoint(path)
+                    loaded.eval()
+                    with torch.no_grad():
+                        torch.testing.assert_close(
+                            model(batch)["family_logits"], loaded(batch)["family_logits"]
+                        )
+
+    def test_labelwise_head_can_separate_identical_attention_contexts(self):
+        head = LabelwiseFamilyHead(2, 4)
+        context = torch.ones(1, 2, 4, requires_grad=True)
+        with torch.no_grad():
+            head.weight[0].fill_(1)
+            head.weight[1].fill_(-1)
+        logits = head(context).squeeze(-1)
+        torch.testing.assert_close(logits, torch.tensor([[4., -4.]]))
+        logits.sum().backward()
+        self.assertGreater(float(context.grad.abs().sum()), 0)
+
     def test_forward_exposes_every_attention_stage(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)
         tensorizer = ReportTensorizer.fit([report])
@@ -37,6 +79,7 @@ class ModelTests(unittest.TestCase):
             window_overlap=1,
             dropout=0.0,
             modality_dropout=0.0,
+            family_head_variant="labelwise",
         )
         model = HybridAttentionModel(config).eval()
         with torch.inference_mode():

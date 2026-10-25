@@ -2,14 +2,29 @@ import json
 import tempfile
 import unittest
 import zipfile
+import torch
 from pathlib import Path
 
 from malware_hybrid.training import (
     _EncodedEmberStream,
     iter_ember_win32_archive,
     load_ember_win32_archive,
+    _snapshot_state,
 )
 from malware_hybrid.dataset import ReportTensorizer
+
+
+class BestCheckpointTests(unittest.TestCase):
+    def test_cpu_best_state_does_not_change_during_later_updates(self):
+        model = torch.nn.Linear(2, 1)
+        best = _snapshot_state(model)
+        expected = model.weight.detach().clone()
+        with torch.no_grad():
+            model.weight.add_(10)
+        torch.testing.assert_close(best["weight"], expected)
+        self.assertNotEqual(best["weight"].data_ptr(), model.weight.data_ptr())
+        model.load_state_dict(best)
+        torch.testing.assert_close(model.weight, expected)
 
 
 class EmberReservoirSamplingTests(unittest.TestCase):
