@@ -4,7 +4,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from malware_hybrid.training import load_ember_win32_archive
+from malware_hybrid.training import iter_ember_win32_archive, load_ember_win32_archive
 
 
 class EmberReservoirSamplingTests(unittest.TestCase):
@@ -30,9 +30,26 @@ class EmberReservoirSamplingTests(unittest.TestCase):
     def test_reservoir_memory_bound_is_enforced(self):
         with self.assertRaisesRegex(ValueError, "reservoir memory bound"):
             load_ember_win32_archive(
-                "unused.zip", rows_per_week=100, max_samples=100,
+                "unused.zip", rows_per_week=200, max_samples=200,
                 maximum_json_line_bytes=4 * 1024 * 1024,
             )
+
+    def test_streaming_reader_supports_official_holdout_archives(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            archive = Path(temporary_directory) / "Win32_test.zip"
+            rows = [
+                {"sha256": f"holdout-{index}", "file_type": "Win32", "label": index % 2}
+                for index in range(25)
+            ]
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+                bundle.writestr("week_Win32_test.jsonl", "".join(json.dumps(row) + "\n" for row in rows))
+            reports = list(iter_ember_win32_archive(archive, max_samples=7))
+            self.assertEqual(len(reports), 7)
+            self.assertEqual(reports[0].sample_hash, "holdout-0")
+
+    def test_streaming_reader_rejects_invalid_sample_cap(self):
+        with self.assertRaisesRegex(ValueError, "max_samples"):
+            list(iter_ember_win32_archive("unused.zip", max_samples=0))
 
 
 if __name__ == "__main__":

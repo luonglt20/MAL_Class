@@ -4,7 +4,7 @@ import numpy as np
 
 from malware_hybrid.calibration import (
     DecisionPolicy, MultilabelSplitConformal, SplitConformalClassifier,
-    choose_threshold_for_fpr, wilson_interval,
+    choose_threshold_for_fpr, fit_multilabel_thresholds, wilson_interval,
 )
 from malware_hybrid.evidence import EvidenceMatch
 
@@ -73,6 +73,26 @@ class CalibrationTests(unittest.TestCase):
         restored = MultilabelSplitConformal.from_dict(original.as_dict())
         self.assertEqual(restored.negative_scores, original.negative_scores)
         self.assertEqual(restored.positive_scores, original.positive_scores)
+
+    def test_family_threshold_calibration_can_select_below_half_without_violating_fpr(self):
+        probabilities = np.asarray([[.20], [.10], [.05], [.30], [.08], [.12]])
+        targets = np.asarray([[1], [0], [0], [1], [0], [0]])
+        result = fit_multilabel_thresholds(
+            ["alpha"], probabilities, targets, np.ones_like(targets),
+            target_fpr=.25, minimum_positives=2, minimum_negatives=3,
+        )
+        self.assertTrue(result["alpha"]["calibrated"])
+        self.assertEqual(result["alpha"]["threshold"], .2)
+        self.assertEqual(result["alpha"]["calibration_fpr"], 0.0)
+
+    def test_calibrated_family_threshold_is_used_for_suspected_output(self):
+        decision = DecisionPolicy().family_multilabel_decision(
+            ["alpha", "beta"], np.asarray([.24, .19]),
+            family_thresholds={"alpha": .2, "beta": .3},
+        )
+        self.assertEqual([item["label"] for item in decision["families"]], ["alpha"])
+        self.assertEqual(decision["families"][0]["status"], "suspected")
+        self.assertEqual(decision["families"][0]["reason"], "calibrated_threshold")
 
 
 if __name__ == "__main__":

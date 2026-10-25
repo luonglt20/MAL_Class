@@ -21,7 +21,9 @@ malware-hybrid predict tests/fixtures/cape_process_injection.json
 malware-hybrid train /path/to/cape-reports --output hybrid_attention.pt --window-size 256 --window-overlap 128 --conformal-alpha 0.10
 malware-hybrid predict report.json --checkpoint hybrid_attention.pt
 malware-hybrid download-ember --output Data/raw
-malware-hybrid train-ember Data/raw/Win32_train.zip --output models/ember2024_hybrid.pt --rows-per-week 80 --max-samples 4000
+malware-hybrid train-ember Data/raw/Win32_train.zip --output models/ember2024_hybrid.pt --rows-per-week 128 --max-samples 7000
+malware-hybrid download-ember --split test --output Data/raw
+malware-hybrid test-ember Data/raw/Win32_test.zip --checkpoint models/ember2024_hybrid.pt
 PYTHONPATH=src streamlit run Source_Code/hybrid_attention_dashboard.py
 malware-hybrid sync-frameworks --output artifacts/frameworks
 PYTHONPATH=src python3 -m unittest discover -s tests -v
@@ -29,7 +31,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 Lệnh train chia dữ liệu thành train/validation/calibration/test riêng; calibration tạo tập dự đoán Mondrian split-conformal nhị phân cho từng family và chọn ngưỡng verdict theo FPR trên benign calibration. Imphash chỉ khớp prototype train theo digest chính xác; TLSH/ssdeep dùng fuzzy similarity. Không đưa raw digest vào token mô hình. Lệnh `sync-frameworks` tải đúng ATT&CK STIX 19.2 và NIST SP 800-53 Rev.5.1.1 OSCAL đã khóa SHA-256, sau đó kiểm tra ID/tên trong crosswalk. Không cung cấp checkpoint: chỉ chạy evidence engine, family luôn là `UNKNOWN`, và confidence behavior là mức đầy đủ của rule chứ không phải xác suất mô hình.
 
-Dashboard nhận file PE tối đa 50 MiB và phân tích tĩnh trong bộ đọc PE giới hạn kích thước; file không được thực thi. Đầu vào CAPE/WinMET JSON mới cung cấp luồng động. Có thể huấn luyện từ thư mục report tại máy hoặc EMBER2024 Win32 ZIP đã khóa checksum. EMBER2024 chỉ cung cấp feature/nhãn tĩnh, không thay thế sandbox trace; bộ train lấy mẫu reservoir có seed trên các shard tuần, vì vậy kết quả của subset không phải benchmark chính thức. Cài package và extras bằng `pip install '.[dev,dashboard]'`.
+Dashboard nhận file PE tối đa 50 MiB và phân tích tĩnh trong bộ đọc PE giới hạn kích thước; file không được thực thi. Đầu vào CAPE/WinMET JSON mới cung cấp luồng động. Có thể huấn luyện từ thư mục report tại máy hoặc EMBER2024 Win32 ZIP đã khóa checksum. EMBER2024 chỉ cung cấp feature/nhãn tĩnh, không thay thế sandbox trace; bộ train lấy mẫu reservoir có seed trên các shard tuần, mặc định tối đa 7.000 mẫu, vì vậy kết quả của subset không phải benchmark chính thức. Các TTP yếu trong EMBER không được dùng làm ground-truth âm; behavior head chỉ bật khi split train có cả bằng chứng dương và âm mạnh. Ngưỡng family được hiệu chuẩn riêng trên calibration split, giới hạn empirical FPR, rồi đánh giá trên test temporal riêng. Cài package và extras bằng `pip install '.[dev,dashboard]'`.
 
 Bộ protocol có đúng 7 baseline: indicator rule, bag-of-token, BiLSTM, temporal transformer, graph attention, sequence+graph và full hybrid attention. Attention được kiểm định bằng flow ablation, deletion AOPC, stability và Spearman agreement với Layer Integrated Gradients ở mức event. Các lớp baseline đã chạy được, nhưng chưa được phép ghi điểm benchmark cho tới khi chạy cùng split dữ liệu thật.
 

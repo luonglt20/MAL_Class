@@ -13,6 +13,19 @@
       "contents": "Static PE features and labels; no executable files",
       "training_split": "train",
       "note": "A bounded number of rows is sampled from each temporal weekly JSONL shard."
+    },
+    "ember2024_win32_test": {
+      "publisher": "EMBER2024 authors",
+      "hub": "https://huggingface.co/datasets/joyce8/EMBER2024",
+      "revision": "3d23efef7c0f0b702c5024400cfff4c3744a3832",
+      "filename": "Win32_test.zip",
+      "url": "https://huggingface.co/datasets/joyce8/EMBER2024/resolve/3d23efef7c0f0b702c5024400cfff4c3744a3832/Win32_test.zip",
+      "sha256": "c05f6562dee3ace4195087be918eb00181e33bc31464c671fb5ba00c9dd5dfdb",
+      "bytes": 2593425203,
+      "license": "Apache-2.0",
+      "contents": "Static PE features and labels; official later-time Win32 test split; no executable files",
+      "training_split": "test",
+      "note": "Keep untouched for final temporal evaluation; do not use for training or calibration."
     }
   }
 }
