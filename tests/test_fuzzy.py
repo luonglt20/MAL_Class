@@ -32,6 +32,17 @@ class FuzzyPrototypeTests(unittest.TestCase):
         index = FuzzyPrototypeIndex.fit([train])
         self.assertEqual(index.evidence(train), [])
 
+    def test_imphash_is_exact_train_prototype_only(self):
+        train = copy.deepcopy(self.base)
+        train.sample_hash = "train-owner"
+        train.metadata["fuzzy_hashes"] = {"imphash": "0123456789abcdef"}
+        index = FuzzyPrototypeIndex.fit([train])
+        inference = copy.deepcopy(train)
+        inference.sample_hash = "unseen-sample"
+        evidence = index.evidence(inference)
+        self.assertTrue(any(item.token == "fuzzy_similarity:imphash:high" for item in evidence))
+        self.assertFalse(any("0123456789abcdef" in item.token for item in evidence))
+
 
 if __name__ == "__main__":
     unittest.main()

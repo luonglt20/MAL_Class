@@ -20,11 +20,16 @@ malware-hybrid inspect-schema tests/fixtures/cape_process_injection.json
 malware-hybrid predict tests/fixtures/cape_process_injection.json
 malware-hybrid train /path/to/cape-reports --output hybrid_attention.pt --window-size 256 --window-overlap 128 --conformal-alpha 0.10
 malware-hybrid predict report.json --checkpoint hybrid_attention.pt
+malware-hybrid download-ember --output Data/raw
+malware-hybrid train-ember Data/raw/Win32_train.zip --output models/ember2024_hybrid.pt --rows-per-week 80 --max-samples 4000
+PYTHONPATH=src streamlit run Source_Code/hybrid_attention_dashboard.py
 malware-hybrid sync-frameworks --output artifacts/frameworks
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
-Lệnh train chia dữ liệu thành train/validation/calibration/test riêng; calibration tạo tập dự đoán Mondrian split-conformal nhị phân cho từng family. TLSH/ssdeep được đối chiếu với prototype chỉ sinh từ train split, không đưa raw fuzzy hash vào token. Lệnh `sync-frameworks` tải đúng ATT&CK STIX 19.2 và NIST SP 800-53 Rev.5.1.1 OSCAL đã khóa SHA-256, sau đó kiểm tra ID/tên trong crosswalk. Không cung cấp checkpoint: chỉ chạy evidence engine, family luôn là `UNKNOWN`, và confidence behavior là mức đầy đủ của rule chứ không phải xác suất mô hình.
+Lệnh train chia dữ liệu thành train/validation/calibration/test riêng; calibration tạo tập dự đoán Mondrian split-conformal nhị phân cho từng family và chọn ngưỡng verdict theo FPR trên benign calibration. Imphash chỉ khớp prototype train theo digest chính xác; TLSH/ssdeep dùng fuzzy similarity. Không đưa raw digest vào token mô hình. Lệnh `sync-frameworks` tải đúng ATT&CK STIX 19.2 và NIST SP 800-53 Rev.5.1.1 OSCAL đã khóa SHA-256, sau đó kiểm tra ID/tên trong crosswalk. Không cung cấp checkpoint: chỉ chạy evidence engine, family luôn là `UNKNOWN`, và confidence behavior là mức đầy đủ của rule chứ không phải xác suất mô hình.
+
+Dashboard nhận file PE tối đa 50 MiB và phân tích tĩnh trong bộ đọc PE giới hạn kích thước; file không được thực thi. Đầu vào CAPE/WinMET JSON mới cung cấp luồng động. Có thể huấn luyện từ thư mục report tại máy hoặc EMBER2024 Win32 ZIP đã khóa checksum. EMBER2024 chỉ cung cấp feature/nhãn tĩnh, không thay thế sandbox trace; bộ train lấy số hàng giới hạn theo từng shard tuần, vì vậy kết quả của subset không phải benchmark chính thức. Tải extras bằng `pip install -e '.[dev,dashboard]'`.
 
 Bộ protocol có đúng 7 baseline: indicator rule, bag-of-token, BiLSTM, temporal transformer, graph attention, sequence+graph và full hybrid attention. Attention được kiểm định bằng flow ablation, deletion AOPC, stability và Spearman agreement với Layer Integrated Gradients ở mức event. Các lớp baseline đã chạy được, nhưng chưa được phép ghi điểm benchmark cho tới khi chạy cùng split dữ liệu thật.
 
@@ -33,5 +38,6 @@ Bộ protocol có đúng 7 baseline: indicator rule, bag-of-token, BiLSTM, tempo
 - [Trạng thái triển khai](docs/implementation-status.md).
 - [README gốc được bảo tồn](references/legacy/README.original.md).
 - [MAL_dectect](https://github.com/luonglt20/MAL_dectect): tham khảo ý tưởng.
+- [EMBER2024 của nhóm tác giả](https://github.com/FutureComputing4AI/EMBER2024) và [bản lưu dữ liệu được khóa checksum](https://huggingface.co/datasets/joyce8/EMBER2024): nguồn feature tĩnh/nhãn; không chứa binary để thực thi.
 
 Các file cũ trong Data/, Documentation/, Reports/ và các script BiLSTM/XAI cũ trong Source_Code/ là hiện vật tham khảo; không nằm trong pipeline malware-hybrid và không được dùng làm kết quả nghiệm thu của đồ án mới.

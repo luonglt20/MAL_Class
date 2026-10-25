@@ -48,6 +48,7 @@ class BaselineTests(unittest.TestCase):
                     output["behavior_logits"].shape,
                     (1, len(self.tensorizer.behavior_ids)),
                 )
+                self.assertEqual(output["malware_logits"].shape, (1,))
                 self.assertTrue(torch.isfinite(output["family_logits"]).all())
                 self.assertTrue(torch.isfinite(output["behavior_logits"]).all())
 

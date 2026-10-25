@@ -21,6 +21,12 @@ class CalibrationTests(unittest.TestCase):
         result = choose_threshold_for_fpr(np.array([0.01, 0.1, 0.2, 0.8]), target_fpr=0.25)
         self.assertIn("wilson_95", result)
         self.assertGreaterEqual(result["threshold"], 0.5)
+        self.assertTrue(result["target_met"])
+
+    def test_threshold_reports_unattainable_empirical_fpr(self):
+        result = choose_threshold_for_fpr(np.array([1.0, 1.0]), target_fpr=0.01)
+        self.assertFalse(result["target_met"])
+        self.assertEqual(result["fpr"], 1.0)
 
     def test_split_conformal_abstains_on_ambiguous_set(self):
         calibrator = SplitConformalClassifier.fit(

@@ -9,3 +9,6 @@ artifacts/
 *.pt
 *.pth
 *.ckpt
+Data/raw/
+data/raw/
+models/
