@@ -1,11 +1,14 @@
 import struct
+import tempfile
 import unittest
 from pathlib import Path
 
 from malware_hybrid.batch_analysis import (
+    analyze_local_dataset,
     analyze_uploaded_sample,
     batch_error_row,
     batch_result_row,
+    discover_dataset_files,
 )
 from malware_hybrid.pipeline import HybridInferencePipeline
 
@@ -76,6 +79,57 @@ class BatchAnalysisTests(unittest.TestCase):
         self.assertEqual(row["verdict"], "UNKNOWN")
         self.assertEqual(row["primary_family"], "UNKNOWN")
         self.assertIn("invalid document", row["error"])
+
+    def test_local_nested_dataset_is_sorted_bounded_and_per_file_fault_tolerant(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            nested = root / "family_a"
+            nested.mkdir()
+            (nested / "sample.exe").write_bytes(minimal_pe())
+            (root / "report.json").write_bytes(FIXTURE.read_bytes())
+            (root / "broken.json").write_text("{bad json", encoding="utf-8")
+            (root / "notes.txt").write_text("ignored", encoding="utf-8")
+
+            progress = []
+            rows, candidates = analyze_local_dataset(
+                root, self.pipeline,
+                progress=lambda index, total: progress.append((index, total)),
+            )
+
+            self.assertEqual(
+                [item.relative_name for item in candidates],
+                ["broken.json", "family_a/sample.exe", "report.json"],
+            )
+            self.assertEqual([row["filename"] for row in rows], [
+                "broken.json", "family_a/sample.exe", "report.json",
+            ])
+            self.assertIn("valid UTF-8", rows[0]["error"])
+            self.assertEqual(rows[1]["primary_family"], "UNKNOWN")
+            self.assertEqual(rows[2]["confirmed_behaviors"], "T1055")
+            self.assertEqual(progress[-1], (3, 3))
+
+    def test_local_dataset_rejects_resource_limit_overruns_and_symlink_root(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "one.exe").write_bytes(b"MZ")
+            (root / "two.exe").write_bytes(b"MZ")
+            with self.assertRaisesRegex(ValueError, "more than 1"):
+                discover_dataset_files(root, max_files=1)
+            with self.assertRaisesRegex(ValueError, "total bytes"):
+                discover_dataset_files(root, max_total_bytes=3)
+            with self.assertRaisesRegex(ValueError, "exceeds 1 bytes"):
+                discover_dataset_files(root, max_sample_bytes=1)
+
+            alias = root.parent / f"{root.name}-link"
+            try:
+                alias.symlink_to(root, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("symbolic links are unavailable in this environment")
+            try:
+                with self.assertRaisesRegex(ValueError, "must not be a symbolic link"):
+                    discover_dataset_files(alias)
+            finally:
+                alias.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

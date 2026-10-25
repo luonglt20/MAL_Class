@@ -18,6 +18,7 @@ import torch
 from malware_hybrid.dataset_sources import verify_dataset_file
 from malware_hybrid.batch_analysis import (
     MAX_SAMPLE_BYTES,
+    analyze_local_dataset,
     analyze_uploaded_sample,
     batch_error_row,
     batch_result_row,
@@ -103,6 +104,27 @@ def attention_sankey(trace: dict):
         node={"label": labels, "pad": 18, "thickness": 18},
         link={"source": sources, "target": targets, "value": values},
     ))
+
+
+def render_batch_results(rows: list[dict], download_key: str):
+    frame = pd.DataFrame(rows)
+    st.dataframe(frame, use_container_width=True, hide_index=True)
+    successful = frame[frame["error"] == ""]
+    col_a, col_b, col_c = st.columns(3)
+    col_a.metric("Tổng file", len(frame))
+    col_b.metric("Phân tích được", len(successful))
+    col_c.metric("Lỗi/không hỗ trợ", len(frame) - len(successful))
+    st.download_button(
+        "Tải kết quả dataset dạng CSV",
+        frame.to_csv(index=False).encode("utf-8-sig"),
+        file_name="mal_class_batch_predictions.csv",
+        mime="text/csv",
+        key=download_key,
+    )
+    st.warning(
+        "UNKNOWN/không cảnh báo không đồng nghĩa với BENIGN. "
+        "Không chạy mẫu trên máy thật dựa vào kết quả nghiên cứu này."
+    )
 
 
 @st.cache_resource(show_spinner=False)
@@ -282,26 +304,43 @@ with analysis_tab:
                             text=f"Đã phân tích {index}/{len(batch_uploads)} file",
                         )
 
-                    frame = pd.DataFrame(rows)
-                    st.dataframe(frame, use_container_width=True, hide_index=True)
-                    successful = frame[frame["error"] == ""]
-                    col_a, col_b, col_c = st.columns(3)
-                    col_a.metric("Tổng file", len(frame))
-                    col_b.metric("Phân tích được", len(successful))
-                    col_c.metric("Lỗi/không hỗ trợ", len(frame) - len(successful))
-                    st.download_button(
-                        "Tải kết quả dataset dạng CSV",
-                        frame.to_csv(index=False).encode("utf-8-sig"),
-                        file_name="mal_class_batch_predictions.csv",
-                        mime="text/csv",
-                        key="download_batch_predictions",
-                    )
-                    st.warning(
-                        "UNKNOWN/không cảnh báo không đồng nghĩa với BENIGN. "
-                        "Không chạy mẫu trên máy thật dựa vào kết quả nghiên cứu này."
-                    )
+                    render_batch_results(rows, "download_batch_upload_predictions")
                 except Exception as error:
                     st.error(f"Không thể khởi tạo phân tích dataset: {error}")
+
+        st.divider()
+        st.caption(
+            "Hoặc nhập đường dẫn thư mục đã giải nén trên máy chạy dashboard. "
+            "Chỉ quét tối đa 500 file PE/CAPE JSON, 256 MiB tổng, không theo symlink."
+        )
+        local_dataset_path = st.text_input(
+            "Đường dẫn thư mục dataset local", key="local_batch_dataset_path"
+        )
+        if st.button(
+            "Phân loại thư mục local", type="primary",
+            disabled=not local_dataset_path,
+            key="run_local_batch_analysis",
+        ):
+            try:
+                local_pipeline = load_pipeline(checkpoint, device)
+                local_progress = st.progress(0, text="Đang duyệt và phân tích thư mục...")
+
+                def local_progress_update(index: int, total: int):
+                    local_progress.progress(
+                        index / total,
+                        text=f"Đã phân tích {index}/{total} file trong thư mục",
+                    )
+
+                rows, candidates = analyze_local_dataset(
+                    local_dataset_path, local_pipeline, progress=local_progress_update
+                )
+                st.caption(
+                    f"Đã xử lý {len(candidates)} file, tổng kích thước "
+                    f"{sum(item.size_bytes for item in candidates) / (1024 * 1024):.1f} MiB."
+                )
+                render_batch_results(rows, "download_local_batch_predictions")
+            except Exception as error:
+                st.error(f"Không thể phân tích thư mục dataset: {error}")
 
 with training_tab:
     st.write(

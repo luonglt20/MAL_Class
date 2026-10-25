@@ -51,3 +51,26 @@ def test_dashboard_batch_upload_renders_results_and_csv_download():
         button.label == "Tải kết quả dataset dạng CSV"
         for button in app.get("download_button")
     )
+
+
+def test_dashboard_classifies_a_local_nested_dataset(tmp_path):
+    sample_directory = tmp_path / "family_a"
+    sample_directory.mkdir()
+    (sample_directory / "sample.exe").write_bytes(minimal_pe())
+    (tmp_path / "report.json").write_bytes(FIXTURE.read_bytes())
+
+    app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(
+        field for field in app.text_input
+        if field.label == "Đường dẫn thư mục dataset local"
+    ).set_value(str(tmp_path))
+    app.run(timeout=20)
+    next(button for button in app.button if button.label == "Phân loại thư mục local").click()
+    app.run(timeout=20)
+
+    assert len(app.exception) == 0
+    assert len(app.dataframe) == 1
+    assert any(
+        button.label == "Tải kết quả dataset dạng CSV"
+        for button in app.get("download_button")
+    )
