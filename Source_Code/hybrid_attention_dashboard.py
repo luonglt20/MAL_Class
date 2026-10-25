@@ -16,7 +16,12 @@ import streamlit as st
 import torch
 
 from malware_hybrid.dataset_sources import verify_dataset_file
-from malware_hybrid.pe_static import PEStaticAnalyzer
+from malware_hybrid.batch_analysis import (
+    MAX_SAMPLE_BYTES,
+    analyze_uploaded_sample,
+    batch_error_row,
+    batch_result_row,
+)
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
 from malware_hybrid.training import (
@@ -117,27 +122,29 @@ with analysis_tab:
         help="Giới hạn 50 MiB. PE không được thực thi; cần CAPE JSON để có luồng hành vi động.",
     )
     if uploaded is not None:
-        raw = uploaded.getvalue()
-        if len(raw) > MAX_UPLOAD_BYTES:
+        if uploaded.size > MAX_UPLOAD_BYTES:
             st.error("File vượt giới hạn 50 MiB; chưa phân tích.")
         else:
-            pipeline = load_pipeline(checkpoint, device)
+            raw = uploaded.getvalue()
             try:
+                pipeline = load_pipeline(checkpoint, device)
                 if Path(uploaded.name).suffix.lower() in {".exe", ".dll", ".sys", ".ocx"}:
-                    report = PEStaticAnalyzer(max_file_size=MAX_UPLOAD_BYTES).analyze_bytes(raw)
+                    report, result = analyze_uploaded_sample(
+                        uploaded.name, raw, pipeline, max_sample_bytes=MAX_UPLOAD_BYTES
+                    )
                     st.info(
                         "Đang phân tích static-only: mẫu PE được đọc như dữ liệu, không chạy. "
                         "Behavior động chỉ được suy luận từ sandbox report."
                     )
                 else:
-                    payload = json.loads(raw.decode("utf-8"))
-                    report = pipeline.parser.parse(payload)
+                    report, result = analyze_uploaded_sample(
+                        uploaded.name, raw, pipeline, max_sample_bytes=MAX_UPLOAD_BYTES
+                    )
             except Exception as error:
                 st.error(f"Không thể phân tích file: {error}")
                 report = None
 
             if report is not None:
-                result = pipeline.predict(report)
                 family = result["family"]
                 left, middle, right = st.columns(3)
                 left.metric("Verdict", result["verdict"]["label"])
@@ -233,6 +240,68 @@ with analysis_tab:
                     st.json(result)
     else:
         st.info("Chọn PE cho phân tích static hoặc CAPE JSON cho phân tích hybrid đầy đủ.")
+
+    with st.expander("Phân loại dataset nhiều mẫu (PE / CAPE JSON)"):
+        st.caption(
+            "Có thể chọn nhiều file cùng lúc. PE chỉ được đọc tĩnh; JSON cung cấp luồng sandbox. "
+            "Mỗi mẫu tối đa 50 MiB, tối đa 500 file và tổng upload 256 MiB."
+        )
+        batch_uploads = st.file_uploader(
+            "Chọn nhiều file để phân loại", type=["exe", "dll", "sys", "ocx", "json"],
+            accept_multiple_files=True, key="batch_analysis_uploads",
+        )
+        if batch_uploads:
+            batch_size = sum(item.size for item in batch_uploads)
+            invalid_size = [item.name for item in batch_uploads if item.size > MAX_SAMPLE_BYTES]
+            if len(batch_uploads) > 500:
+                st.error("Dataset upload vượt giới hạn 500 file.")
+            elif batch_size > 256 * 1024 * 1024:
+                st.error("Tổng dataset upload vượt giới hạn 256 MiB.")
+            elif invalid_size:
+                st.error("Mỗi file phải không lớn hơn 50 MiB: " + ", ".join(invalid_size[:10]))
+            elif st.button("Phân loại dataset", type="primary", key="run_batch_analysis"):
+                try:
+                    batch_pipeline = load_pipeline(checkpoint, device)
+                    progress = st.progress(0, text="Chuẩn bị phân tích dataset...")
+                    rows = []
+                    for index, item in enumerate(batch_uploads, start=1):
+                        size_bytes = item.size
+                        try:
+                            content = item.getvalue()
+                            report, prediction = analyze_uploaded_sample(
+                                item.name, content, batch_pipeline,
+                                max_sample_bytes=MAX_UPLOAD_BYTES,
+                            )
+                            rows.append(batch_result_row(
+                                item.name, size_bytes, report, prediction
+                            ))
+                        except Exception as error:
+                            rows.append(batch_error_row(item.name, size_bytes, error))
+                        progress.progress(
+                            index / len(batch_uploads),
+                            text=f"Đã phân tích {index}/{len(batch_uploads)} file",
+                        )
+
+                    frame = pd.DataFrame(rows)
+                    st.dataframe(frame, use_container_width=True, hide_index=True)
+                    successful = frame[frame["error"] == ""]
+                    col_a, col_b, col_c = st.columns(3)
+                    col_a.metric("Tổng file", len(frame))
+                    col_b.metric("Phân tích được", len(successful))
+                    col_c.metric("Lỗi/không hỗ trợ", len(frame) - len(successful))
+                    st.download_button(
+                        "Tải kết quả dataset dạng CSV",
+                        frame.to_csv(index=False).encode("utf-8-sig"),
+                        file_name="mal_class_batch_predictions.csv",
+                        mime="text/csv",
+                        key="download_batch_predictions",
+                    )
+                    st.warning(
+                        "UNKNOWN/không cảnh báo không đồng nghĩa với BENIGN. "
+                        "Không chạy mẫu trên máy thật dựa vào kết quả nghiên cứu này."
+                    )
+                except Exception as error:
+                    st.error(f"Không thể khởi tạo phân tích dataset: {error}")
 
 with training_tab:
     st.write(
