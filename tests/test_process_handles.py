@@ -2,6 +2,7 @@ import copy
 import unittest
 
 from malware_hybrid.normalization import CapeReportParser
+from malware_hybrid.handles import RegistryHandleResolver
 from malware_hybrid.evidence import EvidenceEngine
 from malware_hybrid.pipeline import HybridInferencePipeline
 
@@ -108,3 +109,24 @@ class ProcessHandleTests(unittest.TestCase):
             call["return"] = failure
             _, match = parse_and_match(raw)
             self.assertNotEqual(match.status, "confirmed")
+
+
+class RegistryHandleTests(unittest.TestCase):
+    def setUp(self):
+        self.resolver = RegistryHandleResolver()
+
+    def test_less_specific_same_hive_full_name_uses_handle_bound_key(self):
+        key = "entity:1:<REGISTRY:HKLM:AUTORUN>"
+        opened = self.resolver.resolve("42", "RegOpenKeyExW", {"Handle": "0x44"}, True,
+                                       key, "registry")
+        queried = self.resolver.resolve("42", "RegSetValueExW", {"Handle": "0x44"}, True,
+                                       "entity:2:<REGISTRY:HKLM>", "registry")
+        self.assertEqual(opened[2], "registry_handle_acquisition")
+        self.assertEqual(queried, (key, "registry", "registry_handle"))
+
+    def test_different_concrete_registry_keys_remain_a_conflict(self):
+        key = "entity:1:<REGISTRY:HKLM:AUTORUN>"
+        self.resolver.resolve("42", "RegOpenKeyExW", {"Handle": "0x44"}, True, key, "registry")
+        queried = self.resolver.resolve("42", "RegSetValueExW", {"Handle": "0x44"}, True,
+                                       "entity:2:<REGISTRY:HKLM:AUTORUN>", "registry")
+        self.assertEqual(queried[0], "<REGISTRY_HANDLE_CONFLICT>")

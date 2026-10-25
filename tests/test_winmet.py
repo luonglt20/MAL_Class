@@ -53,9 +53,11 @@ class WinMETPreparationTests(unittest.TestCase):
             labels = root / "labels.json"
             labels.write_text(json.dumps({sample_hash: {"avclass": "ExampleFamily", "cape": "WrongFamily"}}))
             output = root / "prepared.jsonl"
-            result = prepare_winmet_archive(archive, labels, output, max_events=4)
+            progress = []
+            result = prepare_winmet_archive(archive, labels, output, max_events=4, progress=progress.append)
             reports = list(iter_prepared(output))
             self.assertEqual(result["written"], 1)
+            self.assertEqual(progress[-1]["written"], 1)
             self.assertEqual(reports[0].families, ["examplefamily"])
             self.assertLessEqual(len(reports[0].events), 4)
             self.assertFalse((root / "untrusted.exe").exists())

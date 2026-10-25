@@ -42,12 +42,29 @@ This protects against accidental resource exhaustion, not every possible bug
 in a decompression/JSON library; parsing untrusted reports is not malware
 execution and is not equivalent to a hardened VM sandbox.
 
-The initial prefix is for schema/flow diagnostics, not a representative family
-benchmark. AVClass consensus supplies family labels; missing consensus stays
-unlabeled, never "benign". CAPE verdicts do not replace AVClass targets. Behavior
-rules generate weak/derived targets, not independent annotations. A production
-experiment still needs representative sampling, leakage-controlled splits,
-independent behavior annotations and benign dynamic traces.
+The first real diagnostic prefix was prepared from volume 1: 32 reports, 46,417
+normalized events, 222 static evidence items, 25 AVClass families, and no invalid
+reports. It is archive-order data, not a representative benchmark; family support
+is sparse and the prefix carried no explicit ATT&CK/MBC weak labels. Eight reports
+had partial Run/RunOnce evidence, but none had a complete same-key open/write
+chain. Do not train or quote accuracy from this prefix. AVClass consensus supplies
+family labels; missing consensus stays unlabeled, never "benign". CAPE verdicts do
+not replace AVClass targets. A production experiment still needs representative
+sampling, leakage-controlled splits, independent behavior annotations and benign
+dynamic traces.
+
+A larger bounded run on 2026-10-26 prepared the first 1,700 eligible reports in
+archive order: 17,967,304,865 decompressed report bytes, 2,494,447 normalized
+events, 11,931 static tokens, 1,594 AVClass-labeled reports across 263 families,
+and zero invalid reports. Fifty-three families have at least five reports and 29
+have at least ten; 106 reports have no AVClass consensus and remain unlabeled, not
+benign. The 1.95 GB JSONL is a diagnostic artifact ignored by Git. It is neither
+random nor family-stratified, so these support counts do not establish a valid
+train/test split. Fifty-eight reports reach the configured 2,048-event cap and
+need truncation-coverage review. No report in this cohort carries explicit weak
+ATT&CK/MBC labels, so this run does not train or validate the behavior head. Static
+evidence is still mostly file metadata, string categories, TLSH/ssdeep presence
+and YARA categories—not imports, PE sections, entropy or signer verification.
 
 Normalization preserves a report-local anonymous identity for each named
 file/registry/network/service resource. Semantically similar but different
@@ -55,14 +72,19 @@ paths remain separate graph nodes; repeated access to the same path remains
 one entity. IDs are used only for equality/edges, not learned graph tokens.
 For common process APIs, successful `OpenProcess`/`NtOpenProcess` calls bind a
 handle to an explicit target PID within the owning process; successful close
-invalidates that binding, and reuse replaces it. Failed acquisition, unknown
-owners, conflicting PIDs, unknown handles, and unresolved file/key/socket
-handles stay unknown. Duplicate/inherited handles, thread-handle-to-process
-resolution and complex socket endpoints remain limitations. The current
+invalidates that binding, and reuse replaces it. For registry APIs, normalized
+full names or relative `SubKey` plus a recognized hive identify a key; successful
+`RegOpenKeyEx`/`NtOpenKeyEx` and create calls bind output handles to that entity.
+`RegSetValueEx`/`NtSetValueKey` resolve through the handle where the report logs
+one. Failed acquisition, unknown owners, conflicting PIDs/keys, unknown handles,
+and unresolved file/key/socket handles stay unknown. Duplicate/inherited handles,
+thread-handle-to-process resolution and complex socket endpoints remain
+limitations. The current
 `T1547.001` evidence guard covers the standard registry `Run`/`RunOnce` path
 subset (including `WOW6432Node`) and same-key open/write chains; it does not
 cover startup folders or every autorun location. These behaviors have synthetic
-counterexample tests but await validation against actual WinMET report shapes.
+have synthetic counterexample tests and the argument schema was checked against
+the bounded real prefix; remaining conflicts are not forced into a shared target.
 Event truncation selects globally earliest calls across all processes before
 repeat compression, not a prefix of the first process.
 
@@ -73,4 +95,6 @@ and Microsoft's documentation for [OpenProcess](https://learn.microsoft.com/en-u
 and [NTSTATUS success values](https://learn.microsoft.com/en-us/windows-hardware/drivers/kernel/using-ntstatus-values).
 
 After inspecting a prepared cohort, the ordinary `train` command accepts its
-JSONL path. Do not report an accuracy based only on this small diagnostic prefix.
+JSONL path. The larger prefix permits exploratory family-head runs, but do not
+present archive-order metrics as representative results or claim behavior
+classification from this cohort without independently reviewed labels.

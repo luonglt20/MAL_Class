@@ -117,6 +117,47 @@ class EvidenceTests(unittest.TestCase):
         match = self.engine.evaluate(report.events[:1])["T1547.001"]
         self.assertEqual(match.status, "suspected")
 
+    def test_cape_nt_registry_handle_chain_resolves_objectattributes_name(self):
+        path = r"\REGISTRY\MACHINE\Software\Microsoft\Windows\CurrentVersion\Run"
+        report = CapeReportParser().parse({"behavior": {"processes": [{"process_id": 42, "calls": [
+            {"timestamp": 1, "api": "NtOpenKeyEx", "category": "registry", "return": "0x0",
+             "arguments": {"KeyHandle": "0x44", "ObjectAttributesName": path}},
+            {"timestamp": 2, "api": "NtSetValueKey", "category": "registry", "return": "0x0",
+             "arguments": {"KeyHandle": "68", "ValueName": "Updater", "Buffer": "C:\\Temp\\a.exe"}},
+        ]}]}})
+        match = self.engine.evaluate(report.events)["T1547.001"]
+        self.assertEqual(match.status, "confirmed")
+        self.assertEqual(report.events[0].target, report.events[1].target)
+        self.assertEqual(report.events[0].target_resolution, "registry_handle_acquisition")
+        self.assertEqual(report.events[1].target_resolution, "registry_handle")
+        self.assertNotIn("software", repr(report.events).lower())
+
+    def test_registry_handle_close_invalidates_only_on_success(self):
+        path = r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
+        for close_succeeds in (True, False):
+            with self.subTest(close_succeeds=close_succeeds):
+                report_data = {"behavior": {"processes": [{"process_id": 42, "calls": [
+                    {"timestamp": 1, "api": "NtOpenKeyEx", "category": "registry", "return": 0,
+                     "arguments": {"KeyHandle": "0x44", "ObjectAttributesName": path}},
+                    {"timestamp": 2, "api": "NtClose", "category": "registry", "return": 0 if close_succeeds else "0xc0000001",
+                     "arguments": {"Handle": "0x44"}},
+                    {"timestamp": 3, "api": "NtSetValueKey", "category": "registry", "return": 0,
+                     "arguments": {"KeyHandle": "0x44", "ValueName": "Updater"}},
+                ]}]}}
+                report = CapeReportParser().parse(report_data)
+                match = self.engine.evaluate(report.events)["T1547.001"]
+                self.assertEqual(match.status == "confirmed", not close_succeeds)
+
+    def test_failed_nt_registry_open_does_not_bind_output_handle(self):
+        path = r"\REGISTRY\USER\S-1-5-21-1000\Software\Microsoft\Windows\CurrentVersion\Run"
+        report = CapeReportParser().parse({"behavior": {"processes": [{"process_id": 42, "calls": [
+            {"timestamp": 1, "api": "NtOpenKeyEx", "category": "registry", "return": "0xc0000022",
+             "arguments": {"KeyHandle": "0x44", "ObjectAttributesName": path}},
+            {"timestamp": 2, "api": "NtSetValueKey", "category": "registry", "return": 0,
+             "arguments": {"KeyHandle": "0x44", "ValueName": "Updater"}},
+        ]}]}})
+        self.assertNotEqual(self.engine.evaluate(report.events)["T1547.001"].status, "confirmed")
+
 
 if __name__ == "__main__":
     unittest.main()

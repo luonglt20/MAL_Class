@@ -121,6 +121,38 @@ class NormalizationTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(normalise_scalar(path), expected)
 
+    def test_relative_registry_paths_are_joined_to_predefined_hive_and_redacted(self):
+        report = CapeReportParser().parse({"behavior": {"processes": [{"process_id": 42, "calls": [
+            {"api": "RegOpenKeyExW", "category": "registry", "return": 0,
+             "arguments": {"Handle": "0x44", "Registry": "0x80000001",
+                           "SubKey": r"Software\Microsoft\Windows\CurrentVersion\Run"}},
+        ]}]}})
+        event = report.events[0]
+        self.assertIn(":autorun>", event.target.lower())
+        self.assertNotIn("software", repr(event).lower())
+        self.assertEqual(event.arguments["subkey"], "<REGISTRY:HKCU:AUTORUN>")
+
+    def test_target_file_static_metadata_is_used_without_inventing_missing_pe_fields(self):
+        report = CapeReportParser().parse({
+            "avclass_detection": "Redline",
+            "target": {"file": {
+                "size": 12345, "type": "PE32 executable (GUI) Intel 80386",
+                "strings": ["https://example.test/a", r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run"],
+                "yara": [{"name": "redline_rule", "tags": ["redline", "packer"]}],
+            }},
+        })
+        tokens = [item.token for item in report.atomic_evidence]
+        self.assertIn("file_type:pe32", tokens)
+        self.assertIn("file_architecture:x86", tokens)
+        self.assertIn("string_category:url", tokens)
+        self.assertIn("string_category:registry", tokens)
+        self.assertIn("yara_category:packer", tokens)
+        self.assertNotIn("yara_category:redline", tokens)
+        self.assertNotIn("export_count:b0", tokens)
+        self.assertNotIn("overlay_size:zero", tokens)
+        self.assertNotIn("authenticode:absent", tokens)
+        self.assertFalse(any("software" in token or "redline" in token for token in tokens))
+
     def test_multiple_reference_families_are_preserved(self):
         report = CapeReportParser().parse({
             "id": "multi",
