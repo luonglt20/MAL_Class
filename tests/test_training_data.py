@@ -4,7 +4,12 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from malware_hybrid.training import iter_ember_win32_archive, load_ember_win32_archive
+from malware_hybrid.training import (
+    _EncodedEmberStream,
+    iter_ember_win32_archive,
+    load_ember_win32_archive,
+)
+from malware_hybrid.dataset import ReportTensorizer
 
 
 class EmberReservoirSamplingTests(unittest.TestCase):
@@ -46,6 +51,31 @@ class EmberReservoirSamplingTests(unittest.TestCase):
             reports = list(iter_ember_win32_archive(archive, max_samples=7))
             self.assertEqual(len(reports), 7)
             self.assertEqual(reports[0].sample_hash, "holdout-0")
+
+    def test_encoded_stream_skips_a_deduplicated_prefix(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            archive = Path(temporary_directory) / "small.zip"
+            rows = [
+                {"sha256": f"stream-{index}", "file_type": "Win32", "label": index % 2}
+                for index in range(12)
+            ]
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+                bundle.writestr(
+                    "week_Win32_test.jsonl",
+                    "".join(json.dumps(row) + "\n" for row in rows),
+                )
+            reports = list(iter_ember_win32_archive(archive))
+            tensorizer = ReportTensorizer.fit(reports)
+            stream = _EncodedEmberStream(
+                archive, tensorizer, max_samples=4, skip_samples=5
+            )
+            encoded = list(stream)
+            self.assertEqual(stream.skipped, 5)
+            self.assertEqual(stream.emitted, 4)
+            self.assertEqual(
+                [sample.sample_hash for sample in encoded],
+                [f"stream-{index}" for index in range(5, 9)],
+            )
 
     def test_streaming_reader_rejects_invalid_sample_cap(self):
         with self.assertRaisesRegex(ValueError, "max_samples"):
