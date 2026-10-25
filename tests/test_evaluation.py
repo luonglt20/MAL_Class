@@ -25,6 +25,20 @@ class EvaluationTests(unittest.TestCase):
         match = EvidenceEngine().evaluate(reversed_report.events)["T1055"]
         self.assertNotEqual(match.status, "confirmed")
 
+    def test_shuffling_flow_reassigns_time_and_breaks_original_event_order(self):
+        report = CapeReportParser().parse_file(FIXTURE)
+        original_apis = [event.api for event in report.events]
+        shuffled = ablate_report(report, "shuffle_events", seed=42)
+        shuffled_apis = [event.api for event in shuffled.events]
+
+        self.assertNotEqual(shuffled_apis, original_apis)
+        self.assertEqual(
+            [event.timestamp for event in shuffled.events],
+            [float(index) for index in range(len(shuffled.events))],
+        )
+        match = EvidenceEngine().evaluate(shuffled.events)["T1055"]
+        self.assertNotEqual(match.status, "confirmed")
+
     def test_breaking_targets_invalidates_process_injection_chain(self):
         report = CapeReportParser().parse_file(FIXTURE)
         broken = ablate_report(report, "break_targets")
