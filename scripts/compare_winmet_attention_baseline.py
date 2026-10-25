@@ -1,8 +1,8 @@
 """Validation-only family comparison on a bounded CAPE/WinMET cohort.
 
-The prepared source is an archive-order diagnostic prefix, not a representative
-WinMET benchmark. This runner reservoir-samples it deterministically and keeps
-the internal test partition completely unevaluated.
+The prepared source is a bounded diagnostic sample, not a full-volume WinMET
+benchmark. This runner reservoir-samples it deterministically and keeps the
+internal test partition completely unevaluated.
 """
 
 from __future__ import annotations
@@ -105,7 +105,8 @@ def main():
     args.report.parent.mkdir(parents=True, exist_ok=True)
     result = {
         "notice": (
-            "Validation-only diagnostic on a reservoir sample of an archive-order WinMET prefix. "
+            "Validation-only diagnostic on a bounded WinMET sample. "
+            "Archive-prefix sampling is order-biased; random-solid-block sampling is clustered. "
             "Neither the internal test partition nor any official external test set was evaluated. "
             "This is not a representative benchmark."
         ),
@@ -113,7 +114,8 @@ def main():
         "source_sha256": report_sha256,
         "source_manifest": manifest,
         "seed": args.seed,
-        "sample_method": "deterministic reservoir from the prepared 1,700-report prefix",
+        "prepared_sampling_method": manifest.get("sampling", "unspecified"),
+        "sample_method": "deterministic reservoir from the verified prepared WinMET JSONL",
         "sample_cap": args.max_reports,
         "split_strategy": split_strategy,
         "family_min_support": args.family_min_support,

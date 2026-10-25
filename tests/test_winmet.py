@@ -69,3 +69,29 @@ class WinMETPreparationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "output exceeds"):
                 prepare_winmet_archive(archive, labels, root / "overflow.jsonl", max_output_bytes=1)
             self.assertFalse((root / "overflow.jsonl").exists())
+
+    def test_seeded_solid_block_sampling_keeps_group_provenance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / "reports.7z"
+            fixture = json.loads((Path(__file__).parent / "fixtures" / "cape_process_injection.json").read_text())
+            sample_hash = "b" * 64
+            fixture["target"]["file"]["sha256"] = sample_hash
+            with py7zr.SevenZipFile(archive, "w", password="infected") as bundle:
+                bundle.writestr(json.dumps(fixture), sample_hash + ".json")
+            labels = root / "labels.json"
+            labels.write_text(json.dumps({sample_hash: {"avclass": "ExampleFamily"}}))
+            output = root / "random-blocks.jsonl"
+
+            result = prepare_winmet_archive(
+                archive, labels, output, max_reports=1,
+                sampling_method="random-solid-blocks", seed=42,
+                max_solid_blocks=1, max_raw_bytes=1024 * 1024,
+            )
+            reports = list(iter_prepared(output))
+
+            self.assertEqual(result["sampling"], "random-solid-blocks")
+            self.assertEqual(result["seed"], 42)
+            self.assertEqual(result["selected_block_count"], 1)
+            self.assertEqual(result["written"], 1)
+            self.assertEqual(len(reports[0].metadata["archive_group_id"]), 16)

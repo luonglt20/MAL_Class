@@ -8,7 +8,7 @@
 
 Static self-attention, temporal attention với bias quan hệ/thời gian theo cặp và graph attention được kết hợp bằng cross-attention hai chiều ở mức event. Nhánh graph dùng Fourier time encoding và causal multi-hop path attention. Mỗi family và ATT&CK technique có learned query riêng để chú ý tới bằng chứng liên quan; family dùng sigmoid/BCE đa nhãn. Evidence engine gồm 15 chuỗi nhiều bước và kiểm tra thứ tự, success, process/target trước khi xác nhận behavior.
 
-Mã đang phát triển. Đã có pilot family-attention trên reservoir WinMET 500 mẫu và một so sánh attention-vs-bag trên 1.000 mẫu validation-only; kết quả còn yếu/không nhất quán và behavior head chưa được huấn luyện vì thiếu nhãn âm/dương độc lập. Chưa có ngưỡng nghiệm thu full-hybrid nào được chứng minh; mọi số liệu của MAL_dectect đều không được dùng làm kết quả của dự án này.
+Mã đang phát triển. Đã có pilot family-attention trên reservoir WinMET 500 mẫu và một so sánh attention-vs-bag validation-only trên 1.000 report lấy từ 15 solid blocks, với split giữ nguyên block. Attention đạt mAP/F1/top-1/top-3 = 0.297/0.159/0.431/0.523; bag đạt 0.302/0.092/0.431/0.692. Kết quả một seed còn yếu/không nhất quán, validation/calibration mỗi phần chỉ có một block, và behavior head chưa được huấn luyện vì thiếu nhãn âm/dương độc lập. Chưa có ngưỡng nghiệm thu full-hybrid nào được chứng minh; mọi số liệu của MAL_dectect đều không được dùng làm kết quả của dự án này. Chi tiết và lệnh tái lập ở [workflow WinMET](docs/winmet-workflow.md).
 
 ## Sử dụng
 

@@ -66,6 +66,38 @@ ATT&CK/MBC labels, so this run does not train or validate the behavior head. Sta
 evidence is still mostly file metadata, string categories, TLSH/ssdeep presence
 and YARA categories—not imports, PE sections, entropy or signer verification.
 
+To reduce archive-prefix bias without extracting the volume, the preparer also
+supports deterministic selection from complete 7z solid blocks. On the verified
+volume 1 archive used here, 79 blocks are available. The bounded seed-42 run was:
+
+```bash
+malware-hybrid prepare-winmet Data/raw/winmet/WinMET_volume_1.7z \
+  --labels Data/raw/winmet/reports_consensus_label.json \
+  --output artifacts/winmet/volume1_random_blocks_1k.jsonl \
+  --max-reports 1000 --max-report-mib 64 --raw-budget-mib 40000 \
+  --output-budget-mib 2048 --max-events 2048 \
+  --sampling random-solid-blocks --seed 42 --max-solid-blocks 16
+```
+
+This selected 1,000 reports from 15 blocks, processed 31.9 GB of block data
+within the configured decompression budget, wrote 1.15 GB of normalized JSONL,
+and produced 1,480,653 events and 7,001 static tokens with zero invalid reports.
+The sample is still clustered by solid block and is not a representative
+full-volume sample. The trainer therefore assigns whole blocks to one partition:
+663/92/89/156 reports in train/validation/calibration/withheld test, covering
+11/1/1/2 blocks. Validation and calibration each depend on a single block, and
+the test partition remains unevaluated.
+
+On this one-seed family diagnostic (support threshold 5, ranking weight 0.5),
+attention validation mAP/macro-F1/top-1/top-3 was 0.297/0.159/0.431/0.523; the
+matched bag model was 0.302/0.092/0.431/0.692. Only 22 family labels had positive
+validation support. Attention helped calibrated macro-F1, but not mAP or top-3;
+this does not establish a general attention advantage. AVClass is weak family
+supervision, and the behavior head stayed disabled. The full JSONL, report and
+checkpoint are ignored local artifacts; no executable was extracted or run.
+Repeat with additional seeds/blocks and independently annotated family and
+behavior labels before making benchmark claims.
+
 The evidence engine was then run over all 1,700 reports. Rule-derived chains
 produced positive weak-label support for 12 of the 15 techniques; for example,
 T1547.001 had 493 `suspected` and zero `confirmed` chains. These are not manual
@@ -110,7 +142,7 @@ limitations. The current
 `T1547.001` evidence guard covers the standard registry `Run`/`RunOnce` path
 subset (including `WOW6432Node`) and same-key open/write chains; it does not
 cover startup folders or every autorun location. These behaviors have synthetic
-have synthetic counterexample tests and the argument schema was checked against
+counterexample tests and the argument schema was checked against
 the bounded real prefix; remaining conflicts are not forced into a shared target.
 Event truncation selects globally earliest calls across all processes before
 repeat compression, not a prefix of the first process.

@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -44,6 +45,37 @@ class BestCheckpointTests(unittest.TestCase):
         model.load_state_dict(best)
         torch.testing.assert_close(model.weight, expected)
 
+    def test_research_split_keeps_archive_solid_blocks_disjoint(self):
+        parser = CapeReportParser()
+        reports = []
+        for group_index in range(5):
+            for report_index in range(2):
+                sample_hash = hashlib.sha256(
+                    f"{group_index}:{report_index}".encode()
+                ).hexdigest()
+                report = parser.parse({
+                    "target": {"file": {"sha256": sample_hash}},
+                    "avclass_detection": "family-a",
+                })
+                report.metadata["archive_group_id"] = f"block-{group_index}"
+                reports.append(report)
+
+        first = research_split(reports, seed=17)
+        second = research_split(reports, seed=17)
+        first_groups = [
+            {report.metadata["archive_group_id"] for report in partition}
+            for partition in first[:4]
+        ]
+        self.assertTrue(all(first_groups))
+        self.assertFalse(any(
+            first_groups[left] & first_groups[right]
+            for left in range(4) for right in range(left + 1, 4)
+        ))
+        self.assertEqual(first[4], "group-random-archive-block-65-10-10-15")
+        self.assertEqual(
+            [[report.sample_hash for report in part] for part in first[:4]],
+            [[report.sample_hash for report in part] for part in second[:4]],
+        )
 
 class EmberReservoirSamplingTests(unittest.TestCase):
     def test_weekly_reservoir_is_deterministic_and_not_a_prefix(self):
