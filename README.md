@@ -38,6 +38,7 @@ Bộ protocol có đúng 7 baseline: indicator rule, bag-of-token, BiLSTM, tempo
 ## Tài liệu và nguồn tham khảo
 
 - [Trạng thái triển khai](docs/implementation-status.md).
+- [Tải và chuẩn hóa WinMET có giới hạn tài nguyên](docs/winmet-workflow.md).
 - [README gốc được bảo tồn](references/legacy/README.original.md).
 - [MAL_dectect](https://github.com/luonglt20/MAL_dectect): tham khảo ý tưởng.
 - [EMBER2024 của nhóm tác giả](https://github.com/FutureComputing4AI/EMBER2024) và [bản lưu dữ liệu được khóa checksum](https://huggingface.co/datasets/joyce8/EMBER2024): nguồn feature tĩnh/nhãn; không chứa binary để thực thi.

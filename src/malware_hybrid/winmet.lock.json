@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "record": "https://zenodo.org/records/16414116",
+  "metadata_api": "https://zenodo.org/api/records/16414116",
+  "version": "v3",
+  "license": "GPL-3.0-or-later",
+  "license_evidence": "metadata.license.id in the record API",
+  "contents": "CAPE JSON execution reports and family consensus labels; do not execute embedded content",
+  "archive_password": "infected",
+  "files": [
+    {
+      "filename": "WinMET_volume_1.7z",
+      "url": "https://zenodo.org/api/records/16414116/files/WinMET_volume_1.7z/content",
+      "bytes": 2610691048,
+      "source_checksum": "md5:bf51181eafc8452090bb6ce9f47b6714",
+      "note": "6369 reports; about 154GB uncompressed. Never extract the full volume on this workstation. Record local SHA-256 after acquisition."
+    },
+    {
+      "filename": "reports_consensus_label.json",
+      "url": "https://zenodo.org/api/records/16414116/files/reports_consensus_label.json/content",
+      "bytes": 4324720,
+      "source_checksum": "md5:111b5e2a3a1b1b5ba2ed494a63225e58"
+    }
+  ]
+}

@@ -15,6 +15,10 @@ class DatasetManifestTests(unittest.TestCase):
             json.loads(source_lock.read_text(encoding="utf-8")),
             json.loads(package_lock.read_text(encoding="utf-8")),
         )
+        self.assertEqual(
+            json.loads((repository_root / "configs/winmet.lock.json").read_text()),
+            json.loads((repository_root / "src/malware_hybrid/winmet.lock.json").read_text()),
+        )
 
 
 if __name__ == "__main__":
