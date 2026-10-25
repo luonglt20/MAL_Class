@@ -97,6 +97,27 @@ class EmberReservoirSamplingTests(unittest.TestCase):
             self.assertEqual(len(set(first_hashes)), 10)
             self.assertGreater(max(int(value.removeprefix("sample-")) for value in first_hashes), 10)
 
+    def test_weekly_loader_emits_bounded_progress_updates(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            archive = Path(temporary_directory) / "small.zip"
+            rows = [
+                {"sha256": f"progress-{index}", "file_type": "Win32", "label": index % 2}
+                for index in range(20)
+            ]
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+                bundle.writestr(
+                    "2024-week_Win32_train.jsonl",
+                    "".join(json.dumps(row) + "\n" for row in rows),
+                )
+            updates = []
+            reports = load_ember_win32_archive(
+                archive, rows_per_week=10, max_samples=10, progress=updates.append,
+            )
+            self.assertEqual(len(reports), 10)
+            self.assertEqual(updates[-1]["stage"], "shard_complete")
+            self.assertEqual(updates[-1]["records_seen"], 20)
+            self.assertEqual(updates[-1]["selected_reports"], 10)
+
     def test_reservoir_memory_bound_is_enforced(self):
         with self.assertRaisesRegex(ValueError, "reservoir memory bound"):
             load_ember_win32_archive(

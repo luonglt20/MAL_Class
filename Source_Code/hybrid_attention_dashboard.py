@@ -379,9 +379,27 @@ with training_tab:
                     if not dataset_path:
                         raise ValueError("EMBER2024 ZIP cần có đường dẫn local đã tải xuống")
                     verification = verify_dataset_file(dataset_path)
-                    reports = load_ember_win32_archive(
-                        dataset_path, rows_per_week=int(rows_per_week), max_samples=int(max_samples)
+
+                    ember_loading_progress = st.progress(
+                        0, text="Đang quét các shard EMBER2024 đã xác minh..."
                     )
+
+                    def update_ember_loading_progress(state):
+                        fraction = state["shard_index"] / max(1, state["shard_count"])
+                        ember_loading_progress.progress(
+                            fraction,
+                            text=(
+                                f"EMBER shard {state['shard_index']}/{state['shard_count']} · "
+                                f"đã quét {state['records_seen']:,} dòng ở shard hiện tại · "
+                                f"giữ {state['selected_reports']:,} mẫu"
+                            ),
+                        )
+
+                    reports = load_ember_win32_archive(
+                        dataset_path, rows_per_week=int(rows_per_week),
+                        max_samples=int(max_samples), progress=update_ember_loading_progress,
+                    )
+                    ember_loading_progress.empty()
                 elif uploaded_reports and not dataset_path:
                     total_bytes = sum(len(item.getvalue()) for item in uploaded_reports)
                     if total_bytes > 256 * 1024 * 1024:
