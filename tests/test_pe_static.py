@@ -1,6 +1,8 @@
 import struct
 import unittest
 import hashlib
+import tempfile
+from pathlib import Path
 
 from malware_hybrid.pe_static import PEFormatError, PEStaticAnalyzer
 
@@ -57,6 +59,22 @@ class PEStaticAnalyzerTests(unittest.TestCase):
             PEStaticAnalyzer().analyze_bytes(b"not a PE file")
         with self.assertRaises(PEFormatError):
             PEStaticAnalyzer(max_file_size=10).analyze_bytes(minimal_pe())
+
+    def test_path_reader_rejects_symlinks_and_enforces_bound_before_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "sample.exe"
+            source.write_bytes(minimal_pe())
+            report = PEStaticAnalyzer().analyze_path(source)
+            self.assertEqual(report.metadata["analysis_mode"], "static_only")
+
+            link = root / "linked.exe"
+            link.symlink_to(source)
+            with self.assertRaisesRegex(PEFormatError, "regular file"):
+                PEStaticAnalyzer().analyze_path(link)
+
+            with self.assertRaisesRegex(PEFormatError, "file size"):
+                PEStaticAnalyzer(max_file_size=len(minimal_pe()) - 1).analyze_path(source)
 
     def test_imphash_uses_ordered_import_signature_without_exposing_digest_token(self):
         report = PEStaticAnalyzer().analyze_bytes(pe_with_one_import())
