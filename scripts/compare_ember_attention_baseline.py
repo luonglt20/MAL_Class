@@ -1,4 +1,4 @@
-"""Matched validation-only comparison of static attention and bag evidence."""
+"""Matched validation-only family comparison of static attention and bag evidence."""
 
 from __future__ import annotations
 
@@ -40,11 +40,15 @@ def _metrics(model, reports, tensorizer, device, batch_size, weights, thresholds
         shuffle=False, collate_fn=collate_samples,
     )
     family_ids = [tensorizer.family_vocab.decode(i) for i in range(len(tensorizer.family_vocab))]
-    return evaluate(
+    metrics = evaluate(
         model, loader, device, family_ids,
         weights[0], weights[1], weights[2],
         behavior_head_trained=False, family_thresholds=thresholds,
     )
+    # This experiment compares family ranking/classification only. In
+    # particular, the bag baseline's malware head is not trained, so reporting
+    # its apparent malware FPR/recall would be meaningless.
+    return {key: value for key, value in metrics.items() if key.startswith("family_")}
 
 
 def _train_bag_baseline(
@@ -209,7 +213,8 @@ def main():
     result = {
         "notice": (
             "Matched validation-only static comparison. The training archive was checksum-verified; "
-            "the internal test partition and official test archive were not evaluated."
+            "the internal test partition and official test archive were not evaluated. "
+            "Only family metrics are reported; malware/behavior metrics are out of scope."
         ),
         "dataset_verification": verification,
         "sample_cap": args.max_samples,

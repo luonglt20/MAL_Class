@@ -19,7 +19,9 @@ class CalibrationTests(unittest.TestCase):
         family = policy.family_multilabel_decision(
             ["alpha"], np.array([.9]), malware_probability=.99
         )
-        self.assertEqual(family["label"], "alpha")
+        self.assertEqual(family["label"], "UNKNOWN")
+        self.assertEqual(family["candidate"], "alpha")
+        self.assertTrue(family["abstained"])
         self.assertEqual(family["verdict"], "unknown")
 
     def test_benign_requires_separate_bound_and_confidence_matches_label(self):
@@ -88,13 +90,79 @@ class CalibrationTests(unittest.TestCase):
         self.assertEqual(set(decision["confirmed_labels"]), {"alpha", "beta"})
         self.assertFalse(decision["abstained"])
 
+    def test_joint_conformal_abstains_on_ambiguous_out_of_distribution_scores(self):
+        calibrator = MultilabelSplitConformal.fit(
+            ["alpha", "beta"],
+            np.array([
+                [.9, .8], [.8, .9], [.85, .85], [.9, .9],
+                [.1, .2], [.2, .1], [.15, .15], [.1, .1],
+            ]),
+            np.array([
+                [1, 1], [1, 1], [1, 1], [1, 1],
+                [0, 0], [0, 0], [0, 0], [0, 0],
+            ]),
+            np.ones((8, 2)), alpha=.2,
+        )
+        decision = DecisionPolicy().family_multilabel_decision(
+            ["alpha", "beta"], np.array([.55, .56]), calibrator
+        )
+        self.assertEqual(decision["label"], "UNKNOWN")
+        self.assertTrue(decision["abstained"])
+        self.assertEqual(decision["confirmed_labels"], [])
+        self.assertEqual(
+            decision["uncertainty_method"],
+            "simultaneous-multilabel-split-conformal",
+        )
+
+    def test_legacy_marginal_conformal_is_never_presented_as_simultaneous_confirmation(self):
+        calibrator = MultilabelSplitConformal(
+            ["alpha"],
+            {"alpha": [.1] * 20},
+            {"alpha": [.2]},
+            .1,
+        )
+        decision = DecisionPolicy().family_multilabel_decision(
+            ["alpha"], np.array([.9]), calibrator
+        )
+        self.assertEqual(decision["label"], "UNKNOWN")
+        self.assertEqual(decision["candidate"], "alpha")
+        self.assertEqual(decision["families"][0]["status"], "suspected")
+        self.assertEqual(
+            decision["families"][0]["reason"],
+            "legacy_marginal_conformal_not_simultaneous",
+        )
+        self.assertEqual(
+            decision["uncertainty_method"],
+            "legacy-marginal-multilabel-split-conformal",
+        )
+
     def test_multilabel_conformal_round_trip(self):
-        original = MultilabelSplitConformal(
-            ["a"], {"a": [.1, .2]}, {"a": [.3]}, .1
+        original = MultilabelSplitConformal.fit(
+            ["a"], np.asarray([[.2], [.8]]),
+            np.asarray([[0], [1]]), np.ones((2, 1)), .1,
         )
         restored = MultilabelSplitConformal.from_dict(original.as_dict())
         self.assertEqual(restored.negative_scores, original.negative_scores)
         self.assertEqual(restored.positive_scores, original.positive_scores)
+        self.assertEqual(restored.joint_scores, original.joint_scores)
+        self.assertEqual(
+            original.as_dict()["method"],
+            "simultaneous-multilabel-split-conformal",
+        )
+
+    def test_legacy_mondrian_checkpoint_payload_remains_loadable(self):
+        restored = MultilabelSplitConformal.from_dict({
+            "method": "multilabel-mondrian-split-conformal",
+            "labels": ["alpha"],
+            "negative_scores": {"alpha": [.1]},
+            "positive_scores": {"alpha": [.2]},
+            "alpha": .1,
+        })
+        self.assertIsNone(restored.joint_scores)
+        self.assertEqual(
+            restored.as_dict()["method"],
+            "legacy-marginal-multilabel-conformal",
+        )
 
     def test_family_threshold_calibration_can_select_below_half_without_violating_fpr(self):
         probabilities = np.asarray([[.20], [.10], [.05], [.30], [.08], [.12]])

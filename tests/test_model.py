@@ -85,11 +85,35 @@ class ModelTests(unittest.TestCase):
                         torch.save(payload, path)
                     loaded, _ = load_checkpoint(path)
                     self.assertEqual(loaded.family_training_priors, model.family_training_priors)
+                    self.assertFalse(loaded.malware_head_qualified)
                     loaded.eval()
                     with torch.no_grad():
                         torch.testing.assert_close(
                             model(batch)["family_logits"], loaded(batch)["family_logits"]
                         )
+
+    def test_unqualified_malware_head_abstains_at_inference(self):
+        report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit([report])
+        config = HybridAttentionConfig(
+            token_vocab_size=len(tensorizer.token_vocab),
+            edge_vocab_size=len(tensorizer.edge_vocab),
+            node_type_vocab_size=len(tensorizer.node_type_vocab),
+            n_families=len(tensorizer.family_vocab),
+            behavior_ids=tensorizer.behavior_ids,
+            d_model=16,
+            dropout=0.,
+        )
+        model = HybridAttentionModel(config)
+        model.malware_head_trained = True
+        model.malware_head_qualified = False
+        model.malware_threshold = 0.0
+
+        result = HybridInferencePipeline(model, tensorizer).predict(report)
+
+        self.assertEqual(result["verdict"]["label"], "UNKNOWN")
+        self.assertEqual(result["verdict"]["source"], "not_independently_qualified")
+        self.assertEqual(result["verdict"]["reason"], "malware_head_did_not_pass_release_gate")
 
     def test_failed_checkpoint_write_preserves_previous_valid_file(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)

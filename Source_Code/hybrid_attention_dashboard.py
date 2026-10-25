@@ -174,8 +174,13 @@ with analysis_tab:
                     "Mô hình đang nghiên cứu: không có cảnh báo không có nghĩa là file an toàn. "
                     "Không chạy file trên máy thật dựa vào kết quả này."
                 )
-                middle.metric("Họ mã độc chính", family["label"])
-                right.metric("Độ tin cậy", f"{family['confidence']:.1%}")
+                middle.metric("Họ mã độc đã xác nhận", family["label"])
+                right.metric("Độ tin cậy kết luận", f"{family['confidence']:.1%}")
+                if family.get("abstained") and family.get("candidate"):
+                    st.caption(
+                        f"Ứng viên chưa xác nhận: {family['candidate']} "
+                        f"({family.get('candidate_confidence', 0.0):.1%})"
+                    )
                 st.caption(
                     f"Chế độ: {result['analysis_mode']} · "
                     f"Nguồn verdict: {result['verdict']['source']} · "
