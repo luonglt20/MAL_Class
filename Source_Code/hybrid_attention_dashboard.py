@@ -292,7 +292,7 @@ with training_tab:
                     "samples_loaded": len(reports),
                     "split_strategy": split_strategy,
                     "dataset_note": (
-                        "EMBER rows are a bounded prefix from weekly training shards; "
+                        "EMBER rows are a deterministic reservoir sample from weekly training shards; "
                         "metrics are not the official benchmark result."
                         if dataset_format == "EMBER2024 Win32 ZIP" else "CAPE/WinMET local reports."
                     ),

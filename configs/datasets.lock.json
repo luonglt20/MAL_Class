@@ -12,7 +12,7 @@
       "license": "Apache-2.0",
       "contents": "Static PE features and labels; no executable files",
       "training_split": "train",
-      "note": "A bounded number of rows is read from each temporal weekly JSONL shard."
+      "note": "A bounded number of rows is sampled from each temporal weekly JSONL shard."
     }
   }
 }
