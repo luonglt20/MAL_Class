@@ -41,6 +41,7 @@ class ModelTests(unittest.TestCase):
         model = HybridAttentionModel(config).eval()
         with torch.inference_mode():
             output = model(batch)
+            logits_only = model(batch, return_attention=False)
         self.assertEqual(output["family_logits"].shape, (1, len(tensorizer.family_vocab)))
         self.assertEqual(output["behavior_logits"].shape, (1, len(tensorizer.behavior_ids)))
         self.assertEqual(output["attention"]["behavior_to_modality"].shape[-1], 3)
@@ -58,6 +59,9 @@ class ModelTests(unittest.TestCase):
         )
         self.assertTrue(torch.isfinite(output["family_logits"]).all())
         self.assertTrue(torch.isfinite(output["behavior_logits"]).all())
+        self.assertNotIn("attention", logits_only)
+        for key in ("family_logits", "behavior_logits", "malware_logits"):
+            self.assertTrue(torch.allclose(output[key], logits_only[key], atol=1e-6, rtol=1e-5), key)
 
         # Backward must reach relation/time parameters and both modalities;
         # merely returning an attention tensor does not prove it is used.
