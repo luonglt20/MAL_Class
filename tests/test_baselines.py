@@ -52,6 +52,31 @@ class BaselineTests(unittest.TestCase):
                 self.assertTrue(torch.isfinite(output["family_logits"]).all())
                 self.assertTrue(torch.isfinite(output["behavior_logits"]).all())
 
+    def test_bag_baseline_honors_labelwise_family_head_configuration(self):
+        torch.manual_seed(123)
+        config = HybridAttentionConfig(
+            token_vocab_size=len(self.tensorizer.token_vocab),
+            edge_vocab_size=len(self.tensorizer.edge_vocab),
+            node_type_vocab_size=len(self.tensorizer.node_type_vocab),
+            n_families=3,
+            behavior_ids=self.tensorizer.behavior_ids,
+            d_model=16, n_heads=4, static_layers=1, temporal_layers=1,
+            graph_layers=1, fusion_layers=1, window_size=3,
+            window_overlap=1, dropout=0.0, modality_dropout=0.0,
+            family_head_variant="labelwise",
+        )
+        model = build_baseline("bag_of_tokens", config).eval()
+
+        with torch.inference_mode():
+            output = model(self.batch, return_attention=False)
+            changed_values = dict(self.batch)
+            changed_values["static_values"] = self.batch["static_values"] + 1.0
+            changed_output = model(changed_values, return_attention=False)
+
+        self.assertEqual(output["family_logits"].shape, (1, 3))
+        self.assertEqual(model.family_head.weight.shape, (3, 16))
+        self.assertFalse(torch.allclose(output["family_logits"], changed_output["family_logits"]))
+
 
 if __name__ == "__main__":
     unittest.main()
