@@ -91,6 +91,29 @@ class ModelTests(unittest.TestCase):
                             model(batch)["family_logits"], loaded(batch)["family_logits"]
                         )
 
+    def test_failed_checkpoint_write_preserves_previous_valid_file(self):
+        report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit([report])
+        config = HybridAttentionConfig(
+            token_vocab_size=len(tensorizer.token_vocab),
+            edge_vocab_size=len(tensorizer.edge_vocab),
+            node_type_vocab_size=len(tensorizer.node_type_vocab),
+            n_families=len(tensorizer.family_vocab),
+            behavior_ids=tensorizer.behavior_ids,
+            d_model=16,
+        )
+        model = HybridAttentionModel(config)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "checkpoint.pt"
+            save_checkpoint(path, model, tensorizer)
+            original = path.read_bytes()
+            with patch("malware_hybrid.training.torch.save", side_effect=OSError("interrupted")):
+                with self.assertRaisesRegex(OSError, "interrupted"):
+                    save_checkpoint(path, model, tensorizer)
+            self.assertEqual(path.read_bytes(), original)
+            self.assertEqual(list(Path(directory).glob(".*.tmp")), [])
+            load_checkpoint(path)
+
     def test_labelwise_head_can_separate_identical_attention_contexts(self):
         head = LabelwiseFamilyHead(2, 4)
         context = torch.ones(1, 2, 4, requires_grad=True)

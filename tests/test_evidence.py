@@ -30,6 +30,34 @@ class EvidenceTests(unittest.TestCase):
         match = self.engine.evaluate(self.report.events)["T1055"]
         self.assertNotEqual(match.status, "confirmed")
 
+    def test_process_partition_prevents_cross_process_chain(self):
+        events = copy.deepcopy(self.report.events)
+        events[2].process_id = "another-process"
+        events[3].process_id = "another-process"
+        match = self.engine.evaluate(events)["T1055"]
+        self.assertNotEqual(match.status, "confirmed")
+
+    def test_chain_survives_many_unrelated_targets_and_processes(self):
+        events = copy.deepcopy(self.report.events)
+        for index in range(2_000):
+            events.append(ExecutionEvent(
+                index=index + 10,
+                timestamp=float(index + 10),
+                process_id=f"pid-{index}",
+                parent_process_id="1",
+                thread_id="1",
+                api="GetTickCount",
+                category="system",
+                success=True,
+                return_value="0",
+                subject=f"pid:noise-{index}",
+                target="<UNKNOWN>",
+                resource_type="unknown",
+            ))
+        match = self.engine.evaluate(events)["T1055"]
+        self.assertEqual(match.status, "confirmed")
+        self.assertEqual(len(match.events), 4)
+
     def test_failed_call_breaks_chain(self):
         self.report.events[2].success = False
         match = self.engine.evaluate(self.report.events)["T1055"]

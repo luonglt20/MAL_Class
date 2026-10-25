@@ -9,12 +9,17 @@ from pathlib import Path
 from malware_hybrid.training import (
     _EncodedEmberStream,
     iter_ember_win32_archive,
+    load_cape_reports,
     load_ember_win32_archive,
+    load_checkpoint,
     _snapshot_state,
     _family_training_priors,
+    research_split,
+    train_model,
 )
 from malware_hybrid.dataset import ReportTensorizer
 from malware_hybrid.normalization import CapeReportParser
+from malware_hybrid.serialization import report_to_dict
 
 
 class BestCheckpointTests(unittest.TestCase):
@@ -104,6 +109,60 @@ class EmberReservoirSamplingTests(unittest.TestCase):
                 [sample.sample_hash for sample in encoded],
                 [f"stream-{index}" for index in range(5, 9)],
             )
+
+
+class CapeReservoirSamplingTests(unittest.TestCase):
+    def test_jsonl_sampling_is_seeded_bounded_and_not_a_prefix(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source = Path(temporary_directory) / "reports.jsonl"
+            parser = CapeReportParser()
+            with source.open("w", encoding="utf-8") as output:
+                for index in range(100):
+                    report = parser.parse({"id": f"sample-{index}", "avclass_detection": "alpha"})
+                    report.sample_hash = f"{index:064x}"
+                    report.metadata["row"] = index
+                    output.write(json.dumps(report_to_dict(report)) + "\n")
+            progress = []
+            first = load_cape_reports(source, max_reports=10, seed=42, progress=progress.append)
+            second = load_cape_reports(source, max_reports=10, seed=42)
+            first_rows = [report.metadata["row"] for report in first]
+            second_rows = [report.metadata["row"] for report in second]
+            self.assertEqual(first_rows, second_rows)
+            self.assertEqual(len(first_rows), 10)
+            self.assertNotEqual(first_rows, list(range(10)))
+            self.assertEqual(progress[-1], {"processed": 100, "selected": 10, "limit": 10})
+
+    def test_negative_report_cap_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "max_reports"):
+            load_cape_reports("unused.jsonl", max_reports=-1)
+
+
+class TrainerProgressTests(unittest.TestCase):
+    def test_best_checkpoint_is_written_and_progress_is_emitted_by_epoch(self):
+        base = CapeReportParser(max_events=64).parse_file(
+            Path(__file__).parent / "fixtures" / "cape_process_injection.json"
+        )
+        reports = []
+        for index in range(20):
+            report = copy.deepcopy(base)
+            report.sample_hash = f"{index:064x}"
+            reports.append(report)
+        train, validation, calibration, test, _ = research_split(reports, seed=42)
+        progress = []
+        with tempfile.TemporaryDirectory() as directory:
+            checkpoint = Path(directory) / "pilot.pt"
+            train_model(
+                train, validation, checkpoint, epochs=1, batch_size=2, seed=42,
+                device="cpu", d_model=16, window_size=64, window_overlap=32,
+                family_min_support=1, behavior_min_support=1,
+                calibration_reports=calibration, test_reports=test,
+                train_behavior_head=False, progress=progress.append,
+            )
+            model, _ = load_checkpoint(checkpoint, "cpu")
+        self.assertEqual(model.selected_epoch, 1)
+        self.assertFalse(model.behavior_head_trained)
+        self.assertIn("batch", {item["stage"] for item in progress})
+        self.assertIn("epoch_end", {item["stage"] for item in progress})
 
     def test_streaming_reader_rejects_invalid_sample_cap(self):
         with self.assertRaisesRegex(ValueError, "max_samples"):

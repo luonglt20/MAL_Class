@@ -26,6 +26,29 @@
       "contents": "Static PE features and labels; official later-time Win32 test split; no executable files",
       "training_split": "test",
       "note": "Keep untouched for final temporal evaluation; do not use for training or calibration."
+    },
+    "malbehavd_v1": {
+      "publisher": "MalBehavD-V1 authors",
+      "repository": "https://github.com/mpasco/MalbehavD-V1",
+      "revision": "main; acquired 2026-10-26 and pinned by SHA-256",
+      "filename": "MalBehavD-V1-dataset.csv",
+      "url": "https://raw.githubusercontent.com/mpasco/MalbehavD-V1/main/MalBehavD-V1-dataset.csv",
+      "sha256": "1e39c43a014e9b4ee56766ad6bb367ffe8ec4316eb0be75eb182c3b2d15f6364",
+      "bytes": 2345393,
+      "license": "MIT",
+      "contents": "Binary-labeled ordered API-call sequences only; contains no executable bytes, family labels, arguments, return values, or ATT&CK labels",
+      "rows": 2570,
+      "label_counts": {
+        "0": 1285,
+        "1": 1285
+      },
+      "unique_sha256": 2543,
+      "duplicate_hashes": 27,
+      "sequence_length": {
+        "median": 37,
+        "maximum": 175
+      },
+      "note": "Deduplicate by SHA-256 before any split. Use only as an auxiliary dynamic-sequence/binary-verdict dataset; never treat absent calls as strong ATT&CK negatives or create synthetic hybrid rows."
     }
   }
 }

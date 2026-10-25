@@ -66,6 +66,33 @@ ATT&CK/MBC labels, so this run does not train or validate the behavior head. Sta
 evidence is still mostly file metadata, string categories, TLSH/ssdeep presence
 and YARA categories—not imports, PE sections, entropy or signer verification.
 
+The evidence engine was then run over all 1,700 reports. Rule-derived chains
+produced positive weak-label support for 12 of the 15 techniques; for example,
+T1547.001 had 493 `suspected` and zero `confirmed` chains. These are not manual
+annotations, and the “not detected” outcomes are not valid negative labels. The
+behavior head therefore remains untrained.
+
+A resource-bounded family pilot used `--max-reports 500 --seed 42` from that
+prefix, a 65/10/10/15 deterministic report split, a support-5 family vocabulary,
+and a labelwise family-attention head. The 14-family model's held-out set had only
+34 labeled reports: mAP 0.249 versus frequency-prior 0.050, top-1 0.412 versus
+0.382, top-3 0.735 versus 0.559, but macro-F1 only 0.049. A lower support-2 run
+had top-1 0.245 versus its 0.265 prior baseline. This is a promising ranking
+signal, not a satisfactory classifier: the cohort is archive-order biased, the
+test set is tiny, and family macro-F1 remains poor. The checkpoint is a local,
+ignored exploratory artifact at `models/winmet_500_family_support5_probe.pt` and
+is not suitable for security decisions. It can be exercised in the dashboard to
+verify the report-to-attention inference path, with abstention and behavior-head
+warnings preserved.
+
+The CLI and dashboard now expose a deterministic report cap so long JSONL files
+are fully scanned without retaining every decoded event graph in memory. The UI
+defaults to 600 CAPE/WinMET reports (set 0 only when the machine can hold the full
+dataset). Train progress reports batch and validation milestones; each newly best
+validation checkpoint is written atomically, then replaced by its calibrated
+version after training completes. This preserves the last valid checkpoint if a
+later epoch or calibration step fails, but it does not yet resume optimizer state.
+
 Normalization preserves a report-local anonymous identity for each named
 file/registry/network/service resource. Semantically similar but different
 paths remain separate graph nodes; repeated access to the same path remains

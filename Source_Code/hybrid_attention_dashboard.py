@@ -7,6 +7,7 @@ executes a sample; dynamic evidence must come from a sandbox report.
 from __future__ import annotations
 
 import json
+import random
 from pathlib import Path
 
 import pandas as pd
@@ -246,13 +247,18 @@ with training_tab:
     )
     col_a, col_b, col_c = st.columns(3)
     epochs = col_a.number_input("Epoch", min_value=1, max_value=100, value=2)
-    batch_size = col_b.number_input("Batch size", min_value=1, max_value=256, value=16)
+    batch_size = col_b.number_input("Batch size", min_value=1, max_value=64, value=4)
     d_model = col_c.selectbox("Kích thước mô hình", [32, 64, 128], index=1)
     col_d, col_e, col_f = st.columns(3)
-    min_family = col_d.number_input("Family min support", min_value=1, value=2)
-    min_behavior = col_e.number_input("Behavior min support", min_value=1, value=2)
+    min_family = col_d.number_input("Family min support", min_value=1, value=5)
+    min_behavior = col_e.number_input("Behavior min support", min_value=1, value=10)
     max_samples = col_f.number_input("EMBER sample cap", min_value=100, max_value=100000, value=7000)
     rows_per_week = st.number_input("EMBER rows tối đa mỗi tuần", min_value=1, max_value=512, value=128)
+    max_cape_reports = st.number_input(
+        "CAPE/WinMET sample cap (0 = toàn bộ)", min_value=0, max_value=100000,
+        value=600, step=100,
+        help="Lấy mẫu reservoir có seed khi đọc JSONL/thư mục, tránh nạp toàn bộ trace lớn vào RAM.",
+    )
     checkpoint_output = st.text_input("Lưu checkpoint vào", value="models/mal_class_hybrid.pt")
 
     if st.button(
@@ -274,23 +280,63 @@ with training_tab:
                         raise ValueError("Tập upload CAPE vượt giới hạn tổng 256 MiB; dùng dataset path local")
                     parser = CapeReportParser()
                     reports = []
-                    for item in uploaded_reports:
+                    selected_uploads = uploaded_reports
+                    if max_cape_reports and len(selected_uploads) > max_cape_reports:
+                        selected_uploads = random.Random(42).sample(
+                            selected_uploads, int(max_cape_reports)
+                        )
+                    for item in selected_uploads:
                         payload = json.loads(item.getvalue().decode("utf-8"))
                         reports.append(parser.parse(payload))
                     verification = {
                         "source": "user-uploaded CAPE JSON",
                         "files": len(uploaded_reports),
+                        "selected": len(reports),
+                        "sample_cap": int(max_cape_reports) or None,
+                        "sampling": "seeded random sample" if len(reports) < len(uploaded_reports) else "all uploaded files",
                         "bytes": total_bytes,
                     }
                 else:
-                    verification = {"source": "local CAPE/WinMET directory or JSONL"}
-                    reports = load_cape_reports(dataset_path)
+                    verification = {
+                        "source": "local CAPE/WinMET directory or JSONL",
+                        "sample_cap": int(max_cape_reports) or None,
+                        "sampling": "seeded reservoir" if max_cape_reports else "all reports",
+                    }
+                    reports = load_cape_reports(
+                        dataset_path, max_reports=int(max_cape_reports), seed=42,
+                        progress=lambda state: st.caption(
+                            f"Đã đọc {state['processed']} report; giữ {state['selected']} mẫu"
+                        ) if state["processed"] % 500 == 0 else None,
+                    )
             if len(reports) < 10:
                 st.error(f"Chỉ nạp được {len(reports)} report; cần tối thiểu 10 mẫu để chia tập có ý nghĩa.")
             else:
                 train, validation, calibration, test, split_strategy = research_split(reports)
                 output_path = Path(checkpoint_output)
                 output_path.parent.mkdir(parents=True, exist_ok=True)
+                training_bar = st.progress(0, text="Chuẩn bị huấn luyện attention...")
+
+                def training_progress(state):
+                    if state.get("stage") == "batch":
+                        fraction = (
+                            (state["epoch"] - 1)
+                            + state["batch"] / max(1, state["batches"])
+                        ) / max(1, state["epochs"])
+                        training_bar.progress(
+                            min(100, int(fraction * 100)),
+                            text=(
+                                f"Epoch {state['epoch']}/{state['epochs']} · "
+                                f"batch {state['batch']}/{state['batches']} · "
+                                f"loss {state['train_loss']:.4f}"
+                            ),
+                        )
+                    elif state.get("stage") == "epoch_end":
+                        st.caption(
+                            f"Epoch {state['epoch']}: validation loss "
+                            f"{state['validation_loss']:.4f}, family mAP "
+                            f"{state['family_map'] if state['family_map'] is not None else 'N/A'}; "
+                            f"best epoch {state['selected_epoch']}"
+                        )
                 with st.spinner(f"Đang huấn luyện {len(train)} mẫu; chờ hoàn tất..."):
                     result = train_model(
                         train, validation, output_path,
@@ -299,7 +345,9 @@ with training_tab:
                         behavior_min_support=int(min_behavior),
                         calibration_reports=calibration, test_reports=test,
                         train_behavior_head=dataset_format != "EMBER2024 Win32 ZIP",
+                        progress=training_progress,
                     )
+                training_bar.progress(100, text="Train và hiệu chỉnh hoàn tất")
                 result.update({
                     "dataset_verification": verification,
                     "samples_loaded": len(reports),
@@ -313,6 +361,11 @@ with training_tab:
                 st.session_state["active_checkpoint"] = str(output_path)
                 load_pipeline.clear()
                 st.success(f"Đã lưu checkpoint: {output_path}")
+                if not result.get("behavior_head_trained", False):
+                    st.warning(
+                        "Behavior head đang tắt vì tập train chưa có cả nhãn dương và âm đủ tin cậy; "
+                        "không diễn giải absence của nhãn/rule match thành hành vi âm tính."
+                    )
                 st.json(result)
         except Exception as error:
             st.exception(error)
