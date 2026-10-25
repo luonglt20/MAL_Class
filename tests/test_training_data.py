@@ -3,6 +3,7 @@ import tempfile
 import unittest
 import zipfile
 import torch
+import copy
 from pathlib import Path
 
 from malware_hybrid.training import (
@@ -10,11 +11,23 @@ from malware_hybrid.training import (
     iter_ember_win32_archive,
     load_ember_win32_archive,
     _snapshot_state,
+    _family_training_priors,
 )
 from malware_hybrid.dataset import ReportTensorizer
+from malware_hybrid.normalization import CapeReportParser
 
 
 class BestCheckpointTests(unittest.TestCase):
+    def test_family_priors_are_fitted_only_from_supplied_train_rows(self):
+        malware = CapeReportParser().parse({"id": "train-malware", "avclass_detection": "Alpha"})
+        benign = copy.deepcopy(malware)
+        benign.sample_hash = "train-benign"
+        benign.family = None
+        benign.family_labels = []
+        benign.metadata["family_supervised"] = True
+        tensorizer = ReportTensorizer.fit([malware, benign])
+        self.assertEqual(_family_training_priors(tensorizer, [malware, benign]), {"alpha": .5})
+
     def test_cpu_best_state_does_not_change_during_later_updates(self):
         model = torch.nn.Linear(2, 1)
         best = _snapshot_state(model)

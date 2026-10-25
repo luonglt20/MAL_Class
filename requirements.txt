@@ -1,7 +1,7 @@
 # MAL_Class — independent Hybrid Attention pipeline
 numpy>=1.23
 PyYAML>=6.0
-torch>=2.1
+torch>=2.6
 
 # Dashboard and graph visualisation
 streamlit>=1.24

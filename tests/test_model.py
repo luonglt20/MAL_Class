@@ -1,6 +1,8 @@
 import unittest
 import copy
 import tempfile
+import pickle
+from unittest.mock import patch
 from pathlib import Path
 
 import torch
@@ -16,7 +18,48 @@ from malware_hybrid.training import load_checkpoint, save_checkpoint
 FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
 
 
+class _UnsafeCheckpointCallback:
+    def __reduce__(self):
+        return print, ("checkpoint callback must never execute",)
+
+
 class ModelTests(unittest.TestCase):
+    def test_checkpoint_loader_refuses_vulnerable_torch_versions_before_reading(self):
+        with patch("torch.__version__", "2.5.1"), patch("torch.load") as loader:
+            with self.assertRaisesRegex(ValueError, "PyTorch >= 2.6"):
+                load_checkpoint("unused.pt")
+            loader.assert_not_called()
+
+    def test_checkpoint_loader_rejects_pickled_python_callbacks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "untrusted.pt"
+            torch.save({"unexpected": _UnsafeCheckpointCallback()}, path)
+            with patch("builtins.print") as callback:
+                with self.assertRaises(pickle.UnpicklingError):
+                    load_checkpoint(path)
+                callback.assert_not_called()
+
+    def test_auxiliary_ranking_excludes_benign_multilabel_and_unknown_rows(self):
+        logits = torch.zeros(4, 3, requires_grad=True)
+        output = {"family_logits": logits, "behavior_logits": torch.zeros(4, 1),
+                  "malware_logits": torch.zeros(4)}
+        batch = {
+            "family_targets": torch.tensor([[1., 0., 0.], [0., 0., 0.], [1., 1., 0.], [0., 1., 0.]]),
+            "family_target_mask": torch.tensor([[1., 1., 1.]] * 3 + [[0., 0., 0.]]),
+            "behavior_targets": torch.zeros(4, 1), "behavior_target_mask": torch.zeros(4, 1),
+            "malware_targets": torch.zeros(4), "malware_target_mask": torch.zeros(4),
+        }
+        default = HybridAttentionModel.compute_loss(output, batch)
+        ranked = HybridAttentionModel.compute_loss(output, batch, family_ranking_weight=.5)
+        torch.testing.assert_close(default["family_loss"], default["family_bce_loss"])
+        gradient = torch.autograd.grad(ranked["family_ranking_loss"], logits)[0]
+        self.assertGreater(float(gradient[0].abs().sum()), 0)
+        self.assertEqual(float(gradient[1:].abs().sum()), 0)
+        torch.testing.assert_close(ranked["family_loss"],
+            ranked["family_bce_loss"] + .5 * ranked["family_ranking_loss"])
+        with self.assertRaises(ValueError):
+            HybridAttentionModel.compute_loss(output, batch, family_ranking_weight=-1)
+
     def test_family_head_checkpoint_layouts_roundtrip(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)
         tensorizer = ReportTensorizer.fit([report])
@@ -33,6 +76,7 @@ class ModelTests(unittest.TestCase):
                         d_model=16, dropout=0., family_head_variant=variant,
                     )
                     model = HybridAttentionModel(config).eval()
+                    model.family_training_priors = {label: .25 for label in tensorizer.family_vocab.token_to_id}
                     path = Path(directory) / f"{variant}.pt"
                     save_checkpoint(path, model, tensorizer)
                     if variant == "legacy_shared":
@@ -40,6 +84,7 @@ class ModelTests(unittest.TestCase):
                         del payload["model_config"]["family_head_variant"]
                         torch.save(payload, path)
                     loaded, _ = load_checkpoint(path)
+                    self.assertEqual(loaded.family_training_priors, model.family_training_priors)
                     loaded.eval()
                     with torch.no_grad():
                         torch.testing.assert_close(

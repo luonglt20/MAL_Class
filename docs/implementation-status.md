@@ -52,6 +52,24 @@ Matched end-to-end diagnostic: first 2,048 TRAIN-archive reports, seed 42, tempo
 
 Label audit of that same cohort: only 124/1,331 training rows contain a retained family (354 have any family); `berbew` has 42 of those positives. Validation contains only 27 retained-family positives, including 14 `berbew`. Thus top-1 around 52% can arise from a majority-family predictor without discrimination. Future comparisons need a train-frequency-prior sanity baseline and fixed label space, not just top-k accuracy. This audit does not justify discarding benign samples or treating unknown families as benign.
 
+### Matched objective experiment: rejected candidate
+
+`scripts/compare_family_objectives.py` verifies the pinned TRAIN archive, retains the same 2,048-row cohort/splits above, and fits two labelwise-head models with seed 42, five epochs, d_model 32 and batch 64 on MPS. Both select their checkpoint using validation family mAP; neither uses official-test rows. Weight 0 retains BCE; weight 0.5 adds auxiliary cross-entropy only on fully known single-family rows. Benign, unknown and multilabel rows retain BCE without the auxiliary term. Inference remains sigmoid/multilabel. The default ranking weight stays zero and default checkpoint-selection metric stays loss.
+
+| Method | Internal-test mAP | Calibrated macro-F1 | Top-1 | Top-3 |
+|---|---:|---:|---:|---:|
+| Training-frequency prior, no features | 0.05085 | not measured | 0.5167 | 0.9833 |
+| Labelwise, ranking weight 0 | 0.12629 | 0.01515 | 0.3667 | 0.5333 |
+| Labelwise, ranking weight 0.5 | 0.14860 | 0.03509 | 0.0167 | 0.5333 |
+
+There are 60 known-family-positive internal-test rows and four supported evaluation labels. Both checkpoints select epoch 5. Validation mAP is 0.10933 versus 0.11504, but validation top-1 is 0.1852 versus 0.0. The auxiliary term has mixed/worse results and neither candidate is promoted. This is exploratory, single-seed evidence on an already-examined internal cohort, not an untouched holdout or a scientific improvement claim. Full local results, including train-only priors, split-ID fingerprints, history and input checksum, are in `artifacts/family_objectives_2048_v1.json` (ignored research artifact).
+
+The trainer now persists train-only family priors and selected-epoch/selection-metric metadata; evaluation reports the no-feature prior baseline. Old checkpoints without stored priors report those baseline metrics as unavailable rather than fitting a prior on evaluation labels.
+
+Checkpoint loading now uses restricted `weights_only=True` without an unsafe-pickle fallback. Existing support-50 and both objective-experiment checkpoints load successfully in restricted mode. A regression fixture containing a Python callback is rejected before callback execution. Stable PyTorch >= 2.6 is required at dependency and runtime level because [PyTorch's CVE-2025-32434 advisory](https://github.com/pytorch/pytorch/security/advisories/GHSA-53q9-r3pm-6pq6) identifies earlier restricted loaders as affected. This is defense in depth, not a guarantee against all malformed-model/parser attacks; keep loading limited to project-generated checkpoints.
+
+Feature audit of these 2,048 raw TRAIN-prefix reports: all truncated static feature vectors are distinct (no exact cross-family collisions), evidence lengths range from 64 to 396, and 101 reports exceed the 256-token cap. This rules out identical feature vectors as the sole explanation; truncation coverage, feature scaling, temporal distribution shift and sparse family supervision still need investigation. Real dynamic trace training remains pending the WinMET download.
+
 ## Trace-normalization corrections
 
 Previously, unrelated files normalized to the same path category could share a graph node; the temporal resource relation was also unavailable for placeholder-style targets. Parsing now allocates anonymous report-local entity IDs while graph vocabulary uses only semantic resource tokens. Named objects are distinct; repeat access retains equality; handles are process-scoped but not resolved to underlying objects. Process IDs and event indices are no longer graph features under `semantic_v2`. Old checkpoints missing the new tensorizer field explicitly retain legacy graph-token lookup; previously prepared traces must be rebuilt to recover lost identities.

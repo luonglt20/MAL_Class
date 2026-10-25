@@ -3,10 +3,20 @@ import unittest
 from malware_hybrid.metrics import (
     average_precision, balanced_accuracy, event_localization_f1,
     multilabel_f1, multilabel_metrics,
+    family_prior_baseline,
 )
 
 
 class MetricsTests(unittest.TestCase):
+    def test_prior_baseline_uses_training_ranking_and_masks_unknown_rows(self):
+        result = family_prior_baseline(
+            [[1, 0], [0, 1], [0, 1]], [[1, 1], [1, 1], [0, 0]],
+            ["A", "B"], {"A": .9, "B": .1},
+        )
+        self.assertEqual(result["family_prior_map"], .5)
+        self.assertEqual(result["family_prior_top1_accuracy"], .5)
+        self.assertEqual(result["family_prior_evaluated_samples"], 2)
+        self.assertIsNone(family_prior_baseline([[1]], [[1]], ["A"], {})["family_prior_map"])
     def test_tied_scores_do_not_reward_input_order(self):
         self.assertEqual(average_precision([1, 0], [.5, .5]), .5)
         self.assertEqual(average_precision([0, 1], [.5, .5]), .5)
