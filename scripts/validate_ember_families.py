@@ -54,6 +54,7 @@ def main():
     parser.add_argument("--d-model", type=int, default=64)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--modality-dropout", type=float, default=0.15)
+    parser.add_argument("--early-stopping-patience", type=int, default=None)
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
 
@@ -66,6 +67,8 @@ def main():
         parser.error("require max-samples >= 100 and 1 <= rows-per-week <= max-samples")
     if not math.isfinite(args.modality_dropout) or not 0 <= args.modality_dropout < 1:
         parser.error("modality-dropout must be finite and in [0, 1)")
+    if args.early_stopping_patience is not None and args.early_stopping_patience < 1:
+        parser.error("early-stopping-patience must be positive")
 
     torch.set_num_threads(2)
     verification = verify_dataset_file(args.archive, dataset_name="ember2024_win32_train")
@@ -91,6 +94,7 @@ def main():
         "epochs": args.epochs,
         "device": args.device,
         "modality_dropout": args.modality_dropout,
+        "early_stopping_patience": args.early_stopping_patience,
         "family_min_support": args.family_min_support,
         "family_head_variant": "labelwise",
         "selection_metric": "family_map",
@@ -131,6 +135,7 @@ def main():
         calibration_reports=calibration, test_reports=None,
         train_behavior_head=False, family_head_variant="labelwise",
         modality_dropout=args.modality_dropout,
+        early_stopping_patience=args.early_stopping_patience,
         selection_metric="family_map", progress=progress,
     )
     selected = next(
@@ -139,6 +144,8 @@ def main():
     )
     result.update({
         "checkpoint": str(args.checkpoint),
+        "epochs_completed": run["epochs_completed"],
+        "stopped_early": run["stopped_early"],
         "model_config": run["model_config"],
         "tensorizer_config": run["tensorizer_config"],
         "selected_epoch": run["selected_epoch"],

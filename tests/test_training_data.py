@@ -6,6 +6,7 @@ import zipfile
 import torch
 import copy
 from pathlib import Path
+from unittest.mock import patch
 
 from malware_hybrid.training import (
     _EncodedEmberStream,
@@ -191,6 +192,34 @@ class CapeReservoirSamplingTests(unittest.TestCase):
 
 
 class TrainerProgressTests(unittest.TestCase):
+    def test_early_stopping_restores_best_epoch_and_stops_after_patience(self):
+        train = CapeReportParser(max_events=64).parse_file(
+            Path(__file__).parent / "fixtures" / "cape_process_injection.json"
+        )
+        validation = copy.deepcopy(train)
+        validation.sample_hash = "independent-validation"
+        metrics = [
+            {"loss": 1.0, "family_map": score, "family_macro_f1": 0.0}
+            for score in (0.4, 0.3, 0.2)
+        ]
+        updates = []
+        with tempfile.TemporaryDirectory() as directory:
+            checkpoint = Path(directory) / "early.pt"
+            with patch("malware_hybrid.training.evaluate", side_effect=metrics) as evaluator:
+                result = train_model(
+                    [train], [validation], checkpoint,
+                    epochs=8, batch_size=1, d_model=16, window_size=8,
+                    window_overlap=4, family_min_support=1, behavior_min_support=1,
+                    train_behavior_head=False, selection_metric="family_map",
+                    early_stopping_patience=2, progress=updates.append,
+                )
+            model, _ = load_checkpoint(checkpoint)
+        self.assertEqual(evaluator.call_count, 3)
+        self.assertEqual(result["epochs_completed"], 3)
+        self.assertTrue(result["stopped_early"])
+        self.assertEqual(model.selected_epoch, 1)
+        self.assertEqual(updates[-1]["stage"], "early_stop")
+
     def test_modality_dropout_rejects_values_outside_probability_range(self):
         report = CapeReportParser(max_events=64).parse_file(
             Path(__file__).parent / "fixtures" / "cape_process_injection.json"

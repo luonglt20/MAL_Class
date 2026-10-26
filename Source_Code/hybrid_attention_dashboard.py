@@ -36,7 +36,7 @@ from malware_hybrid.training import (
 
 st.set_page_config(page_title="MAL_Class Hybrid Attention", page_icon="🛡️", layout="wide")
 st.title("🛡️ MAL_Class · Hybrid Attention")
-st.caption("Đồ án độc lập: static PE evidence + sandbox execution flow + provenance graph")
+st.caption("Đồ án độc lập: Signature ↔ Static PE ↔ Dynamic/Behavior · Attention liên kết từng bằng chứng")
 
 model_directory = Path(__file__).resolve().parents[1] / "models"
 checkpoint_options = sorted(str(path) for path in model_directory.glob("*.pt"))
@@ -140,6 +140,13 @@ def attention_sankey(trace: dict):
 
 def render_batch_results(rows: list[dict], download_key: str):
     frame = pd.DataFrame(rows)
+    priority = [
+        "filename", "verdict", "primary_family", "family_candidates",
+        "family_abstained", "family_abstain_reason", "model_input_supported",
+        "model_known_token_fraction", "confirmed_behaviors", "suspected_behaviors", "error",
+    ]
+    first = [column for column in priority if column in frame.columns]
+    frame = frame[first + [column for column in frame.columns if column not in first]]
     st.dataframe(frame, use_container_width=True, hide_index=True)
     successful = frame[frame["error"] == ""]
     col_a, col_b, col_c = st.columns(3)
@@ -257,7 +264,7 @@ with analysis_tab:
                     branch_name = (
                         "static/signature (legacy)"
                         if "family_to_modality" in trace
-                        else "static/signature (chưa có checkpoint)"
+                        else "static/signature (không dùng attention)"
                     )
                     structural_rows = [
                         {
