@@ -18,6 +18,7 @@ from malware_hybrid.model import (
 )
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
+from malware_hybrid.schema import AtomicEvidence
 from malware_hybrid.training import load_checkpoint, save_checkpoint
 
 
@@ -277,6 +278,45 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(result["verdict"]["label"], "UNKNOWN")
         self.assertEqual(result["verdict"]["source"], "not_independently_qualified")
         self.assertEqual(result["verdict"]["reason"], "malware_head_did_not_pass_release_gate")
+
+    def test_incompatible_input_abstains_even_with_a_qualified_high_score_head(self):
+        report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit([report])
+        model = HybridAttentionModel(HybridAttentionConfig(
+            token_vocab_size=len(tensorizer.token_vocab),
+            edge_vocab_size=len(tensorizer.edge_vocab),
+            node_type_vocab_size=len(tensorizer.node_type_vocab),
+            n_families=len(tensorizer.family_vocab),
+            behavior_ids=tensorizer.behavior_ids,
+            d_model=16, dropout=0.0,
+        ))
+        model.malware_head_trained = model.malware_head_qualified = True
+        with torch.no_grad():
+            model.malware_head.weight.zero_()
+            model.malware_head.bias.fill_(20)
+            model.family_head.weight.zero_()
+            model.family_head.bias.fill_(20)
+        pipeline = HybridInferencePipeline(model, tensorizer)
+        supported = pipeline.predict(report)
+        self.assertTrue(supported["model_input_coverage"]["supported"])
+        self.assertEqual(supported["verdict"]["label"], "MALICIOUS")
+
+        unknown = copy.deepcopy(report)
+        unknown.events.clear()
+        unknown.graph = None
+        unknown.atomic_evidence = [
+            AtomicEvidence("import_dll", f"unseen_dll_{index}") for index in range(12)
+        ]
+        unknown.metadata.pop("fuzzy_hashes", None)
+        with patch.object(model, "forward", side_effect=AssertionError("unsupported input reached model")):
+            rejected = pipeline.predict(unknown)
+        self.assertFalse(rejected["model_input_coverage"]["supported"])
+        self.assertEqual(rejected["family"]["label"], "UNKNOWN")
+        self.assertEqual(rejected["family"]["families"], [])
+        self.assertIsNone(rejected["family"]["candidate"])
+        self.assertEqual(rejected["verdict"]["label"], "UNKNOWN")
+        self.assertEqual(rejected["verdict"]["source"], "input_vocabulary_coverage_guard")
+        self.assertNotIn("family_to_modality", rejected["attention_trace"])
 
     def test_failed_checkpoint_write_preserves_previous_valid_file(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)

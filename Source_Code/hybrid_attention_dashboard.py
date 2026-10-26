@@ -212,6 +212,13 @@ with analysis_tab:
                 )
                 middle.metric("Họ mã độc đã xác nhận", family["label"])
                 right.metric("Độ tin cậy kết luận", f"{family['confidence']:.1%}")
+                coverage = result.get("model_input_coverage")
+                if coverage and not coverage["supported"]:
+                    st.warning(
+                        f"Checkpoint chỉ nhận diện {coverage['known_fraction']:.1%} token đầu vào; "
+                        "kết luận mô hình trả UNKNOWN. Chọn checkpoint được huấn luyện cho "
+                        "PE hoặc nguồn report tương ứng."
+                    )
                 if family.get("abstained") and family.get("candidate"):
                     st.caption(
                         f"Ứng viên chưa xác nhận: {family['candidate']} "
@@ -329,7 +336,11 @@ with analysis_tab:
                         with st.expander("Bằng chứng Signature / Static PE ↔ graph node"):
                             st.dataframe(pd.DataFrame(graph_alignments), use_container_width=True)
                 else:
-                    st.info("Chưa nạp checkpoint: đang hiển thị evidence engine, không phải xác suất mô hình.")
+                    st.info(
+                        "Attention không được dùng để kết luận vì checkpoint không tương thích với đầu vào."
+                        if trace.get("mode") == "evidence_only_input_coverage_rejected"
+                        else "Chưa nạp checkpoint: đang hiển thị evidence engine, không phải xác suất mô hình."
+                    )
 
                 st.subheader("Execution provenance graph")
                 st.graphviz_chart(execution_graph_dot(report), use_container_width=True)

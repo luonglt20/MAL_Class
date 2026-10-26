@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
@@ -34,7 +35,10 @@ def _fingerprint(reports):
     return hashlib.sha256(value.encode()).hexdigest()
 
 
-def _metrics(model, reports, tensorizer, device, batch_size, weights, thresholds):
+def _metrics(
+    model, reports, tensorizer, device, batch_size, weights, thresholds,
+    *, disable_cross_branch_attention=False,
+):
     loader = DataLoader(
         HybridDataset(reports, tensorizer), batch_size=batch_size,
         shuffle=False, collate_fn=collate_samples,
@@ -44,10 +48,11 @@ def _metrics(model, reports, tensorizer, device, batch_size, weights, thresholds
         model, loader, device, family_ids,
         weights[0], weights[1], weights[2],
         behavior_head_trained=False, family_thresholds=thresholds,
+        disable_cross_branch_attention=disable_cross_branch_attention,
     )
-    # This experiment compares family ranking/classification only. In
-    # particular, the bag baseline's malware head is not trained, so reporting
-    # its apparent malware FPR/recall would be meaningless.
+    # Both models use the auxiliary verdict loss when labels are available.
+    # This experiment evaluates family ranking/classification only; it does
+    # not calibrate or independently qualify either model's malware verdicts.
     return {key: value for key, value in metrics.items() if key.startswith("family_")}
 
 
@@ -59,7 +64,9 @@ def _train_bag_baseline(
     model = BagOfTokensBaseline(config).to(device)
     model.family_training_priors = _family_training_priors(tensorizer, train)
     model.behavior_head_trained = False
-    model.malware_head_trained = False
+    model.malware_head_trained = any(
+        report.metadata.get("verdict_supervised", False) for report in train
+    )
     weights = _training_loss_weights(tensorizer, train, device)
     loader = DataLoader(
         HybridDataset(train, tensorizer), batch_size=batch_size,
@@ -186,6 +193,13 @@ def main():
         attention, validation, tensorizer, torch.device(args.device), args.batch_size,
         attention_weights, attention_thresholds,
     )
+    attention_without_cross = None
+    if attention.config.signature_branch_enabled:
+        attention_without_cross = _metrics(
+            attention, validation, tensorizer, torch.device(args.device), args.batch_size,
+            attention_weights, attention_thresholds,
+            disable_cross_branch_attention=True,
+        )
 
     print(json.dumps({
         "phase": "training_bag_baseline",
@@ -232,7 +246,16 @@ def main():
             "withheld_internal_test": _fingerprint(withheld),
         },
         "attention_checkpoint": str(args.attention_checkpoint),
+        "model_config": asdict(attention.config),
+        "tensorizer_config": asdict(tensorizer.config),
         "attention_validation": attention_validation,
+        "attention_without_cross_validation": attention_without_cross,
+        "cross_attention_notice": (
+            "Frozen-checkpoint validation ablation with identical inputs and thresholds. "
+            "EMBER reports contain no runtime events, so this measures the effect of "
+            "Signature–Static token interactions when that module is enabled; it does "
+            "not verify runtime-flow reasoning or semantic correctness of displayed pairs."
+        ),
         "bag_of_tokens_validation": bag_validation,
         "bag_selected_epoch": bag_epoch,
         "bag_validation_history": bag_history,
@@ -256,6 +279,10 @@ def main():
             "family_top1": bag_validation["family_top1_accuracy"],
             "family_top3": bag_validation["family_top3_accuracy"],
         },
+        "attention_without_cross": {
+            "family_map": attention_without_cross["family_map"],
+            "family_macro_f1": attention_without_cross["family_calibrated_macro_f1"],
+        } if attention_without_cross is not None else None,
         "report": str(args.report),
     }), flush=True)
 

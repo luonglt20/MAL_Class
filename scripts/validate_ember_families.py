@@ -11,6 +11,7 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import math
 from pathlib import Path
 import sys
 import zipfile
@@ -52,6 +53,7 @@ def main():
     parser.add_argument("--family-min-support", type=int, default=10)
     parser.add_argument("--d-model", type=int, default=64)
     parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--modality-dropout", type=float, default=0.15)
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
 
@@ -62,6 +64,8 @@ def main():
         parser.error("only the pinned Win32_train.zip is accepted; the test archive is forbidden")
     if args.max_samples < 100 or args.rows_per_week < 1 or args.rows_per_week > args.max_samples:
         parser.error("require max-samples >= 100 and 1 <= rows-per-week <= max-samples")
+    if not math.isfinite(args.modality_dropout) or not 0 <= args.modality_dropout < 1:
+        parser.error("modality-dropout must be finite and in [0, 1)")
 
     torch.set_num_threads(2)
     verification = verify_dataset_file(args.archive, dataset_name="ember2024_win32_train")
@@ -86,6 +90,7 @@ def main():
         "seed": args.seed,
         "epochs": args.epochs,
         "device": args.device,
+        "modality_dropout": args.modality_dropout,
         "family_min_support": args.family_min_support,
         "family_head_variant": "labelwise",
         "selection_metric": "family_map",
@@ -125,6 +130,7 @@ def main():
         family_min_support=args.family_min_support, behavior_min_support=2,
         calibration_reports=calibration, test_reports=None,
         train_behavior_head=False, family_head_variant="labelwise",
+        modality_dropout=args.modality_dropout,
         selection_metric="family_map", progress=progress,
     )
     selected = next(
@@ -133,6 +139,8 @@ def main():
     )
     result.update({
         "checkpoint": str(args.checkpoint),
+        "model_config": run["model_config"],
+        "tensorizer_config": run["tensorizer_config"],
         "selected_epoch": run["selected_epoch"],
         "best_validation": selected,
         "validation_history": run["history"],

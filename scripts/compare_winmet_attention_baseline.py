@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from dataclasses import asdict
 import hashlib
 import json
 import math
@@ -147,7 +148,6 @@ def main():
         "batch_size": args.batch_size,
         "epochs": args.epochs,
         "family_head_variant": "labelwise",
-        "architecture": "signature_static_dynamic_three_branch_v1",
         "attention_checkpoint_reused": bool(args.reuse_attention_checkpoint),
         "partitions": {
             "train": _split_summary(train),
@@ -231,6 +231,13 @@ def main():
         bag_weights, bag_thresholds,
     )
     result.update({
+        "architecture": (
+            "signature_static_dynamic_three_branch_v2"
+            if attention.config.signature_static_attention_enabled
+            else "signature_static_dynamic_three_branch_v1"
+        ),
+        "model_config": asdict(attention.config),
+        "tensorizer_config": asdict(tensorizer.config),
         "attention_checkpoint": str(args.checkpoint),
         "attention_selected_epoch": attention_run["selected_epoch"],
         "attention_validation_history": attention_run["history"],

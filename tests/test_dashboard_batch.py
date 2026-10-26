@@ -168,3 +168,4 @@ def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path):
     pe_app.run(timeout=30)
     assert len(pe_app.exception) == 0
     assert any("static-only" in item.value.lower() for item in pe_app.info)
+    assert any("kết luận mô hình trả UNKNOWN" in item.value for item in pe_app.warning)
