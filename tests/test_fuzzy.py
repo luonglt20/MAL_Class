@@ -22,7 +22,7 @@ class FuzzyPrototypeTests(unittest.TestCase):
         inference = copy.deepcopy(self.base)
         inference.sample_hash = "unseen-sample"
         sample = tensorizer.encode(inference)
-        tokens = [tensorizer.token_vocab.decode(index) for index in sample.static_ids]
+        tokens = [tensorizer.token_vocab.decode(index) for index in sample.signature_ids]
         self.assertTrue(any(token.startswith("fuzzy_prototype:tlsh-") for token in tokens))
         self.assertFalse(any("t1fakehash" in token for token in tokens))
 

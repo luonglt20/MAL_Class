@@ -30,6 +30,7 @@ from malware_hybrid.training import (
 
 
 ABLATIONS = (
+    "disable_cross_branch_attention",
     "shuffle_events",
     "reverse_events",
     "remove_timestamps",
@@ -53,7 +54,10 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _family_metrics(model, reports, tensorizer, device, batch_size, weights):
+def _family_metrics(
+    model, reports, tensorizer, device, batch_size, weights,
+    *, disable_cross_branch_attention: bool = False,
+):
     loader = DataLoader(
         HybridDataset(reports, tensorizer),
         batch_size=batch_size,
@@ -74,6 +78,7 @@ def _family_metrics(model, reports, tensorizer, device, batch_size, weights):
         weights[2],
         behavior_head_trained=bool(getattr(model, "behavior_head_trained", False)),
         family_thresholds=getattr(model, "family_thresholds", None),
+        disable_cross_branch_attention=disable_cross_branch_attention,
     )
     return {
         key: value for key, value in metrics.items()
@@ -87,6 +92,10 @@ def main() -> None:
     parser.add_argument("checkpoint", type=Path, help="Frozen WinMET family-attention checkpoint")
     parser.add_argument("source_report", type=Path, help="Matched training report with partition fingerprints")
     parser.add_argument("--report", type=Path, required=True, help="New ablation report; never overwritten")
+    parser.add_argument(
+        "--modes", nargs="+", choices=ABLATIONS, default=list(ABLATIONS),
+        help="ablation modes to run; choose disable_cross_branch_attention for the direct cross-attention test",
+    )
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
@@ -159,6 +168,8 @@ def main() -> None:
         parser.error("reconstructed split fingerprints differ; refusing flow ablation")
 
     model, tensorizer = load_checkpoint(args.checkpoint, args.device)
+    if not model.config.signature_branch_enabled:
+        parser.error("cross-branch ablation requires the three-branch checkpoint")
     if model.config.family_head_variant != experiment.get("family_head_variant"):
         parser.error("checkpoint family-head variant differs from the source experiment")
     if _family_training_priors(tensorizer, train) != model.family_training_priors:
@@ -169,9 +180,19 @@ def main() -> None:
     weights = _training_loss_weights(tensorizer, train, device)
     baseline = _family_metrics(model, validation, tensorizer, device, args.batch_size, weights)
     ablation_results = {}
-    for mode in ABLATIONS:
-        counterfactuals = [ablate_report(report, mode, seed=seed) for report in validation]
-        metrics = _family_metrics(model, counterfactuals, tensorizer, device, args.batch_size, weights)
+    for mode in args.modes:
+        if mode == "disable_cross_branch_attention":
+            metrics = _family_metrics(
+                model, validation, tensorizer, device, args.batch_size, weights,
+                disable_cross_branch_attention=True,
+            )
+        else:
+            counterfactuals = [
+                ablate_report(report, mode, seed=seed) for report in validation
+            ]
+            metrics = _family_metrics(
+                model, counterfactuals, tensorizer, device, args.batch_size, weights
+            )
         ablation_results[mode] = {
             "metrics": metrics,
             "delta_vs_original": {
@@ -192,7 +213,7 @@ def main() -> None:
 
     result = {
         "notice": (
-            "Validation-only counterfactuals on a clustered 1,000-report WinMET sample. "
+            f"Validation-only counterfactuals on a clustered {len(reports):,}-report WinMET sample. "
             "AVClass family labels are weak supervision. Counterfactual metric changes are "
             "diagnostic, not causal proof or an independent benchmark. The withheld test split "
             "was reconstructed for integrity checks but never evaluated."
@@ -235,7 +256,7 @@ def main() -> None:
         },
         "ablation_deltas": {
             mode: result["ablations"][mode]["delta_vs_original"]
-            for mode in ABLATIONS
+            for mode in result["ablations"]
         },
         "report": str(args.report),
     }), flush=True)

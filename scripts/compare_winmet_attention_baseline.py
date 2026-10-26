@@ -68,6 +68,10 @@ def main():
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
+        "--reuse-attention-checkpoint", action="store_true",
+        help="evaluate an already trained attention checkpoint instead of retraining it",
+    )
+    parser.add_argument(
         "--sample-seed", type=int, default=None,
         help="reservoir-sampling seed (defaults to --seed)",
     )
@@ -81,9 +85,13 @@ def main():
     manifest_path = Path(str(args.reports) + ".manifest.json")
     if not args.reports.is_file() or not manifest_path.is_file():
         parser.error("prepared JSONL and its sidecar manifest are required")
-    for path in (args.checkpoint, args.report):
-        if path.exists():
-            parser.error(f"refusing to overwrite existing output: {path}")
+    if args.report.exists():
+        parser.error(f"refusing to overwrite existing report: {args.report}")
+    if args.reuse_attention_checkpoint:
+        if not args.checkpoint.is_file():
+            parser.error("--reuse-attention-checkpoint requires an existing checkpoint")
+    elif args.checkpoint.exists():
+        parser.error(f"refusing to overwrite existing checkpoint: {args.checkpoint}")
     if (args.max_reports < 100 or args.epochs < 1 or args.family_min_support < 1
             or not math.isfinite(args.family_ranking_weight) or args.family_ranking_weight < 0
             or not math.isfinite(args.modality_dropout) or not 0 <= args.modality_dropout < 1):
@@ -139,6 +147,8 @@ def main():
         "batch_size": args.batch_size,
         "epochs": args.epochs,
         "family_head_variant": "labelwise",
+        "architecture": "signature_static_dynamic_three_branch_v1",
+        "attention_checkpoint_reused": bool(args.reuse_attention_checkpoint),
         "partitions": {
             "train": _split_summary(train),
             "validation": _split_summary(validation),
@@ -159,18 +169,47 @@ def main():
     def training_progress(state):
         print(json.dumps({"attention_training": state}), file=sys.stderr, flush=True)
 
-    attention_run = train_model(
-        train, validation, args.checkpoint,
-        epochs=args.epochs, batch_size=args.batch_size, seed=args.seed,
-        device=args.device, d_model=args.d_model,
-        family_min_support=args.family_min_support, behavior_min_support=2,
-        calibration_reports=calibration, test_reports=None,
-        train_behavior_head=False, family_head_variant="labelwise",
-        family_ranking_weight=args.family_ranking_weight,
-        modality_dropout=args.modality_dropout,
-        selection_metric="family_map", progress=training_progress,
-    )
-    attention, tensorizer = load_checkpoint(args.checkpoint, args.device)
+    if args.reuse_attention_checkpoint:
+        attention, tensorizer = load_checkpoint(args.checkpoint, args.device)
+        if (
+            not attention.config.signature_branch_enabled
+            or not tensorizer.config.signature_branch_enabled
+        ):
+            parser.error("reused checkpoint does not use the three-branch architecture")
+        expected = {
+            "d_model": args.d_model,
+            "family_head_variant": "labelwise",
+            "family_ranking_weight": args.family_ranking_weight,
+            "modality_dropout": args.modality_dropout,
+        }
+        mismatched = {
+            key: (getattr(attention.config, key), value)
+            for key, value in expected.items()
+            if getattr(attention.config, key) != value
+        }
+        if mismatched:
+            parser.error(f"reused checkpoint settings do not match this run: {mismatched}")
+        attention_run = {
+            "selected_epoch": attention.selected_epoch,
+            "history": attention.training_history,
+            "modality_dropout_scope": (
+                attention.modality_dropout_scope or "pre_cross_attention_all_branch_tokens_v1"
+            ),
+            "behavior_head_trained": attention.behavior_head_trained,
+        }
+    else:
+        attention_run = train_model(
+            train, validation, args.checkpoint,
+            epochs=args.epochs, batch_size=args.batch_size, seed=args.seed,
+            device=args.device, d_model=args.d_model,
+            family_min_support=args.family_min_support, behavior_min_support=2,
+            calibration_reports=calibration, test_reports=None,
+            train_behavior_head=False, family_head_variant="labelwise",
+            family_ranking_weight=args.family_ranking_weight,
+            modality_dropout=args.modality_dropout,
+            selection_metric="family_map", progress=training_progress,
+        )
+        attention, tensorizer = load_checkpoint(args.checkpoint, args.device)
     if _family_training_priors(tensorizer, train) != attention.family_training_priors:
         raise ValueError("attention checkpoint family priors do not match this reservoir/split")
     weights = _training_loss_weights(tensorizer, train, torch.device(args.device))

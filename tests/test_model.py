@@ -7,9 +7,15 @@ from pathlib import Path
 
 import torch
 
-from malware_hybrid.dataset import ReportTensorizer, collate_samples
+from malware_hybrid.dataset import ReportTensorizer, TensorizerConfig, collate_samples
 from malware_hybrid.evaluation import ablate_report
-from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel, LabelwiseFamilyHead
+from malware_hybrid.model import (
+    EdgeGraphAttentionLayer,
+    HybridAttentionConfig,
+    HybridAttentionModel,
+    LabelwiseFamilyHead,
+    TemporalGraphEncoder,
+)
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
 from malware_hybrid.training import load_checkpoint, save_checkpoint
@@ -24,6 +30,91 @@ class _UnsafeCheckpointCallback:
 
 
 class ModelTests(unittest.TestCase):
+    def test_vectorized_edge_attention_matches_grouped_reference_and_backpropagates(self):
+        torch.manual_seed(73)
+        layer = EdgeGraphAttentionLayer(d_model=8, n_heads=2, edge_vocab_size=5, dropout=0.0).eval()
+        nodes = torch.randn(2, 4, 8, requires_grad=True)
+        edge_index = torch.tensor([
+            [[0, 1, 2, 0, 0], [2, 2, 1, 1, 0]],
+            [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
+        ])
+        edge_types = torch.tensor([[1, 2, 3, 1, 0], [0, 0, 0, 0, 0]])
+        edge_times = torch.tensor([[1.0, 2.0, 3.0, 1.5, 0.0], [0.0] * 5])
+        edge_success = torch.tensor([[1, 1, 0, 1, 0], [0] * 5])
+        edge_mask = torch.tensor([[True, True, True, True, False], [False] * 5])
+
+        actual, actual_attention = layer(
+            nodes, edge_index, edge_types, edge_times, edge_success,
+            edge_mask, return_attention=True,
+        )
+
+        batch, node_count, d_model = nodes.shape
+        q = layer.query(nodes).view(batch, node_count, layer.n_heads, layer.head_dim)
+        k = layer.key(nodes).view(batch, node_count, layer.n_heads, layer.head_dim)
+        v = layer.value(nodes).view(batch, node_count, layer.n_heads, layer.head_dim)
+        edge_context = (
+            layer.edge_embedding(edge_types)
+            + layer.edge_time(edge_times)
+            + layer.edge_success(edge_success)
+        ).view(batch, -1, layer.n_heads, layer.head_dim)
+        expected_aggregated = torch.zeros_like(q)
+        expected_attention = torch.zeros_like(actual_attention)
+        for batch_index in range(batch):
+            valid = torch.nonzero(edge_mask[batch_index], as_tuple=False).flatten()
+            if not len(valid):
+                continue
+            sources = edge_index[batch_index, 0, valid]
+            targets = edge_index[batch_index, 1, valid]
+            scores = (
+                q[batch_index, targets]
+                * (k[batch_index, sources] + edge_context[batch_index, valid])
+            ).sum(dim=-1) / (layer.head_dim ** 0.5)
+            values = v[batch_index, sources] + edge_context[batch_index, valid]
+            for target in torch.unique(targets):
+                group = torch.nonzero(targets == target, as_tuple=False).flatten()
+                weights = torch.softmax(scores[group], dim=0)
+                expected_aggregated[batch_index, target] = (
+                    weights.unsqueeze(-1) * values[group]
+                ).sum(dim=0)
+                expected_attention[batch_index, valid[group]] = weights
+        expected = layer.norm(
+            nodes + layer.dropout(layer.output(expected_aggregated.reshape(batch, node_count, d_model)))
+        )
+        torch.testing.assert_close(actual, expected, atol=1e-6, rtol=1e-5)
+        torch.testing.assert_close(actual_attention, expected_attention, atol=1e-6, rtol=1e-5)
+        (actual.square().sum() + actual_attention.square().sum()).backward()
+        for parameter in (layer.query.weight, layer.key.weight, layer.value.weight, layer.edge_embedding.weight):
+            self.assertIsNotNone(parameter.grad)
+            self.assertTrue(torch.isfinite(parameter.grad).all())
+            self.assertGreater(float(parameter.grad.abs().sum()), 0)
+
+    def test_vectorized_causal_paths_preserve_chains_masks_and_gradients(self):
+        encoder = TemporalGraphEncoder(
+            token_vocab_size=16, node_type_vocab_size=4, edge_vocab_size=4,
+            d_model=8, n_heads=2, layers=1, dropout=0.0,
+        )
+        nodes = torch.randn(1, 4, 8, requires_grad=True)
+        edge_index = torch.tensor([[[0, 1, 2], [1, 2, 3]]])
+        edge_times = torch.tensor([[1.0, 2.0, 3.0]])
+        edge_mask = torch.tensor([[True, True, True]])
+        edge_causal = torch.tensor([[True, True, True]])
+
+        tokens, mask, lengths, path_nodes = encoder._causal_paths(
+            nodes, edge_index, edge_times, edge_mask, edge_causal
+        )
+
+        self.assertEqual(mask.tolist(), [[True, True, True]])
+        self.assertEqual(lengths.tolist(), [[2, 3, 4]])
+        self.assertEqual(path_nodes.tolist(), [[
+            [0, 1, -1, -1, -1],
+            [0, 1, 2, -1, -1],
+            [0, 1, 2, 3, -1],
+        ]])
+        tokens.square().sum().backward()
+        self.assertTrue(torch.isfinite(nodes.grad).all())
+        self.assertGreater(float(nodes.grad.abs().sum()), 0)
+        self.assertIsNotNone(encoder.path_projection[0].weight.grad)
+
     def test_checkpoint_loader_refuses_vulnerable_torch_versions_before_reading(self):
         with patch("torch.__version__", "2.5.1"), patch("torch.load") as loader:
             with self.assertRaisesRegex(ValueError, "PyTorch >= 2.6"):
@@ -63,7 +154,14 @@ class ModelTests(unittest.TestCase):
     def test_family_head_checkpoint_layouts_roundtrip(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)
         tensorizer = ReportTensorizer.fit([report])
-        batch = collate_samples([tensorizer.encode(report)])
+        sample = tensorizer.encode(report)
+        batch = collate_samples([sample])
+        signature_tokens = [tensorizer.token_vocab.decode(index) for index in sample.signature_ids]
+        static_tokens = [tensorizer.token_vocab.decode(index) for index in sample.static_ids]
+        self.assertTrue(any(token.startswith("peid:") for token in signature_tokens))
+        self.assertTrue(any(token.startswith("imphash:") for token in signature_tokens))
+        self.assertTrue(any(token.startswith("import_dll:") for token in static_tokens))
+        self.assertTrue(any(token.startswith("section_entropy:") for token in static_tokens))
         with tempfile.TemporaryDirectory() as directory:
             for variant in ("legacy_shared", "labelwise"):
                 with self.subTest(variant=variant):
@@ -91,6 +189,40 @@ class ModelTests(unittest.TestCase):
                         torch.testing.assert_close(
                             model(batch)["family_logits"], loaded(batch)["family_logits"]
                         )
+
+    def test_legacy_merged_static_checkpoint_loads_without_three_branch_fields(self):
+        report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit(
+            [report], config=TensorizerConfig(signature_branch_enabled=False)
+        )
+        config = HybridAttentionConfig(
+            token_vocab_size=len(tensorizer.token_vocab),
+            edge_vocab_size=len(tensorizer.edge_vocab),
+            node_type_vocab_size=len(tensorizer.node_type_vocab),
+            n_families=len(tensorizer.family_vocab),
+            behavior_ids=tensorizer.behavior_ids,
+            d_model=16,
+            dropout=0.0,
+            signature_branch_enabled=False,
+        )
+        model = HybridAttentionModel(config).eval()
+        batch = collate_samples([tensorizer.encode(report)])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "legacy.pt"
+            save_checkpoint(path, model, tensorizer)
+            payload = torch.load(path, weights_only=False)
+            payload["model_config"].pop("signature_branch_enabled")
+            payload["tensorizer_config"].pop("signature_branch_enabled")
+            payload["tensorizer_config"].pop("max_signature_tokens")
+            torch.save(payload, path)
+            loaded, loaded_tensorizer = load_checkpoint(path)
+        self.assertFalse(loaded.config.signature_branch_enabled)
+        self.assertFalse(loaded_tensorizer.config.signature_branch_enabled)
+        loaded.eval()
+        with torch.inference_mode():
+            torch.testing.assert_close(
+                model(batch)["family_logits"], loaded(batch)["family_logits"]
+            )
 
     def test_unqualified_malware_head_abstains_at_inference(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)
@@ -179,7 +311,7 @@ class ModelTests(unittest.TestCase):
         )
         model = HybridAttentionModel(config).train()
         # Force dropout on every available branch; the implementation must
-        # preserve the first available (static) branch and mask raw dynamic
+        # preserve the first available (signature) branch and mask raw dynamic
         # event/graph tokens, not only their pooled summaries.
         with patch("torch.rand_like", side_effect=lambda value: torch.zeros_like(value)):
             original_output = model(original_batch, return_attention=False)
@@ -216,14 +348,30 @@ class ModelTests(unittest.TestCase):
         with torch.inference_mode():
             output = model(batch)
             logits_only = model(batch, return_attention=False)
+            no_cross = model(batch, disable_cross_branch_attention=True)
         self.assertEqual(output["family_logits"].shape, (1, len(tensorizer.family_vocab)))
         self.assertEqual(output["behavior_logits"].shape, (1, len(tensorizer.behavior_ids)))
         self.assertEqual(output["attention"]["behavior_to_modality"].shape[-1], 3)
         self.assertEqual(
+            output["attention"]["modality_order"], ["signature", "static", "dynamic"]
+        )
+        self.assertEqual(
             output["attention"]["family_to_modality"].shape[-2],
             len(tensorizer.family_vocab),
         )
-        self.assertEqual(output["attention"]["static_to_temporal"].shape[-1], len(report.events))
+        dynamic_token_count = (
+            batch["event_ids"].shape[1] + batch["graph_node_ids"].shape[1]
+        )
+        self.assertEqual(output["attention"]["signature_to_dynamic"].shape[-1], dynamic_token_count)
+        self.assertEqual(output["attention"]["static_to_dynamic"].shape[-1], dynamic_token_count)
+        self.assertEqual(
+            output["attention"]["dynamic_to_signature_static"].shape[-1],
+            batch["signature_ids"].shape[1] + batch["static_ids"].shape[1],
+        )
+        self.assertEqual(
+            output["attention"]["dynamic_to_signature_static"].shape[-2],
+            dynamic_token_count,
+        )
         self.assertEqual(output["attention"]["temporal"]["window_overlap"], 1)
         self.assertGreater(len(output["attention"]["temporal"]["window_starts"]), 1)
         self.assertIn("path_pool", output["attention"]["graph"])
@@ -234,6 +382,24 @@ class ModelTests(unittest.TestCase):
         self.assertTrue(torch.isfinite(output["family_logits"]).all())
         self.assertTrue(torch.isfinite(output["behavior_logits"]).all())
         self.assertNotIn("attention", logits_only)
+        self.assertEqual(
+            int(no_cross["attention"]["signature_to_dynamic"].count_nonzero()), 0
+        )
+        self.assertEqual(
+            int(no_cross["attention"]["dynamic_to_signature_static"].count_nonzero()), 0
+        )
+        static_only_batch = collate_samples([
+            tensorizer.encode(ablate_report(report, "static_only"))
+        ])
+        with torch.inference_mode():
+            static_full = model(static_only_batch, return_attention=False)
+            static_no_cross = model(
+                static_only_batch,
+                return_attention=False,
+                disable_cross_branch_attention=True,
+            )
+        for key in ("family_logits", "behavior_logits", "malware_logits"):
+            torch.testing.assert_close(static_full[key], static_no_cross[key])
         for key in ("family_logits", "behavior_logits", "malware_logits"):
             self.assertTrue(torch.allclose(output[key], logits_only[key], atol=1e-6, rtol=1e-5), key)
 
@@ -245,6 +411,9 @@ class ModelTests(unittest.TestCase):
             model.temporal_encoder.relation_weights,
             model.temporal_encoder.time_scale,
             model.static_encoder.value_projection[0].weight,
+            model.signature_encoder.value_projection[0].weight,
+            model.static_to_dynamic.in_proj_weight,
+            model.signature_to_dynamic.in_proj_weight,
             model.graph_encoder.layers[0].edge_time.projection.weight,
             model.family_queries,
         ):
@@ -267,6 +436,11 @@ class ModelTests(unittest.TestCase):
         alignment = prediction["attention_trace"]["static_dynamic_alignment"]
         self.assertTrue(alignment)
         self.assertIn("event_index", alignment[0])
+        signature_alignment = prediction["attention_trace"]["signature_dynamic_alignment"]
+        self.assertTrue(signature_alignment)
+        self.assertIn("mutual_attention", signature_alignment[0])
+        self.assertTrue(prediction["attention_trace"]["cross_branch_evidence_links"])
+        self.assertTrue(prediction["attention_trace"]["graph_dynamic_alignment"])
 
         for mode in ("static_only", "dynamic_only"):
             partial = collate_samples([tensorizer.encode(ablate_report(report, mode))])
