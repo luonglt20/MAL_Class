@@ -122,7 +122,11 @@ def main() -> None:
         parser.error("checkpoint path differs from the source training report")
 
     torch.set_num_threads(2)
-    seed = int(experiment["seed"])
+    # Older experiment reports use one seed for sampling, splitting and model
+    # training. New repeated-seed comparisons keep data/splits fixed while
+    # varying model initialization.
+    seed = int(experiment.get("sample_seed", experiment["seed"]))
+    split_seed = int(experiment.get("split_seed", experiment["seed"]))
     sample_cap = int(experiment["sample_cap"])
 
     def loading_progress(state):
@@ -137,7 +141,7 @@ def main() -> None:
     )
     if len(reports) != sample_cap:
         parser.error("reconstructed WinMET sample size differs from the experiment report")
-    train, validation, calibration, withheld, split_strategy = research_split(reports, seed)
+    train, validation, calibration, withheld, split_strategy = research_split(reports, split_seed)
     if split_strategy != experiment.get("split_strategy"):
         parser.error("reconstructed split strategy differs from the experiment report")
     partitions = {
@@ -199,6 +203,12 @@ def main() -> None:
         "checkpoint": str(args.checkpoint),
         "checkpoint_sha256": _sha256_file(args.checkpoint),
         "seed": seed,
+        "model_seed": int(experiment["seed"]),
+        "sample_seed": seed,
+        "split_seed": split_seed,
+        "modality_dropout_scope": experiment.get(
+            "modality_dropout_scope", "summary_only_legacy"
+        ),
         "split_strategy": split_strategy,
         "partitions": {
             name: {"rows": len(rows), "sample_ids_sha256": actual_fingerprints[name]}

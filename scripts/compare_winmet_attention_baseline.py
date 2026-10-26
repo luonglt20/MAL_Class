@@ -67,6 +67,14 @@ def main():
     parser.add_argument("--d-model", type=int, default=32)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--sample-seed", type=int, default=None,
+        help="reservoir-sampling seed (defaults to --seed)",
+    )
+    parser.add_argument(
+        "--split-seed", type=int, default=None,
+        help="group-isolated split seed (defaults to --seed)",
+    )
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
 
@@ -88,17 +96,19 @@ def main():
         parser.error("manifest does not verify a sufficiently large prepared dataset")
     torch.set_num_threads(2)
     report_sha256 = _file_sha256(args.reports)
+    sample_seed = args.seed if args.sample_seed is None else args.sample_seed
+    split_seed = args.seed if args.split_seed is None else args.split_seed
 
     def loading_progress(state):
         if state["processed"] % 200 == 0 or state["processed"] == manifest["written"]:
             print(json.dumps({"loading": state}), flush=True)
 
     reports = load_cape_reports(
-        args.reports, max_reports=args.max_reports, seed=args.seed,
+        args.reports, max_reports=args.max_reports, seed=sample_seed,
         progress=loading_progress,
     )
     train, validation, calibration, withheld, split_strategy = research_split(
-        reports, args.seed,
+        reports, split_seed,
     )
     if min(map(len, (train, validation, calibration, withheld))) == 0:
         parser.error("sample is too small for disjoint train/validation/calibration/test partitions")
@@ -116,6 +126,8 @@ def main():
         "source_sha256": report_sha256,
         "source_manifest": manifest,
         "seed": args.seed,
+        "sample_seed": sample_seed,
+        "split_seed": split_seed,
         "prepared_sampling_method": manifest.get("sampling", "unspecified"),
         "sample_method": "deterministic reservoir from the verified prepared WinMET JSONL",
         "sample_cap": args.max_reports,
@@ -188,6 +200,7 @@ def main():
         "bag_validation_history": bag_history,
         "bag_family_thresholds": bag_threshold_report,
         "bag_of_tokens_validation": bag_validation,
+        "modality_dropout_scope": attention_run["modality_dropout_scope"],
         "test_metrics": None,
         "behavior_head_trained": attention_run["behavior_head_trained"],
     })

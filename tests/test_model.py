@@ -149,6 +149,45 @@ class ModelTests(unittest.TestCase):
         logits.sum().backward()
         self.assertGreater(float(context.grad.abs().sum()), 0)
 
+    def test_modality_dropout_masks_raw_tokens_before_cross_attention(self):
+        report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+        changed = copy.deepcopy(report)
+        for event in changed.events:
+            event.api = "UnrelatedSyntheticApi"
+            event.timestamp += 12345.0
+            event.target = "different-resource"
+        tensorizer = ReportTensorizer.fit([report])
+        original_batch = collate_samples([tensorizer.encode(report)])
+        changed_batch = collate_samples([tensorizer.encode(changed)])
+        config = HybridAttentionConfig(
+            token_vocab_size=len(tensorizer.token_vocab),
+            edge_vocab_size=len(tensorizer.edge_vocab),
+            node_type_vocab_size=len(tensorizer.node_type_vocab),
+            n_families=len(tensorizer.family_vocab),
+            behavior_ids=tensorizer.behavior_ids,
+            d_model=16,
+            n_heads=4,
+            static_layers=1,
+            temporal_layers=1,
+            graph_layers=1,
+            fusion_layers=1,
+            window_size=64,
+            window_overlap=32,
+            dropout=0.0,
+            modality_dropout=0.99,
+            family_head_variant="labelwise",
+        )
+        model = HybridAttentionModel(config).train()
+        # Force dropout on every available branch; the implementation must
+        # preserve the first available (static) branch and mask raw dynamic
+        # event/graph tokens, not only their pooled summaries.
+        with patch("torch.rand_like", side_effect=lambda value: torch.zeros_like(value)):
+            original_output = model(original_batch, return_attention=False)
+            changed_output = model(changed_batch, return_attention=False)
+        self.assertEqual(original_output["modality_mask"].tolist(), [[True, False, False]])
+        for key in ("family_logits", "behavior_logits", "malware_logits"):
+            torch.testing.assert_close(original_output[key], changed_output[key])
+
     def test_forward_exposes_every_attention_stage(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)
         tensorizer = ReportTensorizer.fit([report])

@@ -215,7 +215,7 @@ class TrainerProgressTests(unittest.TestCase):
         progress = []
         with tempfile.TemporaryDirectory() as directory:
             checkpoint = Path(directory) / "pilot.pt"
-            train_model(
+            result = train_model(
                 train, validation, checkpoint, epochs=1, batch_size=2, seed=42,
                 device="cpu", d_model=16, window_size=64, window_overlap=32,
                 family_min_support=1, behavior_min_support=1,
@@ -226,6 +226,7 @@ class TrainerProgressTests(unittest.TestCase):
             model, _ = load_checkpoint(checkpoint, "cpu")
         self.assertEqual(model.selected_epoch, 1)
         self.assertEqual(model.config.modality_dropout, 0.4)
+        self.assertEqual(result["modality_dropout_scope"], "pre_cross_attention_all_branch_tokens_v1")
         self.assertFalse(model.behavior_head_trained)
         self.assertIn("batch", {item["stage"] for item in progress})
         self.assertIn("epoch_end", {item["stage"] for item in progress})
