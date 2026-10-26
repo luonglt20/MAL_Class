@@ -38,8 +38,22 @@ st.set_page_config(page_title="MAL_Class Hybrid Attention", page_icon="🛡️",
 st.title("🛡️ MAL_Class · Hybrid Attention")
 st.caption("Đồ án độc lập: static PE evidence + sandbox execution flow + provenance graph")
 
-checkpoint = st.sidebar.text_input(
-    "Checkpoint mô hình", value=st.session_state.get("active_checkpoint", "")
+model_directory = Path(__file__).resolve().parents[1] / "models"
+checkpoint_options = sorted(str(path) for path in model_directory.glob("*.pt"))
+active_checkpoint = str(st.session_state.get("active_checkpoint", ""))
+if active_checkpoint and Path(active_checkpoint).is_file() and active_checkpoint not in checkpoint_options:
+    checkpoint_options.append(active_checkpoint)
+checkpoint_choices = ["(chưa chọn checkpoint)", *checkpoint_options]
+selected_checkpoint_index = (
+    checkpoint_choices.index(active_checkpoint)
+    if active_checkpoint in checkpoint_choices else 0
+)
+selected_checkpoint = st.sidebar.selectbox(
+    "Checkpoint có sẵn", checkpoint_choices, index=selected_checkpoint_index
+)
+manual_checkpoint = st.sidebar.text_input("Hoặc nhập đường dẫn checkpoint", value="")
+checkpoint = manual_checkpoint.strip() or (
+    "" if selected_checkpoint == "(chưa chọn checkpoint)" else selected_checkpoint
 )
 available_devices = ["cpu"]
 if torch.backends.mps.is_available():
@@ -48,6 +62,10 @@ if torch.cuda.is_available():
     available_devices.append("cuda")
 device = st.sidebar.selectbox("Thiết bị", available_devices)
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+st.sidebar.warning(
+    "An toàn: ứng dụng không thực thi EXE và không tự gửi mẫu sang sandbox. "
+    "PE chỉ được đọc tĩnh; behavior động chỉ lấy từ CAPE/WinMET report đã tạo trong VM cô lập."
+)
 
 
 def execution_graph_dot(report, limit: int = 120) -> str:
@@ -77,10 +95,24 @@ def execution_graph_dot(report, limit: int = 120) -> str:
 
 
 def attention_sankey(trace: dict):
-    modalities = ["static/signature", "temporal flow", "provenance graph"]
-    labels, sources, targets, values = list(modalities), [], [], []
-    modality_keys = ["static_signature", "temporal", "graph"]
-    for family, weights in trace.get("family_to_modality", {}).items():
+    family_rows = trace.get("family_to_modality", {})
+    behavior_rows = trace.get("behavior_to_modality", {})
+    example_weights = next(iter(family_rows.values()), None)
+    if example_weights is None:
+        example_weights = next(iter(behavior_rows.values()), {})
+    modality_keys = list(example_weights)
+    modality_labels = {
+        "signature": "Signature",
+        "static": "Static PE",
+        "dynamic": "Dynamic/Behavior",
+        "static_signature": "Static/Signature (legacy checkpoint)",
+        "temporal": "Temporal flow",
+        "graph": "Provenance graph",
+    }
+    labels, sources, targets, values = [
+        modality_labels.get(key, key) for key in modality_keys
+    ], [], [], []
+    for family, weights in family_rows.items():
         target_index = len(labels)
         labels.append(f"family:{family}")
         for source_index, key in enumerate(modality_keys):
@@ -89,7 +121,7 @@ def attention_sankey(trace: dict):
                 sources.append(source_index)
                 targets.append(target_index)
                 values.append(value)
-    for technique, weights in trace.get("behavior_to_modality", {}).items():
+    for technique, weights in behavior_rows.items():
         target_index = len(labels)
         labels.append(f"ATT&CK:{technique}")
         for source_index, key in enumerate(modality_keys):
@@ -129,6 +161,10 @@ def render_batch_results(rows: list[dict], download_key: str):
 
 @st.cache_resource(show_spinner=False)
 def load_pipeline(checkpoint_path: str, selected_device: str):
+    if selected_device == "cpu":
+        # High core-count defaults can oversubscribe small per-sample attention
+        # inference and make the interactive UI look stalled.
+        torch.set_num_threads(min(torch.get_num_threads(), 4))
     if checkpoint_path:
         model, tensorizer = load_checkpoint(checkpoint_path, selected_device)
         return HybridInferencePipeline(model, tensorizer, device=selected_device)
@@ -190,18 +226,48 @@ with analysis_tab:
                 if family.get("families"):
                     st.subheader("Phân loại đa nhãn họ mã độc")
                     st.dataframe(pd.DataFrame(family["families"]), use_container_width=True)
-                if report.atomic_evidence:
-                    st.subheader("Static/signature evidence")
-                    attention_items = result["attention_trace"].get("static", [])
-                    attention_by_token = {item["token"]: item["weight"] for item in attention_items}
-                    st.dataframe(pd.DataFrame([
+                trace = result["attention_trace"]
+                structural_rows = []
+                atomic_values = {item.token: item.value for item in report.atomic_evidence}
+                for branch in ("signature", "static"):
+                    for item in trace.get(branch, []):
+                        token = item.get("token")
+                        if not token:
+                            continue
+                        structural_rows.append({
+                            "branch": branch,
+                            "evidence": token,
+                            "value": atomic_values.get(token),
+                            "attention": item.get("weight"),
+                        })
+                if not structural_rows and report.atomic_evidence:
+                    # Legacy checkpoints expose the merged branch as `static`.
+                    legacy_weights = {
+                        item["token"]: item["weight"]
+                        for item in trace.get("static", [])
+                        if item.get("token") and item.get("weight") is not None
+                    }
+                    branch_name = (
+                        "static/signature (legacy)"
+                        if "family_to_modality" in trace
+                        else "static/signature (chưa có checkpoint)"
+                    )
+                    structural_rows = [
                         {
+                            "branch": branch_name,
                             "evidence": item.token,
                             "value": item.value,
-                            "attention": attention_by_token.get(item.token),
+                            "attention": legacy_weights.get(item.token),
                         }
                         for item in report.atomic_evidence[:80]
-                    ]), use_container_width=True)
+                    ]
+                if structural_rows:
+                    st.subheader(
+                        "Attention trên từng bằng chứng Signature / Static PE"
+                        if "family_to_modality" in trace
+                        else "Bằng chứng Signature / Static PE (chưa có attention)"
+                    )
+                    st.dataframe(pd.DataFrame(structural_rows), use_container_width=True)
 
                 st.subheader("Behavior/TTP evidence")
                 if not result["behaviors"]:
@@ -231,7 +297,6 @@ with analysis_tab:
                             st.caption("Label-aware attention evidence")
                             st.dataframe(pd.DataFrame(label_attention), use_container_width=True)
 
-                trace = result["attention_trace"]
                 if "family_to_modality" in trace:
                     st.subheader("Attention flow theo modality")
                     family_attention = pd.DataFrame(trace["family_to_modality"]).T
@@ -248,10 +313,21 @@ with analysis_tab:
                     ]
                     if rows:
                         st.dataframe(pd.DataFrame(rows), use_container_width=True)
-                    alignments = trace.get("static_dynamic_alignment", [])
+                    alignments = trace.get("cross_branch_evidence_links", [])
+                    if not alignments:
+                        alignments = trace.get("static_dynamic_alignment", [])
                     if alignments:
-                        st.subheader("Static ↔ dynamic cross-attention")
+                        st.subheader("Signature / Static PE ↔ event cross-attention")
+                        st.caption(
+                            "Attention liên kết từng dấu hiệu cấu trúc với event/graph liên quan; "
+                            "head phân loại dùng các biểu diễn đã kết hợp ngữ cảnh để chấm nhãn. "
+                            "Trọng số liên kết không phải xác suất đáng ngờ hay bằng chứng nhân quả."
+                        )
                         st.dataframe(pd.DataFrame(alignments), use_container_width=True)
+                    graph_alignments = trace.get("graph_dynamic_alignment", [])
+                    if graph_alignments:
+                        with st.expander("Bằng chứng Signature / Static PE ↔ graph node"):
+                            st.dataframe(pd.DataFrame(graph_alignments), use_container_width=True)
                 else:
                     st.info("Chưa nạp checkpoint: đang hiển thị evidence engine, không phải xác suất mô hình.")
 

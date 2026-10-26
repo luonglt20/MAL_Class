@@ -3,6 +3,11 @@ import struct
 
 import pytest
 
+from malware_hybrid.dataset import ReportTensorizer
+from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel
+from malware_hybrid.normalization import CapeReportParser
+from malware_hybrid.training import save_checkpoint
+
 
 streamlit_testing = pytest.importorskip("streamlit.testing.v1")
 AppTest = streamlit_testing.AppTest
@@ -53,6 +58,25 @@ def test_dashboard_batch_upload_renders_results_and_csv_download():
     )
 
 
+def test_dashboard_static_pe_without_checkpoint_shows_evidence_not_model_scores():
+    app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(
+        uploader for uploader in app.get("file_uploader")
+        if uploader.label.startswith("Tải PE để phân tích")
+    ).upload("sample.exe", minimal_pe(), "application/octet-stream")
+    app.run(timeout=20)
+
+    assert len(app.exception) == 0
+    assert any(
+        item.value == "Bằng chứng Signature / Static PE (chưa có attention)"
+        for item in app.get("subheader")
+    )
+    assert any(
+        "chưa nạp checkpoint" in item.value.lower()
+        for item in app.info
+    )
+
+
 def test_dashboard_classifies_a_local_nested_dataset(tmp_path):
     sample_directory = tmp_path / "family_a"
     sample_directory.mkdir()
@@ -74,3 +98,73 @@ def test_dashboard_classifies_a_local_nested_dataset(tmp_path):
         button.label == "Tải kết quả dataset dạng CSV"
         for button in app.get("download_button")
     )
+
+
+def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path):
+    report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+    tensorizer = ReportTensorizer.fit([report])
+    model = HybridAttentionModel(HybridAttentionConfig(
+        token_vocab_size=len(tensorizer.token_vocab),
+        edge_vocab_size=len(tensorizer.edge_vocab),
+        node_type_vocab_size=len(tensorizer.node_type_vocab),
+        n_families=len(tensorizer.family_vocab),
+        behavior_ids=tensorizer.behavior_ids,
+        d_model=16,
+        n_heads=4,
+        static_layers=1,
+        temporal_layers=1,
+        graph_layers=1,
+        fusion_layers=1,
+        window_size=8,
+        window_overlap=4,
+        dropout=0.0,
+        modality_dropout=0.0,
+    ))
+    checkpoint_path = tmp_path / "three_branch.pt"
+    save_checkpoint(checkpoint_path, model, tensorizer)
+
+    app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(
+        field for field in app.text_input
+        if field.label == "Hoặc nhập đường dẫn checkpoint"
+    ).set_value(str(checkpoint_path))
+    app.run(timeout=20)
+    sample_uploader = next(
+        uploader for uploader in app.get("file_uploader")
+        if uploader.label.startswith("Tải PE để phân tích")
+    )
+    sample_uploader.upload("process-injection.json", FIXTURE.read_bytes(), "application/json")
+    app.run(timeout=30)
+
+    assert len(app.exception) == 0
+    assert any(
+        item.value == "Attention trên từng bằng chứng Signature / Static PE"
+        for item in app.get("subheader")
+    )
+    assert any(
+        item.value == "Signature / Static PE ↔ event cross-attention"
+        for item in app.get("subheader")
+    )
+    assert any(
+        "liên kết từng dấu hiệu cấu trúc" in item.value
+        and "biểu diễn đã kết hợp ngữ cảnh" in item.value
+        for item in app.caption
+    )
+    assert any(
+        item.value == "Attention flow theo modality"
+        for item in app.get("subheader")
+    )
+
+    pe_app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(
+        field for field in pe_app.text_input
+        if field.label == "Hoặc nhập đường dẫn checkpoint"
+    ).set_value(str(checkpoint_path))
+    pe_app.run(timeout=20)
+    next(
+        uploader for uploader in pe_app.get("file_uploader")
+        if uploader.label.startswith("Tải PE để phân tích")
+    ).upload("sample.exe", minimal_pe(), "application/octet-stream")
+    pe_app.run(timeout=30)
+    assert len(pe_app.exception) == 0
+    assert any("static-only" in item.value.lower() for item in pe_app.info)
