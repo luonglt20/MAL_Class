@@ -291,15 +291,21 @@ class ModelTests(unittest.TestCase):
             d_model=16, dropout=0.0,
         ))
         model.malware_head_trained = model.malware_head_qualified = True
+        model.behavior_head_trained = True
         with torch.no_grad():
             model.malware_head.weight.zero_()
             model.malware_head.bias.fill_(20)
             model.family_head.weight.zero_()
             model.family_head.bias.fill_(20)
+            model.behavior_head.weight.zero_()
+            model.behavior_head.bias.fill_(20)
         pipeline = HybridInferencePipeline(model, tensorizer)
         supported = pipeline.predict(report)
         self.assertTrue(supported["model_input_coverage"]["supported"])
         self.assertEqual(supported["verdict"]["label"], "MALICIOUS")
+        supported_behavior = next(b for b in supported["behaviors"] if b["attack"]["technique_id"] == "T1055")
+        self.assertEqual(supported_behavior["status"], "confirmed")
+        self.assertEqual(supported_behavior["confidence_source"], "model_score")
 
         unknown = copy.deepcopy(report)
         unknown.events.clear()
@@ -317,6 +323,16 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(rejected["verdict"]["label"], "UNKNOWN")
         self.assertEqual(rejected["verdict"]["source"], "input_vocabulary_coverage_guard")
         self.assertNotIn("family_to_modality", rejected["attention_trace"])
+
+        unknown_dynamic = copy.deepcopy(report)
+        unknown_dynamic.atomic_evidence = unknown.atomic_evidence * 30
+        unknown_dynamic.metadata.pop("fuzzy_hashes", None)
+        with patch.object(model, "forward", side_effect=AssertionError("unsupported dynamic input reached model")):
+            rejected_dynamic = pipeline.predict(unknown_dynamic)
+        rejected_behavior = next(b for b in rejected_dynamic["behaviors"] if b["attack"]["technique_id"] == "T1055")
+        self.assertEqual(rejected_behavior["status"], "suspected")
+        self.assertEqual(rejected_behavior["evidence_status"], "confirmed")
+        self.assertEqual(rejected_behavior["confidence_source"], "evidence_chain_coverage")
 
     def test_failed_checkpoint_write_preserves_previous_valid_file(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)

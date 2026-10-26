@@ -306,6 +306,9 @@ with analysis_tab:
                             else "Mức đầy đủ chuỗi bằng chứng"
                         )
                         st.write(f"{confidence_label}: {behavior['confidence']:.1%}")
+                        st.caption(f"Trạng thái chuỗi bằng chứng: {behavior.get('evidence_status', 'unknown')}")
+                        if behavior.get("confidence_source") == "evidence_chain_coverage":
+                            st.caption("Chưa có điểm behavior hợp lệ từ mô hình; kết luận giữ ở mức suspected.")
                         st.write("NIST CSF 2.0:", ", ".join(behavior["nist"]["csf_2_0"]) or "unmapped")
                         st.write("NIST SP 800-53 r5:", ", ".join(behavior["nist"]["sp_800_53_r5"]) or "unmapped")
                         if behavior["evidence_chain"]:

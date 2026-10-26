@@ -59,7 +59,8 @@ class BatchAnalysisTests(unittest.TestCase):
         row = batch_result_row("report.json", len(content), report, result)
 
         self.assertEqual(row["analysis_mode"], "hybrid")
-        self.assertEqual(row["confirmed_behaviors"], "T1055")
+        self.assertEqual(row["confirmed_behaviors"], "")
+        self.assertEqual(row["suspected_behaviors"], "T1055")
         process_injection = next(
             behavior for behavior in result["behaviors"]
             if behavior["attack"]["technique_id"] == "T1055"
@@ -105,7 +106,8 @@ class BatchAnalysisTests(unittest.TestCase):
             ])
             self.assertIn("valid UTF-8", rows[0]["error"])
             self.assertEqual(rows[1]["primary_family"], "UNKNOWN")
-            self.assertEqual(rows[2]["confirmed_behaviors"], "T1055")
+            self.assertEqual(rows[2]["confirmed_behaviors"], "")
+            self.assertEqual(rows[2]["suspected_behaviors"], "T1055")
             self.assertEqual(progress[-1], (3, 3))
 
     def test_local_dataset_rejects_resource_limit_overruns_and_symlink_root(self):

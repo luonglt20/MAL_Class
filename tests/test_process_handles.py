@@ -34,7 +34,9 @@ class ProcessHandleTests(unittest.TestCase):
         self.assertEqual(report.events[1].arguments["processhandle"], "<HANDLE>")
         result = HybridInferencePipeline().predict(report)
         behavior = next(item for item in result["behaviors"] if item["attack"]["technique_id"] == "T1055")
-        self.assertEqual(behavior["status"], "confirmed")
+        self.assertEqual(behavior["status"], "suspected")
+        self.assertEqual(behavior["evidence_status"], "confirmed")
+        self.assertIn("behavior_model_score_unavailable", behavior["reasons"])
         self.assertIn("SI-4", behavior["nist"]["sp_800_53_r5"])
         self.assertEqual(behavior["evidence_chain"][1]["target_resolution"], "process_handle")
 

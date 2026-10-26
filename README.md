@@ -36,6 +36,8 @@ Dashboard nhận một hoặc nhiều PE (tối đa 50 MiB/file) và phân tích
 
 Checkpoint cần phù hợp nhóm feature đầu vào. Guard vocabulary trả `UNKNOWN` và bỏ neural inference nếu dưới 50% token được checkpoint nhận diện; dashboard/CSV ghi rõ lý do. Đây là kiểm tra tương thích ban đầu, chưa phải bộ phát hiện OOD đã kiểm định.
 
+Behavior chỉ được `confirmed` khi có điểm hợp lệ từ behavior head đã train và chuỗi evidence đầy đủ. Nếu chỉ có evidence engine, kết luận tối đa là `suspected`; `evidence_status` ghi riêng chuỗi có đủ bước hay không. Mức đầy đủ chuỗi không phải xác suất của mô hình.
+
 MalBehavD-V1 chỉ dùng trong thí nghiệm chuỗi API động riêng, không ghép với PE/CAPE khác nguồn. Split group theo SHA-256 và chuỗi API chuẩn hóa để tránh rò rỉ chuỗi lặp; các nhóm có cùng chuỗi nhưng nhãn xung đột bị cách ly. Nhãn giữ dạng `0/1` vì README tác giả không chỉ rõ mapping số sang benign/malware. Kết quả nhánh này không đại diện cho phân loại family hay ATT&CK.
 
 Bộ protocol có đúng 7 baseline: indicator rule, bag-of-token, BiLSTM, temporal transformer, graph attention, sequence+graph và full hybrid attention. Attention được kiểm định bằng flow ablation, deletion AOPC, stability và Spearman agreement với Layer Integrated Gradients ở mức event. Các lớp baseline đã chạy được, nhưng chưa được phép ghi điểm benchmark cho tới khi chạy cùng split dữ liệu thật.
