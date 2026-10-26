@@ -63,6 +63,7 @@ def main():
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--family-min-support", type=int, default=5)
     parser.add_argument("--family-ranking-weight", type=float, default=0.0)
+    parser.add_argument("--modality-dropout", type=float, default=0.15)
     parser.add_argument("--d-model", type=int, default=32)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--seed", type=int, default=42)
@@ -76,8 +77,9 @@ def main():
         if path.exists():
             parser.error(f"refusing to overwrite existing output: {path}")
     if (args.max_reports < 100 or args.epochs < 1 or args.family_min_support < 1
-            or not math.isfinite(args.family_ranking_weight) or args.family_ranking_weight < 0):
-        parser.error("invalid sample, epoch, support or ranking-weight setting")
+            or not math.isfinite(args.family_ranking_weight) or args.family_ranking_weight < 0
+            or not math.isfinite(args.modality_dropout) or not 0 <= args.modality_dropout < 1):
+        parser.error("invalid sample, epoch, support, ranking-weight or modality-dropout setting")
 
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("format") not in {None, "malware-hybrid-jsonl-v1"}:
@@ -120,6 +122,7 @@ def main():
         "split_strategy": split_strategy,
         "family_min_support": args.family_min_support,
         "family_ranking_weight": args.family_ranking_weight,
+        "modality_dropout": args.modality_dropout,
         "d_model": args.d_model,
         "batch_size": args.batch_size,
         "epochs": args.epochs,
@@ -152,6 +155,7 @@ def main():
         calibration_reports=calibration, test_reports=None,
         train_behavior_head=False, family_head_variant="labelwise",
         family_ranking_weight=args.family_ranking_weight,
+        modality_dropout=args.modality_dropout,
         selection_metric="family_map", progress=training_progress,
     )
     attention, tensorizer = load_checkpoint(args.checkpoint, args.device)

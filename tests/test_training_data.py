@@ -191,6 +191,17 @@ class CapeReservoirSamplingTests(unittest.TestCase):
 
 
 class TrainerProgressTests(unittest.TestCase):
+    def test_modality_dropout_rejects_values_outside_probability_range(self):
+        report = CapeReportParser(max_events=64).parse_file(
+            Path(__file__).parent / "fixtures" / "cape_process_injection.json"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "modality_dropout"):
+                train_model(
+                    [report], [], Path(directory) / "invalid.pt",
+                    modality_dropout=1.0,
+                )
+
     def test_best_checkpoint_is_written_and_progress_is_emitted_by_epoch(self):
         base = CapeReportParser(max_events=64).parse_file(
             Path(__file__).parent / "fixtures" / "cape_process_injection.json"
@@ -209,10 +220,12 @@ class TrainerProgressTests(unittest.TestCase):
                 device="cpu", d_model=16, window_size=64, window_overlap=32,
                 family_min_support=1, behavior_min_support=1,
                 calibration_reports=calibration, test_reports=test,
-                train_behavior_head=False, progress=progress.append,
+                train_behavior_head=False, modality_dropout=0.4,
+                progress=progress.append,
             )
             model, _ = load_checkpoint(checkpoint, "cpu")
         self.assertEqual(model.selected_epoch, 1)
+        self.assertEqual(model.config.modality_dropout, 0.4)
         self.assertFalse(model.behavior_head_trained)
         self.assertIn("batch", {item["stage"] for item in progress})
         self.assertIn("epoch_end", {item["stage"] for item in progress})
