@@ -2,7 +2,9 @@ import struct
 import unittest
 import hashlib
 import tempfile
+from types import SimpleNamespace
 from pathlib import Path
+from unittest.mock import patch
 
 from malware_hybrid.pe_static import PEFormatError, PEStaticAnalyzer
 
@@ -82,6 +84,49 @@ class PEStaticAnalyzerTests(unittest.TestCase):
         self.assertEqual(report.metadata["fuzzy_hashes"]["imphash"], expected)
         self.assertIn("imphash:present", {item.token for item in report.atomic_evidence})
         self.assertFalse(any(expected in item.token for item in report.atomic_evidence))
+
+    def test_unavailable_fuzzy_backends_are_status_not_sample_evidence(self):
+        report = PEStaticAnalyzer().analyze_bytes(minimal_pe())
+        tokens = {item.token for item in report.atomic_evidence}
+        self.assertNotIn("tlsh:unavailable", tokens)
+        self.assertNotIn("ssdeep:unavailable", tokens)
+        self.assertEqual(set(report.metadata["fuzzy_hash_status"]), {"tlsh", "ssdeep"})
+
+    def test_optional_fuzzy_hashes_are_metadata_for_train_only_prototypes(self):
+        fake_tlsh = SimpleNamespace(hash=lambda _: "T1" + "a" * 70)
+        fake_ssdeep = SimpleNamespace(__name__="ssdeep", hash=lambda _: "3:abc:def")
+        modules = {"tlsh": fake_tlsh, "ssdeep": fake_ssdeep}
+        with patch(
+            "malware_hybrid.pe_static.importlib.import_module",
+            side_effect=lambda name: modules[name],
+        ):
+            report = PEStaticAnalyzer().analyze_bytes(minimal_pe())
+
+        self.assertEqual(report.metadata["fuzzy_hashes"]["tlsh"], "T1" + "a" * 70)
+        self.assertEqual(report.metadata["fuzzy_hashes"]["ssdeep"], "3:abc:def")
+        self.assertEqual(report.metadata["fuzzy_hash_status"]["tlsh"], "computed")
+        self.assertEqual(report.metadata["fuzzy_hash_status"]["ssdeep"], "computed")
+        self.assertFalse(any("3:abc:def" in item.token for item in report.atomic_evidence))
+
+    def test_pure_python_ssdeep_fallback_respects_size_cap(self):
+        fake_ssdeep = SimpleNamespace(__name__="ppdeep", hash=lambda _: self.fail("must not hash"))
+
+        def load_optional(name):
+            if name == "ppdeep":
+                return fake_ssdeep
+            raise ImportError(name)
+
+        with patch(
+            "malware_hybrid.pe_static.importlib.import_module",
+            side_effect=load_optional,
+        ):
+            report = PEStaticAnalyzer(max_python_ssdeep_bytes=8).analyze_bytes(minimal_pe())
+
+        self.assertEqual(
+            report.metadata["fuzzy_hash_status"]["ssdeep"],
+            "python_backend_size_limit",
+        )
+        self.assertNotIn("ssdeep", report.metadata["fuzzy_hashes"])
 
 
 if __name__ == "__main__":

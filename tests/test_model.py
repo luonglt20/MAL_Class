@@ -224,6 +224,37 @@ class ModelTests(unittest.TestCase):
                 model(batch)["family_logits"], loaded(batch)["family_logits"]
             )
 
+    def test_earlier_three_branch_checkpoint_loads_without_signature_static_modules(self):
+        report = CapeReportParser(max_events=64).parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit([report])
+        config = HybridAttentionConfig(
+            token_vocab_size=len(tensorizer.token_vocab),
+            edge_vocab_size=len(tensorizer.edge_vocab),
+            node_type_vocab_size=len(tensorizer.node_type_vocab),
+            n_families=len(tensorizer.family_vocab),
+            behavior_ids=tensorizer.behavior_ids,
+            d_model=16,
+            dropout=0.0,
+            signature_static_attention_enabled=False,
+        )
+        model = HybridAttentionModel(config).eval()
+        batch = collate_samples([tensorizer.encode(report)])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "three_branch_v1.pt"
+            save_checkpoint(path, model, tensorizer)
+            payload = torch.load(path, weights_only=False)
+            payload["model_config"].pop("signature_static_attention_enabled")
+            torch.save(payload, path)
+            loaded, _ = load_checkpoint(path)
+        self.assertTrue(loaded.config.signature_branch_enabled)
+        self.assertFalse(loaded.config.signature_static_attention_enabled)
+        loaded.eval()
+        with torch.inference_mode():
+            expected = model(batch, return_attention=False)
+            actual = loaded(batch, return_attention=False)
+        for key in ("family_logits", "behavior_logits", "malware_logits"):
+            torch.testing.assert_close(expected[key], actual[key])
+
     def test_unqualified_malware_head_abstains_at_inference(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)
         tensorizer = ReportTensorizer.fit([report])
@@ -365,6 +396,14 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(output["attention"]["signature_to_dynamic"].shape[-1], dynamic_token_count)
         self.assertEqual(output["attention"]["static_to_dynamic"].shape[-1], dynamic_token_count)
         self.assertEqual(
+            output["attention"]["signature_to_static"].shape[-2:],
+            (batch["signature_ids"].shape[1], batch["static_ids"].shape[1]),
+        )
+        self.assertEqual(
+            output["attention"]["static_to_signature"].shape[-2:],
+            (batch["static_ids"].shape[1], batch["signature_ids"].shape[1]),
+        )
+        self.assertEqual(
             output["attention"]["dynamic_to_signature_static"].shape[-1],
             batch["signature_ids"].shape[1] + batch["static_ids"].shape[1],
         )
@@ -388,18 +427,33 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(
             int(no_cross["attention"]["dynamic_to_signature_static"].count_nonzero()), 0
         )
+        self.assertEqual(
+            int(no_cross["attention"]["signature_to_static"].count_nonzero()), 0
+        )
+        self.assertEqual(
+            int(no_cross["attention"]["static_to_signature"].count_nonzero()), 0
+        )
         static_only_batch = collate_samples([
             tensorizer.encode(ablate_report(report, "static_only"))
         ])
         with torch.inference_mode():
             static_full = model(static_only_batch, return_attention=False)
+            static_attention = model(static_only_batch)
             static_no_cross = model(
                 static_only_batch,
                 return_attention=False,
                 disable_cross_branch_attention=True,
             )
-        for key in ("family_logits", "behavior_logits", "malware_logits"):
-            torch.testing.assert_close(static_full[key], static_no_cross[key])
+        self.assertGreater(
+            float(static_attention["attention"]["signature_to_static"].abs().sum()), 0
+        )
+        self.assertGreater(
+            float(static_attention["attention"]["static_to_signature"].abs().sum()), 0
+        )
+        self.assertTrue(any(
+            not torch.allclose(static_full[key], static_no_cross[key])
+            for key in ("family_logits", "behavior_logits", "malware_logits")
+        ))
         for key in ("family_logits", "behavior_logits", "malware_logits"):
             self.assertTrue(torch.allclose(output[key], logits_only[key], atol=1e-6, rtol=1e-5), key)
 
@@ -414,6 +468,8 @@ class ModelTests(unittest.TestCase):
             model.signature_encoder.value_projection[0].weight,
             model.static_to_dynamic.in_proj_weight,
             model.signature_to_dynamic.in_proj_weight,
+            model.signature_to_static.in_proj_weight,
+            model.static_to_signature.in_proj_weight,
             model.graph_encoder.layers[0].edge_time.projection.weight,
             model.family_queries,
         ):
@@ -439,6 +495,7 @@ class ModelTests(unittest.TestCase):
         signature_alignment = prediction["attention_trace"]["signature_dynamic_alignment"]
         self.assertTrue(signature_alignment)
         self.assertIn("mutual_attention", signature_alignment[0])
+        self.assertTrue(prediction["attention_trace"]["signature_static_alignment"])
         self.assertTrue(prediction["attention_trace"]["cross_branch_evidence_links"])
         self.assertTrue(prediction["attention_trace"]["graph_dynamic_alignment"])
 

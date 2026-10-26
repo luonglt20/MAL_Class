@@ -317,9 +317,9 @@ with analysis_tab:
                     if not alignments:
                         alignments = trace.get("static_dynamic_alignment", [])
                     if alignments:
-                        st.subheader("Signature / Static PE ↔ event cross-attention")
+                        st.subheader("Liên kết attention giữa các nhánh")
                         st.caption(
-                            "Attention liên kết từng dấu hiệu cấu trúc với event/graph liên quan; "
+                            "Attention liên kết Signature với Static PE và các event/graph liên quan; "
                             "head phân loại dùng các biểu diễn đã kết hợp ngữ cảnh để chấm nhãn. "
                             "Trọng số liên kết không phải xác suất đáng ngờ hay bằng chứng nhân quả."
                         )

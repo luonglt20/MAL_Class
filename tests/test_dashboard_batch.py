@@ -142,11 +142,11 @@ def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path):
         for item in app.get("subheader")
     )
     assert any(
-        item.value == "Signature / Static PE ↔ event cross-attention"
+        item.value == "Liên kết attention giữa các nhánh"
         for item in app.get("subheader")
     )
     assert any(
-        "liên kết từng dấu hiệu cấu trúc" in item.value
+        "liên kết Signature với Static PE" in item.value
         and "biểu diễn đã kết hợp ngữ cảnh" in item.value
         for item in app.caption
     )
