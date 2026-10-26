@@ -82,7 +82,7 @@ def _family_metrics(
     )
     return {
         key: value for key, value in metrics.items()
-        if key.startswith("family_")
+        if key.startswith("family_") or key in {"per_family", "per_family_calibrated"}
     }
 
 

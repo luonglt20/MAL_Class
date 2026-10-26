@@ -256,6 +256,8 @@ class TrainerProgressTests(unittest.TestCase):
         self.assertEqual(model.selected_epoch, 1)
         self.assertEqual(model.config.modality_dropout, 0.4)
         self.assertEqual(result["modality_dropout_scope"], "pre_cross_attention_all_branch_tokens_v1")
+        self.assertEqual(model.training_runtime_encoder_policy, "skip_empty_runtime_no_attention_v1")
+        self.assertEqual(result["training_runtime_encoder_policy"], model.training_runtime_encoder_policy)
         self.assertFalse(model.behavior_head_trained)
         self.assertIn("batch", {item["stage"] for item in progress})
         self.assertIn("epoch_end", {item["stage"] for item in progress})

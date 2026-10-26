@@ -145,6 +145,7 @@ def main():
     result.update({
         "checkpoint": str(args.checkpoint),
         "epochs_completed": run["epochs_completed"],
+        "training_runtime_encoder_policy": run["training_runtime_encoder_policy"],
         "stopped_early": run["stopped_early"],
         "model_config": run["model_config"],
         "tensorizer_config": run["tensorizer_config"],

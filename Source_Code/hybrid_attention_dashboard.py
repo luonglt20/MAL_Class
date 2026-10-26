@@ -300,7 +300,12 @@ with analysis_tab:
                         f"{behavior['attack']['name']} · {behavior['status']}"
                     )
                     with st.expander(title, expanded=behavior["status"] == "confirmed"):
-                        st.write(f"Confidence: {behavior['confidence']:.1%}")
+                        confidence_label = (
+                            "Điểm behavior từ mô hình"
+                            if behavior.get("confidence_source") == "model_score"
+                            else "Mức đầy đủ chuỗi bằng chứng"
+                        )
+                        st.write(f"{confidence_label}: {behavior['confidence']:.1%}")
                         st.write("NIST CSF 2.0:", ", ".join(behavior["nist"]["csf_2_0"]) or "unmapped")
                         st.write("NIST SP 800-53 r5:", ", ".join(behavior["nist"]["sp_800_53_r5"]) or "unmapped")
                         if behavior["evidence_chain"]:

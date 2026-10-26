@@ -477,13 +477,19 @@ class ModelTests(unittest.TestCase):
             tensorizer.encode(ablate_report(report, "static_only"))
         ])
         with torch.inference_mode():
-            static_full = model(static_only_batch, return_attention=False)
+            with (
+                patch.object(model.temporal_encoder, "forward", side_effect=AssertionError("empty temporal encoder ran")),
+                patch.object(model.graph_encoder, "forward", side_effect=AssertionError("empty graph encoder ran")),
+            ):
+                static_full = model(static_only_batch, return_attention=False)
             static_attention = model(static_only_batch)
             static_no_cross = model(
                 static_only_batch,
                 return_attention=False,
                 disable_cross_branch_attention=True,
             )
+        for key in ("family_logits", "behavior_logits", "malware_logits"):
+            torch.testing.assert_close(static_full[key], static_attention[key], atol=1e-6, rtol=1e-5)
         self.assertGreater(
             float(static_attention["attention"]["signature_to_static"].abs().sum()), 0
         )
@@ -496,6 +502,19 @@ class ModelTests(unittest.TestCase):
         ))
         for key in ("family_logits", "behavior_logits", "malware_logits"):
             self.assertTrue(torch.allclose(output[key], logits_only[key], atol=1e-6, rtol=1e-5), key)
+
+        model.zero_grad(set_to_none=True)
+        static_training = model.train()(static_only_batch, return_attention=False)
+        model.compute_loss(static_training, static_only_batch)["loss"].backward()
+        for parameter in (
+            model.signature_to_static.in_proj_weight,
+            model.static_to_signature.in_proj_weight,
+        ):
+            self.assertIsNotNone(parameter.grad)
+            self.assertGreater(float(parameter.grad.abs().sum()), 0)
+        self.assertIsNone(model.temporal_encoder.event_embedding.weight.grad)
+        self.assertIsNone(model.graph_encoder.layers[0].edge_time.projection.weight.grad)
+        model.eval().zero_grad(set_to_none=True)
 
         # Backward must reach relation/time parameters and both modalities;
         # merely returning an attention tensor does not prove it is used.

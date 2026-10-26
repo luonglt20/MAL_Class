@@ -53,7 +53,10 @@ def _metrics(
     # Both models use the auxiliary verdict loss when labels are available.
     # This experiment evaluates family ranking/classification only; it does
     # not calibrate or independently qualify either model's malware verdicts.
-    return {key: value for key, value in metrics.items() if key.startswith("family_")}
+    return {
+        key: value for key, value in metrics.items()
+        if key.startswith("family_") or key in {"per_family", "per_family_calibrated"}
+    }
 
 
 def _train_bag_baseline(
