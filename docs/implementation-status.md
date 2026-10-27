@@ -225,6 +225,22 @@ A bounded raw audit of WinMET report `31c9ccf3ce614f9f9eab26136d5a512d0b23f26be3
 
 This correction is not yet applied to prepared PE-v2 data or the registered model. It requires a versioned parser update and rebuilt traces/retraining, not reinterpretation of existing metrics. Only a typed process-handle argument with known owner may resolve to self; PID fields, invalid acquisition results, registry handles and current-thread pseudo handles must remain distinct. Existing T1055 guards already reject same-subject/self targets. This is a concrete next action for the execution-relation gap, not proof that it alone will improve classification.
 
+### Objective-matched protocol baselines completed (2026-10-27)
+
+Four baselines completed three epochs on MPS with the same seed 44, train vocabulary, split fingerprints, AdamW settings and auxiliary family-ranking loss weight 0.5 as the frozen hybrid. Each selected epoch 3 by validation mAP and calibrated thresholds separately on the reserved calibration partition. No internal/external test metric was computed. [Compact metrics and result fingerprints](experiments/winmet-pev2-protocol-baselines-20261027.json) preserve this experiment.
+
+| Validation model | Family mAP | Calibrated macro-F1 | Top-1 | Top-3 |
+| --- | ---: | ---: | ---: | ---: |
+| Full hybrid | .3681 | .2305 | .7302 | .8413 |
+| Temporal Transformer | .3757 | .1467 | .6349 | .6984 |
+| Graph Attention | .3497 | .1030 | .5556 | .7302 |
+| Sequence + Graph | .2568 | .1834 | .6032 | .7619 |
+| Bag of tokens, matched ranking loss | .2537 | .1554 | .6032 | .8095 |
+
+Hybrid gains 8.38/12.75 macro-F1 points over Temporal/Graph and improves top-k, but its mAP is 0.76 points below Temporal. It does not dominate all metrics. These are one-seed weak-label validation results, not acceptance against independent family/behavior annotations. Only 63 rows have a train-known family for ranking metrics, and 17 family labels have validation positives for mAP. Matching width and training budget does not equalize parameter counts. BiLSTM still needs a real-data run; indicator rules deliberately have no family prediction.
+
+The first 100 PE-v2 prepared reports contain 144,395 events, including 6,029 `NtAllocateVirtualMemory` events, of which 6,023 have placeholder targets. The bounded raw audit above confirms the pseudo-handle cause for six calls in one report only; do not assume it explains every unresolved allocation. This relational-data weakness remains a reason to rebuild and revalidate, not to promote the current checkpoint.
+
 ## Direct Signature↔Static implementation and PE feature extraction (2026-10-26)
 
 New models include bidirectional token attention between Signature and Static PE before their interactions with event/graph tokens. Gradient checks and a PE-only cross-attention ablation confirm the modules affect classification. The inference trace and dashboard expose the resulting pairs. Earlier checkpoints retain their original architecture when loaded.

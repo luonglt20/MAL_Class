@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-27",
+  "status": "validation_pilot_not_promoted",
+  "protocol_implementation_revision": "edbec44",
+  "execution_note": "Run started from the working tree before this commit. Subsequent partition-overlap checks and the unused BiLSTM padding fix did not change training of the four selected models.",
+  "local_report": "artifacts/winmet/volume2_pev2_protocol_baselines_1000_seed44.json",
+  "report_sha256": "c4089928880b9a138b1dc921a09e56d45e1aa00566c7b4dfdfb6961da199d73d",
+  "source_experiment_sha256": "46b3998387e98673f454affd6033a98f7dd36f04101b1151e02c29238fc1d5fd",
+  "source_sha256": "db502228200d4085b4008268b89f95efc029c375cf53db0ce0b1c7955a9f08cf",
+  "checkpoint_sha256": "3c79007236a904a48d3d45b2f06c443ba14f527ff9831a4c6b189c3616d4f745",
+  "model_seed": 44,
+  "sample_seed": 44,
+  "split_seed": 44,
+  "sample_cap": 1000,
+  "partitions": {"train": 637, "validation": 107, "calibration": 101, "withheld_internal_test": 155},
+  "family_labeled_validation_rows": 100,
+  "positive_support_labels": 17,
+  "known_family_ranking_rows": 63,
+  "epochs": 3,
+  "batch_size": 4,
+  "d_model": 32,
+  "device": "mps",
+  "family_ranking_weight_all_models": 0.5,
+  "optimizer": {"name": "AdamW", "lr": 0.0003, "weight_decay": 0.0001},
+  "metrics": {
+    "hybrid_attention": {"map": 0.36808774010145556, "calibrated_macro_f1": 0.2305010893246187, "top1": 0.7301587301587301, "top3": 0.8412698412698413},
+    "temporal_transformer": {"map": 0.37566022930867016, "calibrated_macro_f1": 0.1466980674411015, "top1": 0.6349206349206349, "top3": 0.6984126984126984},
+    "graph_attention": {"map": 0.34971090221204043, "calibrated_macro_f1": 0.10297937356760886, "top1": 0.5555555555555556, "top3": 0.7301587301587301},
+    "sequence_graph": {"map": 0.2568227057679701, "calibrated_macro_f1": 0.1833778966131907, "top1": 0.6031746031746031, "top3": 0.7619047619047619},
+    "bag_of_tokens": {"map": 0.25367843405219165, "calibrated_macro_f1": 0.1553781512605042, "top1": 0.6031746031746031, "top3": 0.8095238095238095}
+  },
+  "test_metrics": null,
+  "behavior_head_trained": false,
+  "limitations": [
+    "Single model seed, small clustered validation split and AVClass weak labels; not independent generalization evidence.",
+    "Hybrid improves calibrated F1 over these baselines but loses mAP to Temporal Transformer; no across-metric superiority claim.",
+    "Same width, optimizer, loss and epoch budget do not imply equal parameter counts or equal hyperparameter-search budgets.",
+    "BiLSTM is unit-tested but has not yet been trained in this real-data comparison; indicator rules cannot predict family labels.",
+    "No benign FPR, independently annotated behavior or attention-faithfulness acceptance gate was established."
+  ]
+}
