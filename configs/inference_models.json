@@ -10,12 +10,12 @@
       "status": "research"
     },
     "hybrid": {
-      "id": "winmet-pev2-seed44",
-      "normalization_version": "cape-pe-locations-v2",
-      "name": "Hybrid Attention · WinMET PE-v2",
-      "path": "../models/winmet_volume2_pev2_hybrid3_attention_1000_seed44.pt",
-      "bytes": 22636238,
-      "sha256": "3c79007236a904a48d3d45b2f06c443ba14f527ff9831a4c6b189c3616d4f745",
+      "id": "winmet-relv3-seed44",
+      "normalization_version": "cape-process-relations-v3",
+      "name": "Hybrid Attention · WinMET luồng v3",
+      "path": "../models/winmet_volume2_relv3_hybrid3_attention_1000_seed44.pt",
+      "bytes": 22636581,
+      "sha256": "2415ff5f2a1bd32b9ad92b66d7663ebf214c1d5f13fe9884f60bb3403b286081",
       "status": "research"
     }
   }

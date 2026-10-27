@@ -6,7 +6,7 @@ evidence rather than trusting the uploaded filename to imply execution behavior.
 | Parsed input | Registered model |
 | --- | --- |
 | PE bytes, no execution trace | Signature–Static Attention trained on EMBER2024 |
-| CAPE/WinMET JSON with ordered events | Three-branch Hybrid Attention trained on recovered WinMET PE-v2 |
+| CAPE/WinMET JSON with ordered events | Three-branch Hybrid Attention trained on WinMET process-relation v3 |
 | JSON with only static evidence | Static model; no fabricated execution events |
 | Suitable checkpoint not installed | Evidence-only output, family UNKNOWN and explicit unavailable reason |
 
@@ -35,10 +35,11 @@ unknown provenance, not verified compatibility. Older checkpoints cannot be
 retroactively assigned a training schema just because current code uses it.
 
 The current parser uses `cape-process-relations-v3` to resolve documented
-current-process pseudo handles. The existing WinMET PE-v2 registration is pinned
-to its earlier schema and is temporarily unavailable for newly parsed v3 reports
-until a retrained candidate is registered. PE-only static routing is unaffected.
-This prevents silently applying historical PE-v2 accuracy to changed graph data.
+current-process pseudo handles. The registry now selects the retrained v3
+research candidate, whose checkpoint independently records this same schema.
+Older v2 traces are rejected by this registration rather than reinterpreted.
+PE-only static routing is unaffected. V3 has its own validation metrics; historical
+PE-v2 accuracy is not silently applied to changed graph data.
 
 This service reads PE bytes and pre-existing JSON reports only. It does not invoke
 an executable, launch an emulator, submit a sample to a remote service, or install

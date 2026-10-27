@@ -36,14 +36,65 @@ def pe_with_one_import() -> bytes:
     struct.pack_into("<II", data, data_directory, 0x1100, 40)
     descriptor = 0x300
     struct.pack_into("<IIIII", data, descriptor, 0x1128, 0, 0, 0x1150, 0x1138)
+    data[0x314:0x328] = b"\0" * 20  # Import-descriptor terminator.
     struct.pack_into("<II", data, 0x328, 0x1160, 0)
     data[0x350:0x35D] = b"KERNEL32.dll\0"
     struct.pack_into("<H", data, 0x360, 0)
-    data[0x362:0x36D] = b"CreateFileW\0"
+    data[0x362:0x36E] = b"CreateFileW\0"
     return bytes(data)
 
 
 class PEStaticAnalyzerTests(unittest.TestCase):
+    def test_named_symbol_with_ordinal_prefix_is_not_an_ordinal_import(self):
+        data = bytearray(pe_with_one_import())
+        data[0x362:0x36E] = b"ordinal_Foo\0"
+        report = PEStaticAnalyzer().analyze_bytes(bytes(data))
+        expected = hashlib.md5(b"kernel32.ordinal_foo", usedforsecurity=False).hexdigest()
+        self.assertEqual(report.metadata["fuzzy_hashes"]["imphash"], expected)
+
+    def test_imphash_uses_raw_library_name_not_sanitized_model_token(self):
+        data = bytearray(pe_with_one_import())
+        data[0x350:0x35F] = b"My Library.dll\0"
+        report = PEStaticAnalyzer().analyze_bytes(bytes(data))
+        expected = hashlib.md5(b"my library.createfilew", usedforsecurity=False).hexdigest()
+        self.assertEqual(report.metadata["fuzzy_hashes"]["imphash"], expected)
+        self.assertIn("import_dll:my_library.dll", {e.token for e in report.atomic_evidence})
+
+    def test_default_reader_hashes_a_complete_table_beyond_old_64_import_cap(self):
+        data = bytearray(pe_with_one_import())
+        data.extend(b"\0" * (0x1200 - len(data)))
+        section = 0x98 + 224
+        struct.pack_into("<I", data, section + 8, 0x1000)  # Virtual size.
+        struct.pack_into("<I", data, section + 16, 0x1000)  # Raw size.
+        struct.pack_into("<I", data, 0x300 + 12, 0x1D00)  # DLL name.
+        data[0xF00:0xF0D] = b"KERNEL32.dll\0"
+        data[0x1000:0x100E] = b"\0\0CreateFileW\0"
+        struct.pack_into("<" + "I" * 66, data, 0x328, *([0x1E00] * 65), 0)
+        report = PEStaticAnalyzer().analyze_bytes(bytes(data))
+        expected = hashlib.md5(",".join(["kernel32.createfilew"] * 65).encode(), usedforsecurity=False).hexdigest()
+        self.assertEqual(report.metadata["import_count"], 65)
+        self.assertTrue(report.metadata["import_table_complete"])
+        self.assertEqual(report.metadata["fuzzy_hashes"]["imphash"], expected)
+
+    def test_partial_import_table_never_produces_full_imphash(self):
+        data = bytearray(pe_with_one_import())
+        struct.pack_into("<III", data, 0x328, 0x1160, 0x1170, 0)
+        struct.pack_into("<H", data, 0x370, 0)
+        data[0x372:0x37E] = b"DeleteFileW\0"
+        report = PEStaticAnalyzer(max_imports=1).analyze_bytes(bytes(data))
+        self.assertNotIn("imphash", report.metadata["fuzzy_hashes"])
+        self.assertFalse(report.metadata["import_table_complete"])
+        self.assertIn("imphash:unavailable_incomplete_imports", {e.token for e in report.atomic_evidence})
+
+    def test_invalid_thunk_is_unknown_not_an_absent_import_table(self):
+        data = bytearray(pe_with_one_import())
+        struct.pack_into("<I", data, 0x300, 0x7FFFFFFF)
+        report = PEStaticAnalyzer().analyze_bytes(bytes(data))
+        self.assertFalse(report.metadata["import_table_complete"])
+        tokens = {e.token for e in report.atomic_evidence}
+        self.assertNotIn("imphash:absent", tokens)
+        self.assertIn("parser_warning:import_table_incomplete", tokens)
+
     def test_extracts_bounded_static_evidence_without_running_sample(self):
         report = PEStaticAnalyzer().analyze_bytes(minimal_pe())
         tokens = {item.token for item in report.atomic_evidence}

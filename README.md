@@ -53,7 +53,7 @@ PYTHONPATH=src python scripts/compare_winmet_protocol_baselines.py \
 
 Lệnh trên cần experiment, JSONL và checkpoint local đã tạo trước đó; không tự tải chúng, không ghi đè report và không tính metric trên test. `indicator_rule` không có family classifier nên không có điểm family để so sánh.
 
-Parser trace hiện dùng `cape-process-relations-v3`: nhận diện pseudo-handle của chính process nhưng không coi thao tác self-memory là remote injection. Checkpoint mới lưu phiên bản chuẩn hóa đã train. Registry hybrid PE-v2 bị chặn với report v3 trong lúc dựng lại dữ liệu/train lại; model static cho PE vẫn hoạt động. Các metric PE-v2 ở trên không được gán cho bản v3. Runner WinMET mới dùng cùng ranking loss cho attention và bag mặc định; muốn tái lập baseline lịch sử phải chỉ rõ `--bag-ranking-weight 0`.
+Parser trace hiện dùng `cape-process-relations-v3`: nhận diện pseudo-handle của chính process nhưng không coi thao tác self-memory là remote injection. Checkpoint mới lưu phiên bản chuẩn hóa đã train; registry chọn model v3 đã train lại và từ chối trace khác phiên bản. Pilot v3 trên cùng split đạt validation mAP/macro-F1 0.3569/0.2282, so với bag cùng hàm loss 0.2537/0.1554; chưa tốt hơn v2 và chưa đạt nghiệm thu. Các metric PE-v2 ở trên không được gán cho bản v3. Runner WinMET mới dùng cùng ranking loss cho attention và bag mặc định; muốn tái lập baseline lịch sử phải chỉ rõ `--bag-ranking-weight 0`.
 
 ## Tài liệu và nguồn tham khảo
 
