@@ -19,6 +19,7 @@ from torch.utils.data import DataLoader
 
 from malware_hybrid.dataset import HybridDataset, collate_samples
 from malware_hybrid.evaluation import ENCODED_ABLATIONS, ablate_encoded_batch, ablate_report
+from malware_hybrid.faithfulness import family_token_faithfulness
 from malware_hybrid.training import (
     _family_training_priors,
     _training_loss_weights,
@@ -99,11 +100,14 @@ def main() -> None:
     parser.add_argument("source_report", type=Path, help="Matched training report with partition fingerprints")
     parser.add_argument("--report", type=Path, required=True, help="New ablation report; never overwritten")
     parser.add_argument(
-        "--modes", nargs="+", choices=ABLATIONS, default=list(ABLATIONS),
+        "--modes", nargs="*", choices=ABLATIONS, default=list(ABLATIONS),
         help="ablation modes to run; choose disable_cross_branch_attention for the direct cross-attention test",
     )
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--device", default="cpu")
+    parser.add_argument("--faithfulness-samples", type=int, default=0,
+                        help="optional seeded validation subset for four-group token-identity controls")
+    parser.add_argument("--faithfulness-random-repeats", type=int, default=5)
     args = parser.parse_args()
 
     manifest_path = Path(str(args.reports) + ".manifest.json")
@@ -116,6 +120,10 @@ def main() -> None:
         parser.error(f"refusing to overwrite existing result: {args.report}")
     if args.batch_size < 1:
         parser.error("batch-size must be positive")
+    if not 0 <= args.faithfulness_samples <= 100 or not 1 <= args.faithfulness_random_repeats <= 100:
+        parser.error("faithfulness samples must be 0..100 and random repeats 1..100")
+    if not args.modes and not args.faithfulness_samples:
+        parser.error("request at least one ablation or faithfulness sample")
     if args.report.resolve() in {
         args.reports.resolve(), args.checkpoint.resolve(),
         args.source_report.resolve(), manifest_path.resolve(),
@@ -172,6 +180,8 @@ def main() -> None:
     actual_fingerprints = {name: _fingerprint(rows) for name, rows in partitions.items()}
     if actual_fingerprints != expected_fingerprints:
         parser.error("reconstructed split fingerprints differ; refusing flow ablation")
+    if args.faithfulness_samples > len(validation):
+        parser.error("faithfulness sample count exceeds validation partition size")
 
     model, tensorizer = load_checkpoint(args.checkpoint, args.device)
     if not model.config.signature_branch_enabled:
@@ -222,6 +232,43 @@ def main() -> None:
             },
         }
 
+    faithfulness = None
+    if args.faithfulness_samples:
+        selected = sorted(validation, key=lambda row: hashlib.sha256(
+            f"{seed}:faithfulness:{row.sample_hash}".encode()
+        ).hexdigest())[:args.faithfulness_samples]
+        rows = []
+        for index, row in enumerate(selected):
+            batch = collate_samples([tensorizer.encode(row)])
+            batch = {key: value.to(device) if isinstance(value, torch.Tensor) else value
+                     for key, value in batch.items()}
+            diagnostic = family_token_faithfulness(
+                model, batch, seed=seed + index,
+                random_repeats=args.faithfulness_random_repeats,
+            )
+            diagnostic["sample_hash"] = row.sample_hash
+            diagnostic["target_family"] = tensorizer.family_vocab.decode(diagnostic["target_index"])
+            rows.append(diagnostic)
+            print(json.dumps({"faithfulness_completed": index + 1, "requested": len(selected)}),
+                  file=sys.stderr, flush=True)
+        summary = {}
+        for branch in ("signature", "static", "temporal_events", "graph"):
+            measured = [row["branches"][branch] for row in rows if row["branches"][branch]["evaluated"]]
+            summary[branch] = {
+                "evaluated_samples": len(measured),
+                "mean_top_minus_random_aopc": (
+                    sum(row["top_minus_random_aopc"] for row in measured) / len(measured)
+                    if measured else None
+                ),
+                "top_beats_random_samples": sum(row["top_minus_random_aopc"] > 0 for row in measured),
+            }
+        faithfulness = {
+            "notice": "Token-identity-only diagnostic; numeric values, masks, context, edges and cross-branch duplicates remain. Not event deletion, full evidence deletion, rollout or causal proof. Graph rankings cover only the family evidence-head prefix. Sigmoid scores are not calibrated probabilities.",
+            "selection": "smallest SHA256(sample_seed:faithfulness:sample_hash), validation only, no label selection",
+            "sample_ids_sha256": _fingerprint(selected),
+            "summary": summary, "samples": rows,
+        }
+
     result = {
         "notice": (
             f"Validation-only counterfactuals on a clustered {len(reports):,}-report WinMET sample. "
@@ -252,6 +299,7 @@ def main() -> None:
         "validation_family_supervised_rows": sum(report.family_supervised for report in validation),
         "baseline": baseline,
         "ablations": ablation_results,
+        "token_identity_faithfulness": faithfulness,
         "test_metrics": None,
         "ablation_interpretation": {
             "break_targets": "Historical joint perturbation: also changes graph size, pruning and token coverage.",
