@@ -125,6 +125,59 @@ validation checkpoint is written atomically, then replaced by its calibrated
 version after training completes. This preserves the last valid checkpoint if a
 later epoch or calibration step fails, but it does not yet resume optimizer state.
 
+## Excluding prior solid blocks for a frozen check
+
+`prepare-winmet --exclude-manifest PATH` can be repeated to keep a new sample out
+of every solid block listed by earlier sidecars. The selected and excluded IDs
+are preserved in the new sidecar. Example: all previously used random-block
+family cohorts (1k, 1.6k and 2.5k reports) are excluded below. The 2.5k sidecar
+name contains the historical word `disjoint`, but that cohort overlapped earlier
+cohorts; exclusion applies to the full union of all 56 previously used blocks.
+
+```bash
+PYTHONPATH=src .venv/bin/python -m malware_hybrid.cli prepare-winmet \
+  Data/raw/winmet/WinMET_volume_1.7z \
+  --labels Data/raw/winmet/reports_consensus_label.json \
+  --output artifacts/winmet/volume1_remaining_blocks_20261027.jsonl \
+  --max-reports 5000 --max-report-mib 64 --raw-budget-mib 92160 \
+  --output-budget-mib 4096 --max-events 2048 \
+  --sampling random-solid-blocks --seed 20261027 --max-solid-blocks 79 \
+  --exclude-manifest artifacts/winmet/volume1_random_blocks_1k.jsonl.manifest.json \
+  --exclude-manifest artifacts/winmet/volume1_random_blocks_1600_seed44.jsonl.manifest.json \
+  --exclude-manifest artifacts/winmet/volume1_random_blocks_2500_seed202600_disjoint.jsonl.manifest.json
+```
+
+This left 23 blocks and 1,556 reports (zero invalid), with 2,294,296 events,
+10,904 static/signature tokens and a 1.79 GB JSONL. The 23 selected IDs had zero
+intersection with the 56 excluded IDs. This is block-disjoint from those prior
+cohorts inside the same WinMET volume, not an independent dataset, not a temporal
+holdout, and not a representative full-volume benchmark.
+
+The frozen checkpoint can be evaluated on the new cohort without retraining or
+threshold fitting:
+
+```bash
+PYTHONPATH=src:scripts .venv/bin/python scripts/evaluate_winmet_external_cohort.py \
+  artifacts/winmet/volume1_remaining_blocks_20261027.jsonl \
+  models/winmet_hybrid3_attention_2500_seed44.pt \
+  artifacts/winmet/hybrid3_attention_2500_seed44.json \
+  --report artifacts/winmet/hybrid3_attention_2500_seed44_external_blocks_20261027.json \
+  --batch-size 8 --device mps
+```
+
+The evaluator verifies source/checkpoint fingerprints, reconstructs the original
+split and training priors, requires the source blocks in the exclusion manifest,
+and rejects sample-hash overlap. AVClass labels cover 1,456 rows; only 1,106 rows
+(76.0%) include a family known to the model, across 48 supported labels. On those
+rows, frozen mAP/calibrated macro-F1/top-1/top-3 were 0.1960/0.1657/0.5235/0.7269.
+The same weights and thresholds without cross-branch attention scored mAP 0.1711
+and calibrated macro-F1 0.1206 (top-1/top-3 lower by 1.63/3.71 points). This is
+evidence that attention contributes on held-out blocks, not evidence that the
+classifier is accurate enough for security decisions. The family labels are
+weak, 350 labeled rows have unseen family names, malware verdicts are absent,
+and the behavior head is untrained. Reports and checkpoint are local ignored
+artifacts; no malware binary was executed.
+
 Normalization preserves a report-local anonymous identity for each named
 file/registry/network/service resource. Semantically similar but different
 paths remain separate graph nodes; repeated access to the same path remains

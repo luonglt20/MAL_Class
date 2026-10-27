@@ -95,3 +95,35 @@ class WinMETPreparationTests(unittest.TestCase):
             self.assertEqual(result["selected_block_count"], 1)
             self.assertEqual(result["written"], 1)
             self.assertEqual(len(reports[0].metadata["archive_group_id"]), 16)
+
+    def test_random_block_sampler_excludes_prior_cohort_blocks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / "reports.7z"
+            fixture = json.loads((Path(__file__).parent / "fixtures" / "cape_process_injection.json").read_text())
+            sample_hash = "c" * 64
+            fixture["target"]["file"]["sha256"] = sample_hash
+            with py7zr.SevenZipFile(archive, "w", password="infected") as bundle:
+                bundle.writestr(json.dumps(fixture), sample_hash + ".json")
+            labels = root / "labels.json"
+            labels.write_text(json.dumps({sample_hash: {"avclass": "ExampleFamily"}}))
+
+            initial = prepare_winmet_archive(
+                archive, labels, root / "initial.jsonl", max_reports=1,
+                sampling_method="random-solid-blocks", max_solid_blocks=1,
+                max_raw_bytes=1024 * 1024,
+            )
+            prior_block_ids = set(initial["selected_block_ids"])
+            excluded_output = root / "excluded.jsonl"
+            with self.assertRaisesRegex(ValueError, "block exclusions"):
+                prepare_winmet_archive(
+                    archive, labels, excluded_output, max_reports=1,
+                    sampling_method="random-solid-blocks", max_solid_blocks=1,
+                    excluded_block_ids=prior_block_ids, max_raw_bytes=1024 * 1024,
+                )
+            self.assertFalse(excluded_output.exists())
+            with self.assertRaisesRegex(ValueError, "16-character"):
+                prepare_winmet_archive(
+                    archive, labels, root / "invalid.jsonl", max_reports=1,
+                    sampling_method="random-solid-blocks", excluded_block_ids={"bad"},
+                )
