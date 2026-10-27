@@ -33,6 +33,28 @@ def write_registry(root):
 
 
 class InferenceServiceTests(unittest.TestCase):
+    def test_pinned_trace_schema_rejects_missing_or_changed_normalization_before_loading(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            registry = write_registry(root)
+            config = json.loads(registry.read_text())
+            config["models"]["hybrid"]["normalization_version"] = "trace-v2"
+            registry.write_text(json.dumps(config))
+            calls = []
+            router = RoutedInferencePipeline(
+                registry, pipeline_loader=lambda *args: calls.append(args) or HybridInferencePipeline(),
+            )
+            sample = report(True)
+            for version in (None, "trace-v3"):
+                sample.metadata["normalization_version"] = version
+                result = router.predict(sample)
+                self.assertEqual(result["family"]["source"], "no_model_checkpoint")
+                self.assertEqual(result["model_selection"]["reason"], "normalization_version_mismatch")
+                self.assertEqual(calls, [])
+            sample.metadata["normalization_version"] = "trace-v2"
+            self.assertEqual(router.predict(sample)["model_selection"]["status"], "research")
+            self.assertEqual(len(calls), 1)
+
     def test_routes_each_sample_in_a_mixed_batch_and_loads_once_per_mode(self):
         with tempfile.TemporaryDirectory() as directory:
             registry = write_registry(Path(directory))

@@ -11,6 +11,7 @@
     },
     "hybrid": {
       "id": "winmet-pev2-seed44",
+      "normalization_version": "cape-pe-locations-v2",
       "name": "Hybrid Attention · WinMET PE-v2",
       "path": "../models/winmet_volume2_pev2_hybrid3_attention_1000_seed44.pt",
       "bytes": 22636238,

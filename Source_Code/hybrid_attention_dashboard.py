@@ -230,7 +230,13 @@ with analysis_tab:
                 coverage = result.get("model_input_coverage")
                 selection = result.get("model_selection")
                 if selection and selection["status"] == "unavailable":
-                    st.warning("Chưa có model phù hợp được cài cho đầu vào này; kết quả family là UNKNOWN.")
+                    if selection.get("reason") == "normalization_version_mismatch":
+                        st.warning(
+                            "Schema trace khác phiên bản model đã học; cần checkpoint được train lại. "
+                            "Tạm giữ family UNKNOWN và chỉ hiển thị evidence độc lập."
+                        )
+                    else:
+                        st.warning("Chưa có model phù hợp được cài cho đầu vào này; kết quả family là UNKNOWN.")
                 elif selection:
                     st.caption(f"Model tự chọn: {selection['name']} · bản nghiên cứu")
                 if coverage and not coverage.get("signature_policy_compatible", True):
@@ -238,12 +244,16 @@ with analysis_tab:
                         "Checkpoint cũ đã học YARA chưa được lọc theo chính sách chữ ký cấu trúc. "
                         "Cần huấn luyện lại; hệ thống trả UNKNOWN và giữ chuỗi bằng chứng độc lập."
                     )
+                elif coverage and not coverage.get("normalization_compatible", True):
+                    st.warning("Schema trace khác checkpoint đã học; cần train lại. Family giữ UNKNOWN.")
                 elif coverage and not coverage["supported"]:
                     st.warning(
                         f"Checkpoint chỉ nhận diện {coverage['known_fraction']:.1%} token đầu vào; "
                         "kết luận mô hình trả UNKNOWN. Chọn checkpoint được huấn luyện cho "
                         "PE hoặc nguồn report tương ứng."
                     )
+                elif coverage and report.events and coverage.get("normalization_provenance") == "unknown_legacy":
+                    st.caption("Checkpoint cũ chưa lưu phiên bản chuẩn hóa trace; tương thích schema chưa được xác minh.")
                 if family.get("abstained") and family.get("candidate"):
                     st.caption(
                         f"Ứng viên chưa xác nhận: {family['candidate']} "

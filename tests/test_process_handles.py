@@ -2,7 +2,7 @@ import copy
 import unittest
 
 from malware_hybrid.normalization import CapeReportParser
-from malware_hybrid.handles import RegistryHandleResolver
+from malware_hybrid.handles import ProcessHandleResolver, RegistryHandleResolver, positive_identifier
 from malware_hybrid.evidence import EvidenceEngine
 from malware_hybrid.pipeline import HybridInferencePipeline
 
@@ -26,6 +26,65 @@ def parse_and_match(raw):
 
 
 class ProcessHandleTests(unittest.TestCase):
+    def test_current_process_pseudo_handles_resolve_to_owner_not_pid_values(self):
+        for value in (-1, "-1", "0xffffffff", 0xFFFFFFFF,
+                      "0xffffffffffffffff", 0xFFFFFFFFFFFFFFFF):
+            with self.subTest(value=value):
+                raw = trace()
+                calls = raw["behavior"]["processes"][0]["calls"]
+                for call in calls[1:]:
+                    call["arguments"] = {"ProcessHandle": value}
+                report, match = parse_and_match(raw)
+                self.assertEqual({event.target for event in report.events[1:]}, {"pid:100"})
+                self.assertTrue(all(event.target_resolution == "current_process_pseudo_handle"
+                                    for event in report.events[1:]))
+                self.assertNotEqual(match.status, "confirmed")
+                self.assertIsNone(positive_identifier(value))  # Never legal as a PID.
+
+    def test_self_memory_and_thread_operations_never_complete_remote_injection(self):
+        raw = trace()
+        raw["behavior"]["processes"][0]["calls"][0]["arguments"] = {"ProcessId": 100}
+        for call in raw["behavior"]["processes"][0]["calls"][1:]:
+            call["arguments"] = {"ProcessHandle": -1}
+        report, match = parse_and_match(raw)
+        self.assertEqual({event.target for event in report.events}, {"pid:100"})
+        self.assertEqual(match.status, "not_detected")
+
+    def test_pseudo_handle_conflicts_and_unknown_owner_stay_unknown(self):
+        resolver = ProcessHandleResolver()
+        conflict = resolver.resolve("100", "NtAllocateVirtualMemory", {"ProcessHandle": -1},
+                                    0, True, "pid:900", "process")
+        self.assertEqual(conflict[0], "<PROCESS_HANDLE_CONFLICT>")
+        self.assertEqual(conflict[2], "conflicting_process_handle")
+        for owner in ("unknown", "unknown:0"):
+            unresolved = resolver.resolve(owner, "NtAllocateVirtualMemory", {"ProcessHandle": -1},
+                                          0, True, "<PROCESS>", "process")
+            self.assertTrue(unresolved[0].startswith("<"))
+
+    def test_pseudo_handles_do_not_bind_acquisitions_or_unknown_api(self):
+        resolver = ProcessHandleResolver()
+        for api, args, returned in (
+            ("OpenProcess", {"ProcessId": 900}, -1),
+            ("NtOpenProcess", {"ProcessHandle": -1}, 0),
+            ("UnrecognizedApi", {"ProcessHandle": -1}, 0),
+            ("NtAllocateVirtualMemory", {"ProcessHandle": -2}, 0),
+            ("CloseHandle", {"Handle": -1}, True),
+        ):
+            with self.subTest(api=api):
+                target = resolver.resolve("100", api, args, returned, True, "<PROCESS>", "process")
+                self.assertTrue(target[0].startswith("<"))
+                self.assertEqual(resolver.bindings, {})
+
+    def test_current_process_is_owner_local_and_failure_is_preserved(self):
+        raw = {"behavior": {"processes": [
+            {"process_id": owner, "calls": [{"api": "ZwAllocateVirtualMemory",
+                "category": "process", "status": success, "arguments": {"ProcessHandle": -1}}]}
+            for owner, success in ((100, True), (200, False))
+        ]}}
+        report = CapeReportParser().parse(raw)
+        self.assertEqual([event.target for event in report.events], ["pid:100", "pid:200"])
+        self.assertEqual([event.success for event in report.events], [True, False])
+
     def test_cape_style_process_handles_resolve_to_same_target(self):
         report, match = parse_and_match(trace())
         self.assertEqual(match.status, "confirmed")

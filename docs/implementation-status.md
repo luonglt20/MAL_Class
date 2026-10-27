@@ -241,6 +241,14 @@ Hybrid gains 8.38/12.75 macro-F1 points over Temporal/Graph and improves top-k, 
 
 The first 100 PE-v2 prepared reports contain 144,395 events, including 6,029 `NtAllocateVirtualMemory` events, of which 6,023 have placeholder targets. The bounded raw audit above confirms the pseudo-handle cause for six calls in one report only; do not assume it explains every unresolved allocation. This relational-data weakness remains a reason to rebuild and revalidate, not to promote the current checkpoint.
 
+### Process-relation schema v3 implementation (2026-10-27)
+
+`cape-process-relations-v3` now resolves signed −1 and 32/64-bit all-one values only in typed `ProcessHandle`/`hProcess` arguments of explicitly supported process-memory/thread APIs. It uses a known owning PID, never treats the pseudo value as a PID, never binds it as an acquisition result, and rejects a conflicting explicit target PID. Unknown owners, unknown APIs, current-thread pseudo handles and registry handles do not acquire self-process meaning. Failed calls retain their failure state. Existing remote-target guards prevent self memory allocation/write/thread chains from confirming T1055. Tests first reproduced the lost identities and then passed after the fix.
+
+The same bounded real report now resolves all six observed allocations to owner PID 2072, retains T1055 evidence status `not_detected`, and returns family UNKNOWN because the pinned PE-v2 model rejects the v3 schema. This is a trace-regression check, not family accuracy. The 2,500-report volume-2 cohort is being rebuilt from raw JSON into a separate v3 artifact; v2 data/results remain unchanged.
+
+New training checkpoints persist exact dynamic normalization versions (static-only is `[]`, unknown legacy provenance is `null`). Pipeline guards block mismatched versions even for manual checkpoint selection, while the router can reject the mismatch before loading weights. CSV retains routing reasons and schema compatibility; the UI distinguishes schema rejection from low vocabulary coverage or missing weights. Legacy unknown provenance is explicitly disclosed and is not promoted to verified compatibility. The static EMBER route remains available; the registered hybrid v2 route is intentionally unavailable for fresh v3 reports pending retraining.
+
 ## Direct Signature↔Static implementation and PE feature extraction (2026-10-26)
 
 New models include bidirectional token attention between Signature and Static PE before their interactions with event/graph tokens. Gradient checks and a PE-only cross-attention ablation confirm the modules affect classification. The inference trace and dashboard expose the resulting pairs. Earlier checkpoints retain their original architecture when loaded.

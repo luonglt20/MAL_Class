@@ -68,7 +68,7 @@ class WinMETPreparationTests(unittest.TestCase):
             result = prepare_winmet_archive(archive, labels, output, max_events=4, progress=progress.append)
             reports = list(iter_prepared(output))
             self.assertEqual(result["written"], 1)
-            self.assertEqual(result["normalization_version"], "cape-pe-locations-v2")
+            self.assertEqual(result["normalization_version"], "cape-process-relations-v3")
             self.assertEqual(result["reports_with_pe_imports"], 1)
             self.assertEqual(result["reports_with_pe_sections"], 1)
             self.assertEqual(result["reports_with_signature_tokens"], 1)

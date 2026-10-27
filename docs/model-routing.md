@@ -26,6 +26,20 @@ or choose a checkpoint explicitly in the dashboard. For another installation,
 Changing that file invalidates the dashboard routing cache. Manual checkpoint
 selection overrides automatic routing and retains the existing input guards.
 
+Hybrid registrations can pin `normalization_version`. A missing/different trace
+schema returns evidence-only UNKNOWN before loading weights, even when token
+coverage would be high. New checkpoints also persist `normalization_versions`
+from their dynamic training reports and enforce it inside the pipeline, including
+manual selection. An empty list means static-only training; `null` means legacy
+unknown provenance, not verified compatibility. Older checkpoints cannot be
+retroactively assigned a training schema just because current code uses it.
+
+The current parser uses `cape-process-relations-v3` to resolve documented
+current-process pseudo handles. The existing WinMET PE-v2 registration is pinned
+to its earlier schema and is temporarily unavailable for newly parsed v3 reports
+until a retrained candidate is registered. PE-only static routing is unaffected.
+This prevents silently applying historical PE-v2 accuracy to changed graph data.
+
 This service reads PE bytes and pre-existing JSON reports only. It does not invoke
 an executable, launch an emulator, submit a sample to a remote service, or install
 missing weights. Runtime behavior requires an existing execution report from an
