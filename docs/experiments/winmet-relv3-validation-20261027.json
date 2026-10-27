@@ -38,12 +38,25 @@
     "behavior_head_trained": false,
     "notice": "Integration check, not a correct family prediction; candidate differs from weak reference label and is appropriately unconfirmed."
   },
-  "flow_ablation_status": "running",
+  "flow_ablation_status": "complete",
+  "flow_ablation_sha256": "42678780b3a43473304002d9b3a995e805a56ec1b1f5520d2e4aa132e77560ac",
+  "flow_delta_orientation": "ablated_minus_full",
+  "flow_ablation_deltas": {
+    "disable_cross_branch_attention": {"map": 0.02114641337486506, "calibrated_macro_f1": -0.06899653275085799},
+    "shuffle_events": {"map": -0.06126915876318262, "calibrated_macro_f1": -0.06595821352413642},
+    "reverse_events": {"map": -0.07622062576099181, "calibrated_macro_f1": -0.06886095958851374},
+    "remove_timestamps": {"map": -0.02401889388151096, "calibrated_macro_f1": -0.021615753813896216},
+    "break_targets": {"map": 0.03877380464313568, "calibrated_macro_f1": -0.010033444816053505},
+    "remove_graph_edges": {"map": -0.003166904386760483, "calibrated_macro_f1": 0.02865716491372705},
+    "static_only": {"map": -0.19709638657293388, "calibrated_macro_f1": -0.16940434293375467},
+    "dynamic_only": {"map": -0.04108851704782701, "calibrated_macro_f1": -0.1070539482304188}
+  },
   "test_metrics": null,
   "behavior_head_trained": false,
   "limitations": [
     "Same small clustered sample/split, one initialization and three epochs; AVClass labels are weak supervision.",
     "Semantic target repair does not increase validation mAP or calibrated macro-F1 over the prior v2 seed-44 model.",
+    "Removing cross-attention or breaking targets improves mAP, and removing graph edges improves F1; relational attention quality remains unproven.",
     "No current-schema trained single-branch comparison, independent behavior gold set or benign FPR qualification.",
     "Offline classification metrics do not establish accepted-family coverage of the abstaining inference policy."
   ]
