@@ -22,6 +22,18 @@ FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_order_control_retains_real_timestamp_gaps_and_event_multiset(self):
+        report = CapeReportParser().parse_file(FIXTURE)
+        times = [0., .0001, .037, 3.14]
+        for event, timestamp in zip(report.events, times):
+            event.timestamp = timestamp
+        shuffled = ablate_report(report, "shuffle_events_keep_timestamps", seed=42)
+        self.assertEqual([event.timestamp for event in shuffled.events], times)
+        self.assertEqual([event.timestamp for event in report.events], times)
+        self.assertCountEqual([event.token for event in report.events], [event.token for event in shuffled.events])
+        self.assertNotEqual([event.api for event in report.events], [event.api for event in shuffled.events])
+        self.assertEqual([event.index for event in shuffled.events], list(range(4)))
+
     def test_temporal_windows_do_not_change_when_batch_padding_increases(self):
         torch.manual_seed(44)
         encoder = TemporalHierarchicalEncoder(32, 16, 4, 1, 0., 4, 2, 16, 16).eval()

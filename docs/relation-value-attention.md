@@ -42,3 +42,20 @@ identical cohort/partitions/loss/epoch budget and unchanged test exclusion.
 Evaluate node-preserving resource/context/edge controls, attention faithfulness,
 additional seeds and independent labels. Attention weights alone do not capture
 the value-message contribution and must not be presented as causal explanations.
+
+## First real-data pilot (2026-10-27)
+
+The three-epoch seed-44 MPS run completed on the same 1,000-report reservoir,
+637/107/101/155 archive-isolated partitions and matching ranking loss as the
+corrected-window bias-only control. Validation mAP was 0.3617109 versus
+0.3657475 for the control; calibrated macro-F1 tied at 0.2545723, top-1 tied at
+0.7142857 and top-3 tied at 0.8412698. There is no measured classification gain
+from relation values in this pilot. The behavior head remains untrained and no
+test partition or benign FPR evaluation was opened. More training, frozen
+controls and independent repetitions are needed; this negative result does not
+justify changing the registered model.
+
+Local full report: `artifacts/winmet/volume2_relv3_relvalues_hybrid3_attention_1000_seed44.json`
+(SHA-256 `331acf05fca254f30ee726c646847ef41e8545a88ae6c7b524bc8056cffec266`).
+Checkpoint SHA-256: `bea172ea07a39c060eacf0987144227243d3dddc442e301bae213d410f509fdd`;
+22,659,083 bytes, trained at revision `da6510f`.

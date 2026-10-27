@@ -32,6 +32,7 @@ from malware_hybrid.training import (
 ABLATIONS = (
     "disable_cross_branch_attention",
     "shuffle_events",
+    "shuffle_events_keep_timestamps",
     "reverse_events",
     "remove_timestamps",
     "break_targets",
@@ -254,6 +255,8 @@ def main() -> None:
         "test_metrics": None,
         "ablation_interpretation": {
             "break_targets": "Historical joint perturbation: also changes graph size, pruning and token coverage.",
+            "shuffle_events": "Historical shuffle also replaces timestamp gaps with integer positions.",
+            "shuffle_events_keep_timestamps": "Shuffle event objects, retain original timestamp slots; graph order still changes.",
             "remove_graph_edges": "Historical report-edge deletion: pruning can remove graph nodes too.",
             "remove_resource_relations": "Zero temporal resource identities after encoding; keep graph and tokens unchanged.",
             "remove_process_context": "Zero process/parent/thread context after encoding; keep graph and tokens unchanged.",
