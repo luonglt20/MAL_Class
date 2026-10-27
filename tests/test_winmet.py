@@ -57,6 +57,7 @@ class WinMETPreparationTests(unittest.TestCase):
             fixture = json.loads((Path(__file__).parent / "fixtures" / "cape_process_injection.json").read_text())
             sample_hash = "a" * 64
             fixture["target"]["file"]["sha256"] = sample_hash
+            fixture["target"]["file"]["pe"] = fixture.pop("static")["pe"]
             with py7zr.SevenZipFile(archive, "w", password="infected") as bundle:
                 bundle.writestr(json.dumps(fixture), sample_hash + ".json")
                 bundle.writestr(b"not executable; ignored test member", "untrusted.exe")
@@ -67,6 +68,12 @@ class WinMETPreparationTests(unittest.TestCase):
             result = prepare_winmet_archive(archive, labels, output, max_events=4, progress=progress.append)
             reports = list(iter_prepared(output))
             self.assertEqual(result["written"], 1)
+            self.assertEqual(result["normalization_version"], "cape-pe-locations-v2")
+            self.assertEqual(result["reports_with_pe_imports"], 1)
+            self.assertEqual(result["reports_with_pe_sections"], 1)
+            self.assertEqual(result["reports_with_signature_tokens"], 1)
+            self.assertEqual(result["reports_with_dynamic_events"], 1)
+            self.assertEqual(result["signature_tokens"] + result["pe_static_tokens"], result["static_tokens"])
             self.assertEqual(progress[-1]["written"], 1)
             self.assertEqual(reports[0].families, ["examplefamily"])
             self.assertLessEqual(len(reports[0].events), 4)

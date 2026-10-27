@@ -153,6 +153,63 @@ class NormalizationTests(unittest.TestCase):
         self.assertNotIn("authenticode:absent", tokens)
         self.assertFalse(any("software" in token or "redline" in token for token in tokens))
 
+    def test_winmet_nested_pe_and_mapping_imports_match_static_pe_layout(self):
+        # Synthetic values following the target.file.pe layout observed in WinMET v3.
+        import copy
+        import math
+        pe = {
+            "entrypoint": "0x409ddc", "imagebase": "0x400000",
+            "imphash": "a" * 32,
+            "imports": {"KERNEL32": {"dll": "KERNEL32.DLL", "imports": [
+                {"name": "VirtualProtect", "address": "0x409ddc"},
+                {"name": "GetProcAddress", "address": "0x409de0"},
+            ]}},
+            "sections": [{"name": "UPX0\x00", "entropy": "7.60",
+                          "size_of_data": "0x1000", "virtual_size": "0x2000",
+                          "characteristics": "IMAGE_SCN_MEM_EXECUTE|IMAGE_SCN_MEM_WRITE"}],
+            "overlay": {"size": "0x100"}, "resources": [],
+        }
+        raw = {"target": {"file": {"sha256": "b" * 64, "pe": pe}}}
+        nested = CapeReportParser().parse(raw)
+        tokens = {item.token: item.value for item in nested.atomic_evidence}
+        self.assertIn("import_dll:kernel32.dll", tokens)
+        self.assertIn("import_api:virtualprotect", tokens)
+        self.assertIn("import_api:getprocaddress", tokens)
+        self.assertIn("section:upx0", tokens)
+        self.assertAlmostEqual(tokens["section_entropy:upx0"], 7.6)
+        self.assertAlmostEqual(tokens["section_size:upx0"], math.log1p(4096))
+        self.assertNotIn("entrypoint:zero", tokens)
+        self.assertNotIn("overlay_size:zero", tokens)
+        self.assertIn("imphash:present", tokens)
+        self.assertNotIn("a" * 32, repr(tokens))
+        self.assertEqual(nested.metadata["fuzzy_hashes"]["imphash"], "a" * 32)
+        self.assertEqual(nested.metadata["pe_source_paths"], ["target.file.pe"])
+
+        static_layout = copy.deepcopy(raw)
+        static_layout["static"] = {"pe": static_layout["target"]["file"].pop("pe")}
+        conventional = CapeReportParser().parse(static_layout)
+        self.assertEqual(nested.atomic_evidence, conventional.atomic_evidence)
+        self.assertEqual(nested.metadata["fuzzy_hashes"], conventional.metadata["fuzzy_hashes"])
+
+    def test_static_pe_fields_override_nested_pe_without_dropping_other_fields(self):
+        report = CapeReportParser().parse({
+            "target": {"file": {"pe": {"imphash": "a" * 32, "subsystem": "console"}}},
+            "static": {"pe": {"subsystem": "gui"}},
+        })
+        tokens = [item.token for item in report.atomic_evidence]
+        self.assertIn("pe_subsystem:gui", tokens)
+        self.assertNotIn("pe_subsystem:console", tokens)
+        self.assertEqual(report.metadata["fuzzy_hashes"]["imphash"], "a" * 32)
+
+    def test_imports_beside_pe_and_malformed_entries_are_handled(self):
+        report = CapeReportParser().parse({"target": {"file": {"imports": {
+            "USER32.DLL": ["MessageBoxW"], "EMPTY.DLL": None,
+        }}}})
+        tokens = [item.token for item in report.atomic_evidence]
+        self.assertIn("import_api:messageboxw", tokens)
+        self.assertIn("import_dll:user32.dll", tokens)
+        self.assertEqual(report.metadata["pe_source_paths"], ["target.file.imports"])
+
     def test_multiple_reference_families_are_preserved(self):
         report = CapeReportParser().parse({
             "id": "multi",

@@ -44,6 +44,20 @@ releasing each report buffer after parsing. Invalid reports are counted. Output
 is finalized only on successful extraction and cannot overwrite existing files.
 The sidecar manifest records input checksums, limits and counts.
 
+Current normalization (`cape-pe-locations-v2`) reads both `static.pe` and the
+`target.file.pe` layout documented in [Table 2 of the WinMET paper](https://zaguan.unizar.es/record/165301/files/texto_completo.pdf).
+It supports mapping-form DLL imports and hexadecimal PE size fields, and restores
+nested imphash to metadata for train-only prototype matching. Hash identities and
+vendor verdicts are not model tokens. YARA matches use the whole-rule structural
+allowlist; cached generic matches without provenance are excluded.
+
+Old prepared caches omitted `target.file.pe`; re-run preparation to recover its
+fields. The manifest now reports Signature/Static counts and coverage for imports,
+sections and dynamic events. A repeated volume-2 sample with seed 44 retained the
+same 37 blocks/2,500 reports/3,671,889 events, but recovered 367,560 atomic tokens
+instead of 17,521. New tensorizers preserve observed feature kinds under the
+256-token budget, so a long import list cannot consume every section/entropy slot.
+
 Solid archives may need to decode skipped members to reach a selected report;
 the total decompression budget also covers these bytes and can abort the run.
 Increase limits only after reviewing available memory/disk and the archive

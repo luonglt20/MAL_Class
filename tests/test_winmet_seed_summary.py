@@ -57,6 +57,12 @@ class WinmetSeedSummaryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "differ in source, split"):
             summarize_reports([first, second])
 
+    def test_rejects_mixing_feature_budget_policies(self):
+        first, second = _report(42, 0.3, 0.2), _report(43, 0.5, 0.4)
+        second["tensorizer_config"] = {"evidence_selection_policy": "kind_balanced_v1"}
+        with self.assertRaisesRegex(ValueError, "differ in source, split"):
+            summarize_reports([first, second])
+
     def test_aggregates_matched_metrics_and_paired_wins(self):
         result = summarize_reports([_report(42, 0.3, 0.2), _report(43, 0.5, 0.4)])
         self.assertAlmostEqual(result["metrics"]["attention"]["family_map"]["mean"], 0.4)

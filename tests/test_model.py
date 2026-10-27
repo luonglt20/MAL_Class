@@ -215,10 +215,12 @@ class ModelTests(unittest.TestCase):
             payload["model_config"].pop("signature_branch_enabled")
             payload["tensorizer_config"].pop("signature_branch_enabled")
             payload["tensorizer_config"].pop("max_signature_tokens")
+            payload["tensorizer_config"].pop("evidence_selection_policy")
             torch.save(payload, path)
             loaded, loaded_tensorizer = load_checkpoint(path)
         self.assertFalse(loaded.config.signature_branch_enabled)
         self.assertFalse(loaded_tensorizer.config.signature_branch_enabled)
+        self.assertEqual(loaded_tensorizer.config.evidence_selection_policy, "prefix_legacy")
         loaded.eval()
         with torch.inference_mode():
             torch.testing.assert_close(

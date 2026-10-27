@@ -45,6 +45,9 @@ def _experiment_identity(report: dict) -> dict:
         "yara_input_policy": report.get("tensorizer_config", {}).get(
             "yara_input_policy", "legacy_unverified_yara_v0"
         ),
+        "evidence_selection_policy": report.get("tensorizer_config", {}).get(
+            "evidence_selection_policy", "prefix_legacy"
+        ),
         "partition_fingerprints": {
             name: report["partitions"][name]["sample_ids_sha256"]
             for name in PARTITIONS

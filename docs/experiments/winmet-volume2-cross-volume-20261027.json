@@ -55,6 +55,7 @@
   },
   "limitations": [
     "This run predates the whole-rule structural YARA filter. Generic match/category tokens could originate from family/verdict rules; these metrics cannot qualify the corrected input policy. Retraining is required.",
+    "This preparation also omitted the rich target.file.pe fields present in raw WinMET. The former claim that WinMET lacks PE imports/sections was a parser error. Rebuilding and retraining with cape-pe-locations-v2 is required.",
     "One initialization and one clustered sample/split; more seeds are required.",
     "Both archive volumes belong to WinMET; this is not an independent-dataset or temporal test.",
     "Average precision and F1 use masked family targets; top-k uses only rows with a known family.",
