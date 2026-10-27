@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-27",
+  "status": "trace_regression_verified_model_validation_pending",
+  "normalization_version": "cape-process-relations-v3",
+  "normalization_implementation_revision": "0cf6a01",
+  "training_runner_revision": "d39805c",
+  "dataset_record": "https://zenodo.org/records/16414116",
+  "archive_sha256": "d62bf52ab86397e1cfa0c48974f77a9391988e0e9132d094a8ea347fc32b0691",
+  "label_source_sha256": "fe79a49d219988613f67faa580df0f860d9092b64cbb77a4da8494320f7038a8",
+  "prepared_old_sha256": "db502228200d4085b4008268b89f95efc029c375cf53db0ce0b1c7955a9f08cf",
+  "prepared_new_sha256": "c6b13028505f7537dc39bd27a7bdb6850128675b46e3d0f0484adfb30f28882a",
+  "sample_ids_sha256": "8c1cad6dcbba0434bdc3345cb7351b3d7f122c7b0d41e8e794f63502ec8ded41",
+  "reports": 2500,
+  "invalid_reports": 0,
+  "solid_blocks": 37,
+  "same_sample_order_as_v2": true,
+  "same_family_labels_as_v2": true,
+  "same_atomic_evidence_as_v2": true,
+  "old_events": 3671889,
+  "new_events": 3671904,
+  "signature_tokens": 9839,
+  "static_tokens": 357721,
+  "output_bytes": 2933043067,
+  "current_process_pseudo_handle_resolutions": 384338,
+  "remaining_unresolved_process_handle_events": 36200,
+  "first_100_report_allocation_audit": {
+    "ntallocatevirtualmemory_calls": 6029,
+    "old_unresolved_targets": 6023,
+    "new_unresolved_targets": 0,
+    "new_self_targets": 6023,
+    "pseudo_handle_resolved": 6023
+  },
+  "raw_report_regression": {
+    "sample_hash": "31c9ccf3ce614f9f9eab26136d5a512d0b23f26be30c2dc017dbdb5b08cfc6ce",
+    "allocations": 6,
+    "self_targets": 6,
+    "owner_pid": 2072,
+    "T1055_evidence_status": "not_detected",
+    "old_registered_model_result": "UNKNOWN",
+    "old_registered_model_rejection": "normalization_version_mismatch"
+  },
+  "safety": "Only bounded JSON report members read in memory; no executable extracted or run.",
+  "limitations": [
+    "Correct target identity does not establish attention faithfulness or higher family accuracy.",
+    "Some repeat-collapsing boundaries change when previously conflated targets become distinct; normalized event count increases by 15.",
+    "Other unresolved and conflicting handles remain; thread-handle, duplication and inheritance are not implemented.",
+    "AVClass family labels remain weak supervision; no benign or independent behavior accuracy is established."
+  ]
+}
