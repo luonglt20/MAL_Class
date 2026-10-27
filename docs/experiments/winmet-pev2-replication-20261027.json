@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-27",
+  "status": "validation_pilot_not_promoted",
+  "model_seeds": [44, 45],
+  "sample_seed": 44,
+  "split_seed": 44,
+  "source_sha256": "db502228200d4085b4008268b89f95efc029c375cf53db0ce0b1c7955a9f08cf",
+  "seed45_training_report_sha256": "ef28a63e36626182854b3299f08f18bef13fbfe2e7aebeeb05e63ef379d83f47",
+  "seed45_ablation_report_sha256": "a531d503be6b2b066b9e84535f31bc8e6aeb1ee67c9640b5f5ae42f4733cabcc",
+  "two_seed_summary_sha256": "61baf76e631df5fee93850e5054d31da417050aaecbac6dd10a6abcf59cf2707",
+  "seed45_attention": {"map": 0.4473624716233612, "calibrated_macro_f1": 0.2303035558908806, "top1": 0.6984126984126984, "top3": 0.8253968253968254},
+  "seed45_bag": {"map": 0.3337079870805757, "calibrated_macro_f1": 0.13930905695611578, "top1": 0.7142857142857143, "top3": 0.873015873015873},
+  "mean_attention": {"map": 0.4077251058624084, "calibrated_macro_f1": 0.23040232260774968, "top1": 0.7142857142857142, "top3": 0.8333333333333333},
+  "mean_bag": {"map": 0.29283958654223763, "calibrated_macro_f1": 0.1456667515491045, "top1": 0.6587301587301587, "top3": 0.8412698412698413},
+  "seed45_ablation_delta_orientation": "ablated_minus_full",
+  "seed45_ablation_deltas": {
+    "disable_cross_branch_attention": {"map": -0.01799529225812646, "calibrated_macro_f1": -0.08955427812334726},
+    "shuffle_events": {"map": -0.04771167801366788, "calibrated_macro_f1": -0.04210511862123592},
+    "reverse_events": {"map": -0.08627973893775598, "calibrated_macro_f1": -0.05205402764135236},
+    "remove_timestamps": {"map": 0.05039712372196237, "calibrated_macro_f1": -0.008436034294256822},
+    "break_targets": {"map": -0.05658008925060065, "calibrated_macro_f1": -0.025139125293924064},
+    "remove_graph_edges": {"map": -0.08517111358188467, "calibrated_macro_f1": 0.012609369065717552},
+    "static_only": {"map": -0.24362468067052945, "calibrated_macro_f1": -0.20731505014375418},
+    "dynamic_only": {"map": -0.08492509799486636, "calibrated_macro_f1": -0.04263149529493751}
+  },
+  "test_metrics": null,
+  "behavior_head_trained": false,
+  "limitations": [
+    "Same small clustered validation split and weak AVClass labels; seeds are not independent data replications.",
+    "Historical bag comparisons omit the auxiliary ranking loss used by attention; a new objective-matched protocol is required for architecture attribution.",
+    "No consistent target/time/cross-attention mAP effect across both seeds; graph removal improves fixed-threshold F1 in both.",
+    "No independently annotated behavior evaluation, benign FPR qualification or independent dataset benchmark."
+  ]
+}

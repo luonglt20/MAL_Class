@@ -8,7 +8,7 @@
 
 Trọng tâm mô hình là ba nhánh đầu vào độc lập: Signature (PEiD/YARA an toàn/imphash/fuzzy prototype/chữ ký số), Static PE (header/section/import/resource/string/entropy) và Dynamic/Behavior (chuỗi event theo thời gian cùng execution graph). Mỗi nhánh có self-attention riêng. Signature và Static PE cross-attend trực tiếp tới token của nhau, rồi cả hai nhánh cross-attend tới event/graph token; event/graph token cũng chú ý ngược lại tới từng bằng chứng cấu trúc. Vì vậy mô hình có thể học liên hệ giữa nhiều dấu hiệu, như import/DLL đáng ngờ cùng file được tải, ghi rồi thực thi, thay vì chỉ cộng ba điểm tổng quát. Temporal attention giữ thứ tự, process/thread, success và thời gian; graph attention giữ quan hệ thực thể và causal path. Learned query riêng cho family/behavior tiếp tục chú ý tới ba nhánh và evidence token để phân loại đa nhãn.
 
-Mã đang phát triển. Phiên bản ba nhánh trước khi bổ sung Signature↔Static đã chạy hai seed trên cùng split WinMET 1.600 mẫu: attention mAP 0.285/0.369 so với bag 0.264/0.247; khi tắt cross-attention, mAP giảm 0.024/0.059. Chỉ 105 mẫu có family để đánh giá; static evidence trung vị 7 token/report và behavior head tắt do thiếu nhãn độc lập. Các số liệu này chưa đánh giá kiến trúc mới có Signature↔Static trực tiếp. Những pilot dùng nhánh static/signature gộp cũng là kết quả lịch sử riêng. Không checkpoint thì family `UNKNOWN`; verdict malware giữ `UNKNOWN` cho đến khi đạt release gate độc lập. Chưa có benchmark nghiệm thu. Chi tiết ở [trạng thái triển khai](docs/implementation-status.md) và [workflow WinMET](docs/winmet-workflow.md).
+Mã đang phát triển. Parser hiện đọc đúng `target.file.pe` và `static.pe`, lọc toàn bộ YARA rule family/verdict và giữ các nhóm feature khi imports vượt budget. Pilot PE-v2 có hai seed trên cùng reservoir/split WinMET 1.000 mẫu: validation mAP trung bình 0.408 so với bag 0.293, calibrated macro-F1 0.230 so với 0.146. Top-1/top-3 chưa thắng nhất quán; chỉ 63 validation rows có family đã học để tính ranking, và behavior head chưa train. Các số liệu trước khi sửa schema/YARA là lịch sử, không đại diện cho pipeline hiện tại. Verdict malware giữ `UNKNOWN` cho đến khi đạt release gate độc lập. Chưa có benchmark nghiệm thu. Chi tiết ở [trạng thái triển khai](docs/implementation-status.md) và [workflow WinMET](docs/winmet-workflow.md).
 
 ## Sử dụng
 
@@ -27,20 +27,31 @@ malware-hybrid download-ember --split test --output Data/raw
 malware-hybrid test-ember Data/raw/Win32_test.zip --checkpoint models/ember2024_hybrid.pt
 PYTHONPATH=src streamlit run Source_Code/hybrid_attention_dashboard.py
 malware-hybrid sync-frameworks --output artifacts/frameworks
-PYTHONPATH=src python3 -m unittest discover -s tests -v
+PYTHONPATH=src python3 -m pytest -q
 ```
 
 Lệnh train chia dữ liệu thành train/validation/calibration/test riêng; family calibration dùng simultaneous split-conformal trên vector nhãn đã biết để tránh gọi hàng trăm marginal 90% dự đoán là “confirmed” đồng thời. Checkpoint cũ chỉ có marginal conformal sẽ hạ kết quả thành `suspected`, không `confirmed`. Malware verdict `MALICIOUS`/`BENIGN` cũng trả `UNKNOWN` trừ khi checkpoint vượt release gate độc lập; train/calibration đơn thuần không đủ điều kiện. Imphash chỉ khớp prototype train theo digest chính xác; TLSH/ssdeep dùng fuzzy similarity. Không đưa raw digest vào token mô hình. Lệnh `sync-frameworks` tải đúng ATT&CK STIX 19.2 và NIST SP 800-53 Rev.5.1.1 OSCAL đã khóa SHA-256, sau đó kiểm tra ID/tên trong crosswalk. Không cung cấp checkpoint: chỉ chạy evidence engine, family luôn là `UNKNOWN`, và confidence behavior là mức đầy đủ của rule chứ không phải xác suất mô hình.
 
 Dashboard nhận một hoặc nhiều PE (tối đa 50 MiB/file) và phân tích tĩnh trong bộ đọc PE giới hạn kích thước; file không được thực thi. Chế độ batch nhận upload hoặc đường dẫn thư mục local (tối đa 500 file/256 MiB, không theo symlink), xuất từng kết quả và lỗi sang CSV. Đầu vào CAPE/WinMET JSON mới cung cấp luồng động. Có thể huấn luyện từ thư mục report tại máy hoặc EMBER2024 Win32 ZIP đã khóa checksum. CAPE/WinMET có sample cap seeded-reservoir (UI mặc định 600); EMBER2024 lấy mẫu reservoir có seed trên shard tuần, mặc định tối đa 7.000 mẫu. Vì vậy các kết quả subset không phải benchmark chính thức. Các TTP yếu trong EMBER không được dùng làm ground-truth âm; behavior head chỉ bật khi split train có cả bằng chứng dương và âm mạnh. Ngưỡng family được hiệu chuẩn riêng trên calibration split, giới hạn empirical FPR, rồi đánh giá trên test temporal riêng. Cài package và extras bằng `pip install '.[dev,dashboard]'`.
 
-Checkpoint cần phù hợp nhóm feature đầu vào. Guard vocabulary trả `UNKNOWN` và bỏ neural inference nếu dưới 50% token được checkpoint nhận diện; dashboard/CSV ghi rõ lý do. Đây là kiểm tra tương thích ban đầu, chưa phải bộ phát hiện OOD đã kiểm định.
+Dashboard mặc định **Tự chọn model theo đầu vào**: PE hoặc report chỉ có static dùng model Signature–Static; report có event thực thi dùng model hybrid. [Registry model local](configs/inference_models.json) khóa tên file, kích thước và SHA-256; mỗi kết quả/CSV ghi rõ model đã dùng. Không tự tải weights hoặc chạy EXE. Model chưa cài thì trả `UNKNOWN`; checksum sai báo lỗi. Lựa chọn checkpoint thủ công vẫn ghi đè chế độ tự chọn. Xem [hướng dẫn routing](docs/model-routing.md).
+
+Checkpoint cần phù hợp nhóm feature đầu vào. Guard vocabulary trả `UNKNOWN` và bỏ neural inference nếu dưới 50% token được checkpoint nhận diện; dashboard/CSV ghi rõ lý do. Đây là kiểm tra tương thích ban đầu, chưa phải bộ phát hiện OOD đã kiểm định. CLI `predict` không truyền checkpoint vẫn là evidence-only; cơ chế tự chọn được dùng trong dashboard.
 
 Behavior chỉ được `confirmed` khi có điểm hợp lệ từ behavior head đã train và chuỗi evidence đầy đủ. Nếu chỉ có evidence engine, kết luận tối đa là `suspected`; `evidence_status` ghi riêng chuỗi có đủ bước hay không. Mức đầy đủ chuỗi không phải xác suất của mô hình.
 
 MalBehavD-V1 chỉ dùng trong thí nghiệm chuỗi API động riêng, không ghép với PE/CAPE khác nguồn. Split group theo SHA-256 và chuỗi API chuẩn hóa để tránh rò rỉ chuỗi lặp; các nhóm có cùng chuỗi nhưng nhãn xung đột bị cách ly. Nhãn giữ dạng `0/1` vì README tác giả không chỉ rõ mapping số sang benign/malware. Kết quả nhánh này không đại diện cho phân loại family hay ATT&CK.
 
-Bộ protocol có đúng 7 baseline: indicator rule, bag-of-token, BiLSTM, temporal transformer, graph attention, sequence+graph và full hybrid attention. Attention được kiểm định bằng flow ablation, deletion AOPC, stability và Spearman agreement với Layer Integrated Gradients ở mức event. Các lớp baseline đã chạy được, nhưng chưa được phép ghi điểm benchmark cho tới khi chạy cùng split dữ liệu thật.
+Bộ protocol có đúng 7 baseline: indicator rule, bag-of-token, BiLSTM, temporal transformer, graph attention, sequence+graph và full hybrid attention. Có công cụ kiểm định flow ablation, deletion AOPC, stability và Spearman agreement với Layer Integrated Gradients ở mức event; chưa hoàn thành tất cả phép đo trên dữ liệu thật. Runner `scripts/compare_winmet_protocol_baselines.py` tái dựng và kiểm tra fingerprint các split của experiment đã lưu, dùng chung vocabulary train, hàm loss và budget epoch, chỉ chọn model bằng validation và fit threshold bằng calibration. Các so sánh bag lịch sử không dùng auxiliary ranking loss như attention, nên không được quy toàn bộ chênh lệch đó cho kiến trúc.
+
+```bash
+PYTHONPATH=src python scripts/compare_winmet_protocol_baselines.py \
+  artifacts/winmet/volume2_pev2_hybrid3_attention_1000_seed44.json \
+  --report artifacts/winmet/volume2_pev2_protocol_baselines_1000_seed44.json \
+  --models temporal_transformer graph_attention sequence_graph bag_of_tokens --device mps
+```
+
+Lệnh trên cần experiment, JSONL và checkpoint local đã tạo trước đó; không tự tải chúng, không ghi đè report và không tính metric trên test. `indicator_rule` không có family classifier nên không có điểm family để so sánh.
 
 ## Tài liệu và nguồn tham khảo
 

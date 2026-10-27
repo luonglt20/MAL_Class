@@ -51,6 +51,7 @@
     "static_dynamic_links": 20,
     "family_label": "UNKNOWN",
     "family_candidate": "snojan",
+    "reference_avclass": "cosmu",
     "behavior_head_trained": false,
     "technique_specific_neural_maps_reported": 0,
     "notice": "Integration check only; attention links are associations, not independently validated evidence."

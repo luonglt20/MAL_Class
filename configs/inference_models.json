@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "models": {
+    "static": {
+      "id": "ember-sigstatic-e15-conformal",
+      "name": "Signature–Static Attention · EMBER2024",
+      "path": "../models/ember_hybrid3_sigstatic_nodrop_34k_d64_seed42_e15_conformal.pt",
+      "bytes": 125238516,
+      "sha256": "b356431ff1b9a8dc27e7177c02c8a455d3c4240171a5284c363201f67eb02bba",
+      "status": "research"
+    },
+    "hybrid": {
+      "id": "winmet-pev2-seed44",
+      "name": "Hybrid Attention · WinMET PE-v2",
+      "path": "../models/winmet_volume2_pev2_hybrid3_attention_1000_seed44.pt",
+      "bytes": 22636238,
+      "sha256": "3c79007236a904a48d3d45b2f06c443ba14f527ff9831a4c6b189c3616d4f745",
+      "status": "research"
+    }
+  }
+}

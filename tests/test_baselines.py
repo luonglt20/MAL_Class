@@ -77,6 +77,18 @@ class BaselineTests(unittest.TestCase):
         self.assertEqual(model.family_head.weight.shape, (3, 16))
         self.assertFalse(torch.allclose(output["family_logits"], changed_output["family_logits"]))
 
+    def test_bilstm_predictions_do_not_depend_on_batch_padding(self):
+        torch.manual_seed(44)
+        model = build_baseline("bilstm", self.config).eval()
+        padded = dict(self.batch)
+        padded["event_ids"] = torch.nn.functional.pad(self.batch["event_ids"], (0, 9))
+        padded["event_mask"] = torch.nn.functional.pad(self.batch["event_mask"], (0, 9), value=False)
+        with torch.inference_mode():
+            short = model(self.batch)
+            long = model(padded)
+        for key in ("family_logits", "behavior_logits", "malware_logits"):
+            torch.testing.assert_close(short[key], long[key], atol=1e-6, rtol=1e-6)
+
 
 if __name__ == "__main__":
     unittest.main()

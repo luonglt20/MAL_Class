@@ -7,6 +7,7 @@ executes a sample; dynamic evidence must come from a sandbox report.
 from __future__ import annotations
 
 import json
+import os
 import random
 from pathlib import Path
 
@@ -25,6 +26,7 @@ from malware_hybrid.batch_analysis import (
 )
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
+from malware_hybrid.inference_service import DEFAULT_MODEL_REGISTRY, RoutedInferencePipeline
 from malware_hybrid.training import (
     load_cape_reports,
     load_checkpoint,
@@ -43,7 +45,7 @@ checkpoint_options = sorted(str(path) for path in model_directory.glob("*.pt"))
 active_checkpoint = str(st.session_state.get("active_checkpoint", ""))
 if active_checkpoint and Path(active_checkpoint).is_file() and active_checkpoint not in checkpoint_options:
     checkpoint_options.append(active_checkpoint)
-checkpoint_choices = ["(chưa chọn checkpoint)", *checkpoint_options]
+checkpoint_choices = ["Tự chọn model theo đầu vào", *checkpoint_options]
 selected_checkpoint_index = (
     checkpoint_choices.index(active_checkpoint)
     if active_checkpoint in checkpoint_choices else 0
@@ -53,8 +55,13 @@ selected_checkpoint = st.sidebar.selectbox(
 )
 manual_checkpoint = st.sidebar.text_input("Hoặc nhập đường dẫn checkpoint", value="")
 checkpoint = manual_checkpoint.strip() or (
-    "" if selected_checkpoint == "(chưa chọn checkpoint)" else selected_checkpoint
+    "" if selected_checkpoint == "Tự chọn model theo đầu vào" else selected_checkpoint
 )
+registry_path = Path(os.environ.get("MAL_CLASS_MODEL_REGISTRY") or DEFAULT_MODEL_REGISTRY)
+registry_stat = registry_path.stat() if registry_path.is_file() else None
+registry_version = f"{registry_stat.st_mtime_ns}:{registry_stat.st_size}" if registry_stat else "missing"
+if not checkpoint:
+    st.sidebar.caption("Tự chọn model phù hợp: PE tĩnh hoặc report có luồng thực thi.")
 available_devices = ["cpu"]
 if torch.backends.mps.is_available():
     available_devices.append("mps")
@@ -167,7 +174,8 @@ def render_batch_results(rows: list[dict], download_key: str):
 
 
 @st.cache_resource(show_spinner=False)
-def load_pipeline(checkpoint_path: str, selected_device: str):
+def load_pipeline(checkpoint_path: str, selected_device: str, model_registry: str, registry_version: str):
+    # Registry path/version are cache inputs so configuration changes invalidate routing.
     if selected_device == "cpu":
         # High core-count defaults can oversubscribe small per-sample attention
         # inference and make the interactive UI look stalled.
@@ -175,7 +183,7 @@ def load_pipeline(checkpoint_path: str, selected_device: str):
     if checkpoint_path:
         model, tensorizer = load_checkpoint(checkpoint_path, selected_device)
         return HybridInferencePipeline(model, tensorizer, device=selected_device)
-    return HybridInferencePipeline()
+    return RoutedInferencePipeline(model_registry, device=selected_device)
 
 
 analysis_tab, training_tab = st.tabs(["Phân tích mẫu", "Dataset & huấn luyện"])
@@ -192,7 +200,7 @@ with analysis_tab:
         else:
             raw = uploaded.getvalue()
             try:
-                pipeline = load_pipeline(checkpoint, device)
+                pipeline = load_pipeline(checkpoint, device, str(registry_path), registry_version)
                 if Path(uploaded.name).suffix.lower() in {".exe", ".dll", ".sys", ".ocx"}:
                     report, result = analyze_uploaded_sample(
                         uploaded.name, raw, pipeline, max_sample_bytes=MAX_UPLOAD_BYTES
@@ -217,9 +225,14 @@ with analysis_tab:
                     "Mô hình đang nghiên cứu: không có cảnh báo không có nghĩa là file an toàn. "
                     "Không chạy file trên máy thật dựa vào kết quả này."
                 )
-                middle.metric("Họ mã độc đã xác nhận", family["label"])
+                middle.metric("Họ mã độc · kết luận hiện tại", family["label"])
                 right.metric("Độ tin cậy kết luận", f"{family['confidence']:.1%}")
                 coverage = result.get("model_input_coverage")
+                selection = result.get("model_selection")
+                if selection and selection["status"] == "unavailable":
+                    st.warning("Chưa có model phù hợp được cài cho đầu vào này; kết quả family là UNKNOWN.")
+                elif selection:
+                    st.caption(f"Model tự chọn: {selection['name']} · bản nghiên cứu")
                 if coverage and not coverage.get("signature_policy_compatible", True):
                     st.warning(
                         "Checkpoint cũ đã học YARA chưa được lọc theo chính sách chữ ký cấu trúc. "
@@ -395,7 +408,7 @@ with analysis_tab:
                 st.error("Mỗi file phải không lớn hơn 50 MiB: " + ", ".join(invalid_size[:10]))
             elif st.button("Phân loại dataset", type="primary", key="run_batch_analysis"):
                 try:
-                    batch_pipeline = load_pipeline(checkpoint, device)
+                    batch_pipeline = load_pipeline(checkpoint, device, str(registry_path), registry_version)
                     progress = st.progress(0, text="Chuẩn bị phân tích dataset...")
                     rows = []
                     for index, item in enumerate(batch_uploads, start=1):
@@ -434,7 +447,7 @@ with analysis_tab:
             key="run_local_batch_analysis",
         ):
             try:
-                local_pipeline = load_pipeline(checkpoint, device)
+                local_pipeline = load_pipeline(checkpoint, device, str(registry_path), registry_version)
                 local_progress = st.progress(0, text="Đang duyệt và phân tích thư mục...")
 
                 def local_progress_update(index: int, total: int):

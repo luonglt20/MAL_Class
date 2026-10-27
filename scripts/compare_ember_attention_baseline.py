@@ -13,7 +13,7 @@ import zipfile
 import torch
 from torch.utils.data import DataLoader
 
-from malware_hybrid.baselines import BagOfTokensBaseline
+from malware_hybrid.baselines import BASELINE_NAMES, build_baseline
 from malware_hybrid.dataset import HybridDataset, collate_samples
 from malware_hybrid.dataset_sources import verify_dataset_file
 from malware_hybrid.training import (
@@ -63,8 +63,23 @@ def _train_bag_baseline(
     config, tensorizer, train, validation, calibration, *,
     epochs, batch_size, seed, device,
 ):
+    # Preserve the historical bag objective for reproducibility. New matched
+    # protocol experiments explicitly supply the same ranking loss as attention.
+    return _train_neural_baseline(
+        "bag_of_tokens", config, tensorizer, train, validation, calibration,
+        epochs=epochs, batch_size=batch_size, seed=seed, device=device,
+        family_ranking_weight=0.0,
+    )
+
+
+def _train_neural_baseline(
+    name, config, tensorizer, train, validation, calibration, *,
+    epochs, batch_size, seed, device, family_ranking_weight,
+):
+    if name not in BASELINE_NAMES[1:-1]:
+        raise ValueError("expected a trainable protocol baseline, not rule/full hybrid")
     set_seed(seed)
-    model = BagOfTokensBaseline(config).to(device)
+    model = build_baseline(name, config).to(device)
     model.family_training_priors = _family_training_priors(tensorizer, train)
     model.behavior_head_trained = False
     model.malware_head_trained = any(
@@ -92,7 +107,7 @@ def _train_bag_baseline(
             losses = model.compute_loss(
                 output, batch,
                 family_pos_weight=weights[0], behavior_pos_weight=weights[1],
-                malware_pos_weight=weights[2], family_ranking_weight=0.0,
+                malware_pos_weight=weights[2], family_ranking_weight=family_ranking_weight,
             )
             loss = losses["family_loss"] + losses["malware_loss"]
             loss.backward()
@@ -101,7 +116,7 @@ def _train_bag_baseline(
             running_loss += float(loss.detach())
             if batch_index % max(1, len(loader) // 10) == 0 or batch_index == len(loader):
                 print(json.dumps({
-                    "model": "bag_of_tokens",
+                    "model": name,
                     "epoch": epoch,
                     "epochs": epochs,
                     "batch": batch_index,
@@ -123,7 +138,7 @@ def _train_bag_baseline(
             best_state = _snapshot_state(model)
             best_epoch = epoch
         print(json.dumps({
-            "model": "bag_of_tokens",
+            "model": name,
             "epoch_end": epoch,
             "validation_family_map": validation_metrics["family_map"],
             "validation_family_macro_f1": validation_metrics["family_macro_f1"],
@@ -132,7 +147,7 @@ def _train_bag_baseline(
         }), flush=True)
 
     if best_state is None:
-        raise ValueError("bag baseline produced no finite validation family mAP")
+        raise ValueError(f"{name} baseline produced no finite validation family mAP")
     model.load_state_dict(best_state)
     threshold_report = fit_family_thresholds(
         model, tensorizer, calibration, device, batch_size=batch_size,

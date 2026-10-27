@@ -1,4 +1,6 @@
 from pathlib import Path
+import hashlib
+import json
 import struct
 
 import pytest
@@ -15,6 +17,16 @@ AppTest = streamlit_testing.AppTest
 ROOT = Path(__file__).parents[1]
 FIXTURE = ROOT / "tests" / "fixtures" / "cape_process_injection.json"
 DASHBOARD = ROOT / "Source_Code" / "hybrid_attention_dashboard.py"
+
+
+@pytest.fixture(autouse=True)
+def isolate_installed_models(monkeypatch, tmp_path):
+    # UI tests must not load large ignored workstation checkpoints implicitly.
+    import streamlit as st
+    monkeypatch.setenv("MAL_CLASS_MODEL_REGISTRY", str(tmp_path / "not-installed.json"))
+    st.cache_resource.clear()
+    yield
+    st.cache_resource.clear()
 
 
 def minimal_pe() -> bytes:
@@ -100,7 +112,7 @@ def test_dashboard_classifies_a_local_nested_dataset(tmp_path):
     )
 
 
-def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path):
+def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path, monkeypatch):
     report = CapeReportParser(max_events=64).parse_file(FIXTURE)
     tensorizer = ReportTensorizer.fit([report])
     model = HybridAttentionModel(HybridAttentionConfig(
@@ -122,13 +134,15 @@ def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path):
     ))
     checkpoint_path = tmp_path / "three_branch.pt"
     save_checkpoint(checkpoint_path, model, tensorizer)
+    registry_path = tmp_path / "models.json"
+    registry_path.write_text(json.dumps({"schema_version": 1, "models": {"hybrid": {
+        "id": "test-hybrid", "name": "Test Hybrid Attention", "path": str(checkpoint_path),
+        "bytes": checkpoint_path.stat().st_size,
+        "sha256": hashlib.sha256(checkpoint_path.read_bytes()).hexdigest(), "status": "research",
+    }}}))
+    monkeypatch.setenv("MAL_CLASS_MODEL_REGISTRY", str(registry_path))
 
     app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
-    next(
-        field for field in app.text_input
-        if field.label == "Hoặc nhập đường dẫn checkpoint"
-    ).set_value(str(checkpoint_path))
-    app.run(timeout=20)
     sample_uploader = next(
         uploader for uploader in app.get("file_uploader")
         if uploader.label.startswith("Tải PE để phân tích")
@@ -137,6 +151,7 @@ def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path):
     app.run(timeout=30)
 
     assert len(app.exception) == 0
+    assert any("Model tự chọn: Test Hybrid Attention" in item.value for item in app.caption)
     assert any(
         item.value == "Attention trên từng bằng chứng Signature / Static PE"
         for item in app.get("subheader")
