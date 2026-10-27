@@ -2,16 +2,19 @@ import unittest
 from pathlib import Path
 
 import numpy as np
+import torch
 
 from malware_hybrid.dataset import ReportTensorizer, collate_samples
 from malware_hybrid.evaluation import (
     ablate_report,
+    ablate_encoded_batch,
+    ENCODED_ABLATIONS,
     attention_integrated_gradients_agreement,
     fold_window_attention,
     integrated_gradients_event_scores,
 )
 from malware_hybrid.evidence import EvidenceEngine
-from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel
+from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel, RelationalAttentionBlock
 from malware_hybrid.normalization import CapeReportParser
 
 
@@ -19,6 +22,67 @@ FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_uniform_relation_bias_is_not_absolute_relation_evidence(self):
+        # Softmax cancels row-constant shifts. This scopes a limitation of
+        # bias-only relation encoding, not a claim about the whole hybrid.
+        torch.manual_seed(44)
+        block = RelationalAttentionBlock(16, 4, 0.).eval()
+        x = torch.randn(1, 4, 16)
+        mask = torch.tensor([[True, True, True, False]])
+        zeros = torch.zeros(1, 4, 4, 4)
+        with torch.inference_mode():
+            unknown, weights = block(x, mask, zeros)
+            known_uniform, shifted_weights = block(x, mask, zeros + .7)
+        torch.testing.assert_close(unknown, known_uniform, atol=1e-6, rtol=1e-6)
+        torch.testing.assert_close(weights, shifted_weights, atol=1e-6, rtol=1e-6)
+
+    def test_node_preserving_edge_control_still_runs_graph_encoder(self):
+        from unittest.mock import patch
+        report = CapeReportParser().parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit([report])
+        batch = collate_samples([tensorizer.encode(report)])
+        config = HybridAttentionConfig(
+            token_vocab_size=len(tensorizer.token_vocab), edge_vocab_size=len(tensorizer.edge_vocab),
+            node_type_vocab_size=len(tensorizer.node_type_vocab), n_families=len(tensorizer.family_vocab),
+            behavior_ids=tensorizer.behavior_ids, d_model=16, n_heads=4, temporal_layers=1,
+            graph_layers=1, static_layers=1, fusion_layers=1, window_size=4, window_overlap=2,
+            dropout=0., modality_dropout=0.,
+        )
+        model = HybridAttentionModel(config).eval()
+        changed = ablate_encoded_batch(batch, "mask_graph_edges_keep_nodes")
+        with patch.object(model.graph_encoder, "forward", wraps=model.graph_encoder.forward) as forward:
+            with torch.inference_mode():
+                output = model(changed, return_attention=False)
+        self.assertEqual(forward.call_count, 1)
+        self.assertTrue(torch.isfinite(output["family_logits"]).all())
+
+    def test_encoded_controls_preserve_tokens_shapes_labels_and_original_batch(self):
+        report = CapeReportParser().parse_file(FIXTURE)
+        tensorizer = ReportTensorizer.fit([report])
+        batch = collate_samples([tensorizer.encode(report)])
+        original = {key: value.clone() for key, value in batch.items() if isinstance(value, torch.Tensor)}
+        expected_changes = {
+            "remove_resource_relations": {"resource_ids"},
+            "remove_process_context": {"process_ids", "parent_process_ids", "thread_ids"},
+            "mask_graph_edges_keep_nodes": {"edge_mask"},
+        }
+        for mode in ENCODED_ABLATIONS:
+            with self.subTest(mode=mode):
+                changed = ablate_encoded_batch(batch, mode)
+                for key, before in original.items():
+                    self.assertEqual(changed[key].shape, before.shape)
+                    self.assertEqual(changed[key].dtype, before.dtype)
+                    torch.testing.assert_close(batch[key], before)
+                    if key in expected_changes[mode]:
+                        self.assertEqual(int(changed[key].count_nonzero()), 0)
+                    else:
+                        torch.testing.assert_close(changed[key], before)
+                self.assertGreater(int(changed["graph_node_mask"].sum()), 0)
+
+    def test_unknown_encoded_control_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "unknown encoded ablation"):
+            ablate_encoded_batch({}, "invented")
+
     def test_reversing_flow_invalidates_process_injection_chain(self):
         report = CapeReportParser().parse_file(FIXTURE)
         reversed_report = ablate_report(report, "reverse_events")

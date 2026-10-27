@@ -18,7 +18,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from malware_hybrid.dataset import HybridDataset, collate_samples
-from malware_hybrid.evaluation import ablate_report
+from malware_hybrid.evaluation import ENCODED_ABLATIONS, ablate_encoded_batch, ablate_report
 from malware_hybrid.training import (
     _family_training_priors,
     _training_loss_weights,
@@ -38,6 +38,7 @@ ABLATIONS = (
     "remove_graph_edges",
     "static_only",
     "dynamic_only",
+    *ENCODED_ABLATIONS,
 )
 
 
@@ -57,6 +58,7 @@ def _sha256_file(path: Path) -> str:
 def _family_metrics(
     model, reports, tensorizer, device, batch_size, weights,
     *, disable_cross_branch_attention: bool = False,
+    encoded_ablation: str | None = None,
 ):
     loader = DataLoader(
         HybridDataset(reports, tensorizer),
@@ -68,6 +70,9 @@ def _family_metrics(
         tensorizer.family_vocab.decode(index)
         for index in range(model.config.n_families)
     ]
+    if encoded_ablation:
+        source_loader = loader
+        loader = (ablate_encoded_batch(batch, encoded_ablation) for batch in source_loader)
     metrics = evaluate(
         model,
         loader,
@@ -186,6 +191,11 @@ def main() -> None:
                 model, validation, tensorizer, device, args.batch_size, weights,
                 disable_cross_branch_attention=True,
             )
+        elif mode in ENCODED_ABLATIONS:
+            metrics = _family_metrics(
+                model, validation, tensorizer, device, args.batch_size, weights,
+                encoded_ablation=mode,
+            )
         else:
             counterfactuals = [
                 ablate_report(report, mode, seed=seed) for report in validation
@@ -225,6 +235,8 @@ def main() -> None:
         "checkpoint_sha256": _sha256_file(args.checkpoint),
         "seed": seed,
         "model_seed": int(experiment["seed"]),
+        "device": args.device,
+        "batch_size": args.batch_size,
         "sample_seed": seed,
         "split_seed": split_seed,
         "modality_dropout_scope": experiment.get(
@@ -240,6 +252,13 @@ def main() -> None:
         "baseline": baseline,
         "ablations": ablation_results,
         "test_metrics": None,
+        "ablation_interpretation": {
+            "break_targets": "Historical joint perturbation: also changes graph size, pruning and token coverage.",
+            "remove_graph_edges": "Historical report-edge deletion: pruning can remove graph nodes too.",
+            "remove_resource_relations": "Zero temporal resource identities after encoding; keep graph and tokens unchanged.",
+            "remove_process_context": "Zero process/parent/thread context after encoding; keep graph and tokens unchanged.",
+            "mask_graph_edges_keep_nodes": "Mask GAT/path edges after encoding; keep all encoded graph nodes and masks.",
+        },
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     with args.report.open("x", encoding="utf-8") as output:
