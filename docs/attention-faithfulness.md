@@ -6,6 +6,14 @@ by the family evidence head. It verifies the prepared source checksum, recreates
 and checks **all** partition fingerprints, and evaluates validation only. No
 weight, threshold or withheld-test metric is changed.
 
+The default `--faithfulness-ranking attention` preserves the original direct
+attention diagnostic. Optional `--faithfulness-ranking signed_readout` compares
+a different ranking without retraining: signed contributions of contextualized
+values to that family's linear logit. Both use the same hash-selected samples,
+fixed target, masking budgets and random seeds. Keep the reports separate; a
+better explanation ranking is not a better classifier and does not replace a
+failed attention-weight diagnostic.
+
 For a deterministic hash-selected validation subset, fix the original top-logit
 family before perturbation. Rank each input group by direct
 `family_to_evidence` attention averaged across heads. Set the top 5/10/20% token
@@ -57,6 +65,30 @@ misleading attention (which must score worse than random), deterministic random
 controls, unchanged context/source tensors/parameters, mode restoration,
 argument guards and a real three-branch model contract check.
 
+## Signed readout decomposition (not raw-input attribution)
+
+For each family query and head, multiply its attention weight by the projected
+value's component along the family classifier direction. Sum across heads,
+then add contributions from both modality and evidence attention, both output
+projection biases and the family-head bias. This linear sum reconstructs the
+family **logit**, not the sigmoid score. Tests verify reconstruction for
+shared/labelwise heads and relation-value variants, including equal-attention
+values with opposite signed effects.
+
+`src/malware_hybrid/readout.py` captures the two existing attention calls with
+temporary hooks, restores train/eval state and removes hooks on success or
+failure. No classification parameter or route is added. The diagnostic refuses
+a reconstruction error greater than 1e-4.
+
+Positive contributions support this particular family; negative contributions
+oppose it. They are **not** global maliciousness scores. Inputs were already
+mixed by self/cross-attention, so a value attached to a Signature position may
+contain information from dynamic events. Reconstruction proves the readout
+arithmetic, not causal attribution to that raw signature. Equivalent
+parameterizations can redistribute contextualized contributions. Numeric
+features/relationships remain when token identity is masked, so a positive
+readout need not imply a large token-identity deletion effect.
+
 ## First frozen-data diagnostic (2026-10-27)
 
 The corrected-window seed-44 checkpoint was evaluated on five deterministic
@@ -73,3 +105,11 @@ This evidence changes the next action: do not present direct attention weights
 as suspiciousness or causal contribution. Evaluate the longer-trained model
 with the same frozen controls and retain negative results. Independent labels,
 signed value/readout contributions and broader interventions are still needed.
+
+The optional signed-readout diagnostic then evaluated the **same** five
+samples and fixed family targets. Maximum logit reconstruction error was
+1.43e-6. Top-minus-random AOPC averaged +0.02949 for Signature (4/5 wins),
++0.00359 for Static (2/5), +0.00415 for events (4/5), and **−0.000147 for graph
+(0/5)**. The mixed result is not acceptance and does not change classifier
+predictions or replace the failed attention-weight ranking. See the
+[signed-readout diagnostic](experiments/winmet-signed-readout-20261027.json).

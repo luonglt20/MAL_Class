@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-27",
+  "status": "explanation_diagnostic_only_classifier_unchanged",
+  "checkpoint_sha256": "8d6919b06b5fc75206617a3068e70665c23e8a78f50a475cbfb9b1cfc0eac2c4",
+  "source_sha256": "c6b13028505f7537dc39bd27a7bdb6850128675b46e3d0f0484adfb30f28882a",
+  "full_report": "artifacts/winmet/volume2_relv3_samplewindows_signed_readout_1000_seed44.json",
+  "full_report_sha256": "a5ce65417d77da4feeed1c23ddfc986d604b8f0f3feb0ec0c8f651b543576a2e",
+  "device": "cpu",
+  "batch_size": 4,
+  "evaluated_partition": "validation",
+  "all_partition_fingerprints_verified": true,
+  "baseline_unchanged": {"map": 0.3657475132578362, "calibrated_macro_f1": 0.25457232825653875, "top1": 0.7142857142857143, "top3": 0.8412698412698413},
+  "faithfulness_samples": 5,
+  "sample_ids_sha256": "a2132f3995f04a0124a71879dd3bbaba81c2e9f305b4049c4d48f303e26aff01",
+  "same_samples_targets_masking_and_random_seeds_as_attention_control": true,
+  "fractions": [0.05, 0.1, 0.2],
+  "random_repeats": 3,
+  "ranking": "signed contextualized value contribution to linear family readout, not raw-input causality",
+  "maximum_logit_reconstruction_error": 0.000001430511474609375,
+  "mean_top_minus_random_aopc": {"signature": 0.029487366146511505, "static": 0.0035927322175767678, "temporal_events": 0.004152124457889133, "graph": -0.00014670160081651476},
+  "top_beats_random_samples": {"signature": 4, "static": 2, "temporal_events": 4, "graph": 0},
+  "test_metrics": null,
+  "limitations": [
+    "Classifier parameters, predictions, routing and thresholds are unchanged. This is not a classification improvement.",
+    "An exact linear readout reconstruction does not establish raw-input attribution; cross-attention has already mixed branches.",
+    "Graph ranking fails this small identity diagnostic, beating random on zero of five samples.",
+    "Only five clustered validation samples, uncalibrated sigmoid score drops and three random controls per fraction; no acceptance or statistical-significance claim.",
+    "The original negative attention-weight ranking remains recorded separately and is not replaced by this alternative ranking."
+  ]
+}

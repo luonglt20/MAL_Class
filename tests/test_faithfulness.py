@@ -68,6 +68,13 @@ class FaithfulnessTests(unittest.TestCase):
                 self.assertTrue(np.isfinite(branch["top_minus_random_aopc"]))
         for key, value in before.items():
             torch.testing.assert_close(model.state_dict()[key], value)
+        signed = family_token_faithfulness(model, batch, fractions=(.2,), random_repeats=1, ranking="signed_readout")
+        self.assertLess(signed["readout_reconstruction_error"], 2e-6)
+        self.assertEqual(signed["target_index"], measured["target_index"])
+        self.assertAlmostEqual(signed["baseline_probability"], measured["baseline_probability"])
+        for branch in signed["branches"].values():
+            if branch["evaluated"]:
+                self.assertLessEqual(branch["positive_readout_tokens"], branch["valid_tokens"])
 
     def test_known_important_identity_beats_random_and_insertion_recovers(self):
         model = KnownImportanceModel().train()
@@ -110,7 +117,7 @@ class FaithfulnessTests(unittest.TestCase):
         batch["static_mask"].zero_()
         model = KnownImportanceModel()
         self.assertFalse(family_token_faithfulness(model, batch, random_repeats=1)["branches"]["static"]["evaluated"])
-        for kwargs in ({"fractions": ()}, {"fractions": (np.nan,)}, {"fractions": (0.,)}, {"random_repeats": 0}, {"target_index": 2}):
+        for kwargs in ({"fractions": ()}, {"fractions": (np.nan,)}, {"fractions": (0.,)}, {"random_repeats": 0}, {"target_index": 2}, {"ranking": "invented"}):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 family_token_faithfulness(model, batch, **kwargs)
         self.assertTrue(model.training)

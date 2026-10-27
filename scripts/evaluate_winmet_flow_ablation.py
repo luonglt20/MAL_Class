@@ -20,6 +20,8 @@ from torch.utils.data import DataLoader
 from malware_hybrid.dataset import HybridDataset, collate_samples
 from malware_hybrid.evaluation import ENCODED_ABLATIONS, ablate_encoded_batch, ablate_report
 from malware_hybrid.faithfulness import family_token_faithfulness
+from malware_hybrid.deployment_audit import audit_family_decisions
+from malware_hybrid.pipeline import HybridInferencePipeline
 from malware_hybrid.training import (
     _family_training_priors,
     _training_loss_weights,
@@ -108,6 +110,9 @@ def main() -> None:
     parser.add_argument("--faithfulness-samples", type=int, default=0,
                         help="optional seeded validation subset for four-group token-identity controls")
     parser.add_argument("--faithfulness-random-repeats", type=int, default=5)
+    parser.add_argument("--faithfulness-ranking", choices=("attention", "signed_readout"), default="attention")
+    parser.add_argument("--deployment-audit", action="store_true",
+                        help="measure actual guarded family decisions on the same validation partition")
     args = parser.parse_args()
 
     manifest_path = Path(str(args.reports) + ".manifest.json")
@@ -122,7 +127,7 @@ def main() -> None:
         parser.error("batch-size must be positive")
     if not 0 <= args.faithfulness_samples <= 100 or not 1 <= args.faithfulness_random_repeats <= 100:
         parser.error("faithfulness samples must be 0..100 and random repeats 1..100")
-    if not args.modes and not args.faithfulness_samples:
+    if not args.modes and not args.faithfulness_samples and not args.deployment_audit:
         parser.error("request at least one ablation or faithfulness sample")
     if args.report.resolve() in {
         args.reports.resolve(), args.checkpoint.resolve(),
@@ -245,6 +250,7 @@ def main() -> None:
             diagnostic = family_token_faithfulness(
                 model, batch, seed=seed + index,
                 random_repeats=args.faithfulness_random_repeats,
+                ranking=args.faithfulness_ranking,
             )
             diagnostic["sample_hash"] = row.sample_hash
             diagnostic["target_family"] = tensorizer.family_vocab.decode(diagnostic["target_index"])
@@ -265,9 +271,21 @@ def main() -> None:
         faithfulness = {
             "notice": "Token-identity-only diagnostic; numeric values, masks, context, edges and cross-branch duplicates remain. Not event deletion, full evidence deletion, rollout or causal proof. Graph rankings cover only the family evidence-head prefix. Sigmoid scores are not calibrated probabilities.",
             "selection": "smallest SHA256(sample_seed:faithfulness:sample_hash), validation only, no label selection",
+            "ranking": args.faithfulness_ranking,
             "sample_ids_sha256": _fingerprint(selected),
             "summary": summary, "samples": rows,
         }
+
+    deployment = None
+    if args.deployment_audit:
+        pipeline = HybridInferencePipeline(model, tensorizer, device=args.device)
+        def audit_progress(done, total):
+            if done % 20 == 0 or done == total:
+                print(json.dumps({"deployment_audit": {"done": done, "total": total}}),
+                      file=sys.stderr, flush=True)
+        deployment = audit_family_decisions(
+            pipeline, validation, tensorizer.family_vocab.token_to_id, audit_progress,
+        )
 
     result = {
         "notice": (
@@ -300,6 +318,7 @@ def main() -> None:
         "baseline": baseline,
         "ablations": ablation_results,
         "token_identity_faithfulness": faithfulness,
+        "deployment_family_decisions": deployment,
         "test_metrics": None,
         "ablation_interpretation": {
             "break_targets": "Historical joint perturbation: also changes graph size, pruning and token coverage.",
