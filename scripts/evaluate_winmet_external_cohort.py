@@ -93,11 +93,21 @@ def main() -> None:
     if source_blocks & external_blocks or excluded_blocks & external_blocks:
         parser.error("external block IDs overlap prior/excluded blocks")
 
-    archive_filename = Path(external_manifest.get("source", "")).name
-    if not archive_filename or _archive_sha(external_manifest, archive_filename) != _archive_sha(
-        source_experiment.get("source_manifest", {}), archive_filename,
-    ):
-        parser.error("source and external cohorts do not verify against the same pinned archive")
+    external_archive_filename = Path(external_manifest.get("source", "")).name
+    source_archive_filename = Path(source_manifest.get("source", "")).name
+    source_archive_sha = _archive_sha(source_manifest, source_archive_filename)
+    external_archive_sha = _archive_sha(external_manifest, external_archive_filename)
+    if not source_archive_sha or not external_archive_sha:
+        parser.error("source and external manifests must verify their source archives")
+    source_record = next(iter(source_manifest.get("verification", [])), {}).get("record")
+    external_record = next(iter(external_manifest.get("verification", [])), {}).get("record")
+    if not source_record or source_record != external_record:
+        parser.error("source and external archives do not belong to the same pinned WinMET record")
+    same_archive = source_archive_sha == external_archive_sha
+    if same_archive and not source_blocks.issubset(excluded_blocks):
+        parser.error("same-archive external sampler did not exclude every source-experiment block")
+    if source_blocks & external_blocks:
+        parser.error("source and external block IDs overlap")
     if _archive_sha(external_manifest, "reports_consensus_label.json") != _archive_sha(
         source_experiment.get("source_manifest", {}), "reports_consensus_label.json",
     ):
@@ -106,6 +116,10 @@ def main() -> None:
     expected_source_manifest = source_experiment.get("source_manifest", {})
     if source_manifest.get("written") != expected_source_manifest.get("written"):
         parser.error("training JSONL sidecar does not match the source experiment")
+    if source_manifest.get("selected_block_ids") != expected_source_manifest.get("selected_block_ids"):
+        parser.error("training sidecar block provenance differs from the source experiment")
+    if source_manifest.get("verification") != expected_source_manifest.get("verification"):
+        parser.error("training sidecar checksum evidence differs from the source experiment")
     if external_manifest.get("excluded_block_ids") != sorted(excluded_blocks):
         parser.error("external exclusion list is not canonical")
 
@@ -220,10 +234,10 @@ def main() -> None:
     }
     result = {
         "notice": (
-            "One-time frozen evaluation on WinMET volume-1 solid blocks excluded from all prior "
-            "listed random-block cohorts. This is block-disjoint within the same archive, not an "
-            "external-dataset or temporal benchmark. AVClass consensus family labels are weak labels. "
-            "No model weights or thresholds were fitted or changed."
+            "One-time frozen evaluation on WinMET reports with disjoint sample hashes and solid-block IDs. "
+            "Different archive volumes provide cross-volume validation within WinMET, not an independent "
+            "dataset or temporal benchmark; same-volume evaluation requires explicit block exclusions. "
+            "AVClass consensus family labels are weak labels. No weights or thresholds were fitted or changed."
         ),
         "source_experiment": str(args.source_experiment),
         "source_experiment_sha256": _sha256_file(args.source_experiment),
@@ -234,7 +248,12 @@ def main() -> None:
         "external_jsonl": str(args.reports),
         "external_jsonl_sha256": _sha256_file(args.reports),
         "external_manifest": str(external_manifest_path),
-        "archive_sha256": _archive_sha(external_manifest, archive_filename),
+        "source_archive_filename": source_archive_filename,
+        "source_archive_sha256": source_archive_sha,
+        "external_archive_filename": external_archive_filename,
+        "external_archive_sha256": external_archive_sha,
+        "same_archive": same_archive,
+        "cross_volume_evaluation": not same_archive,
         "label_file_sha256": _archive_sha(external_manifest, "reports_consensus_label.json"),
         "source_block_count": len(source_blocks),
         "external_block_count": len(external_blocks),

@@ -6,11 +6,21 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from malware_hybrid.winmet import download_winmet_file, prepare_winmet_archive
+from malware_hybrid.winmet import WINMET_LOCK, download_winmet_file, prepare_winmet_archive
 from malware_hybrid.serialization import iter_prepared
 
 
 class WinMETDownloadTests(unittest.TestCase):
+    def test_volume2_is_pinned_to_the_official_v3_artifact(self):
+        lock = json.loads(WINMET_LOCK.read_text(encoding="utf-8"))
+        entry = next(item for item in lock["files"] if item["filename"] == "WinMET_volume_2.7z")
+        self.assertEqual(entry["bytes"], 2620638102)
+        self.assertEqual(entry["source_checksum"], "md5:aee86b4591a46c69b0d027de80ff1011")
+        self.assertEqual(
+            entry["url"],
+            "https://zenodo.org/api/records/16414116/files/WinMET_volume_2.7z/content",
+        )
+
     def test_verification_and_download_size_bounds(self):
         payload = b"report bytes"
         with tempfile.TemporaryDirectory() as directory:

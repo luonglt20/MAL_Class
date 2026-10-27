@@ -1,17 +1,20 @@
 # WinMET: bounded, report-only workflow
 
 Source: [WinMET v3](https://zenodo.org/records/16414116), with source checksums,
-sizes and API license metadata pinned in `configs/winmet.lock.json`.
+sizes and API license metadata pinned in `configs/winmet.lock.json`. Volumes 1
+and 2 are individually pinned; volume 2 is a report-only extension and is not
+the same as the held-out volume-1 block cohort.
 The [record API](https://zenodo.org/api/records/16414116) declares
 GPL-3.0-or-later. Keep attribution and applicable dataset license terms with
 derived datasets; this metadata does not change the repository's code license.
 
-Install the optional reader and fetch only one volume plus labels:
+Install the optional reader and fetch only the volume(s) needed plus labels:
 
 ```bash
 pip install -e '.[winmet]'
 malware-hybrid download-winmet reports_consensus_label.json
 malware-hybrid download-winmet WinMET_volume_1.7z
+malware-hybrid download-winmet WinMET_volume_2.7z
 malware-hybrid prepare-winmet Data/raw/winmet/WinMET_volume_1.7z \
   --labels Data/raw/winmet/reports_consensus_label.json \
   --output artifacts/winmet/prepared_reports.jsonl \
@@ -24,6 +27,13 @@ local SHA-256. Failed downloads are removed; existing artifacts are verified,
 not overwritten. Downloads require space for the pinned file plus a 1 GiB
 reserve. The label JSON acquired locally has SHA-256
 `fe79a49d219988613f67faa580df0f860d9092b64cbb77a4da8494320f7038a8`.
+
+The [official v3 record](https://zenodo.org/records/16414116) lists 31,844
+reports across five volumes; volume 2 contains 6,369 report JSON files and is
+2,620,638,102 bytes (MD5
+`aee86b4591a46c69b0d027de80ff1011`). It expands to about 154 GB, so use the
+bounded report preparer and never unpack the volume wholesale. Its AVClass
+family labels come from the same separately pinned consensus file.
 
 Preparation verifies both pinned artifacts before decompression. Only regular
 JSON report members named with SHA-256 hashes are selected. Archive bytes go

@@ -16,6 +16,13 @@
       "note": "6369 reports; about 154GB uncompressed. Never extract the full volume on this workstation. Record local SHA-256 after acquisition."
     },
     {
+      "filename": "WinMET_volume_2.7z",
+      "url": "https://zenodo.org/api/records/16414116/files/WinMET_volume_2.7z/content",
+      "bytes": 2620638102,
+      "source_checksum": "md5:aee86b4591a46c69b0d027de80ff1011",
+      "note": "6369 reports; report-only use. Never extract the full volume or any executable on this workstation."
+    },
+    {
       "filename": "reports_consensus_label.json",
       "url": "https://zenodo.org/api/records/16414116/files/reports_consensus_label.json/content",
       "bytes": 4324720,
