@@ -280,6 +280,10 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(result["verdict"]["label"], "UNKNOWN")
         self.assertEqual(result["verdict"]["source"], "not_independently_qualified")
         self.assertEqual(result["verdict"]["reason"], "malware_head_did_not_pass_release_gate")
+        self.assertFalse(result["attention_trace"]["behavior_head_trained"])
+        self.assertFalse(result["attention_trace"]["behavior_to_modality"])
+        self.assertFalse(result["attention_trace"]["per_label_evidence"])
+        self.assertTrue(result["attention_trace"]["family_to_modality"])
 
     def test_incompatible_input_abstains_even_with_a_qualified_high_score_head(self):
         report = CapeReportParser(max_events=64).parse_file(FIXTURE)
