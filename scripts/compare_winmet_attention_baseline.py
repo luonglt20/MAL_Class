@@ -55,6 +55,17 @@ def _split_summary(reports):
     }
 
 
+def validate_reference_split(result, reference):
+    """A parser/schema experiment may change features, never its held-out rows."""
+    for key in ("sample_cap", "sample_seed", "split_seed", "split_strategy"):
+        if result[key] != reference[key]:
+            raise ValueError(f"reference split setting differs: {key}")
+    for name in ("train", "validation", "calibration", "withheld_internal_test"):
+        for key in ("rows", "sample_ids_sha256"):
+            if result["partitions"][name][key] != reference["partitions"][name][key]:
+                raise ValueError(f"reference split differs: {name}/{key}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("reports", type=Path, help="Prepared CAPE/WinMET JSONL with sidecar manifest")
@@ -85,6 +96,10 @@ def main():
         help="group-isolated split seed (defaults to --seed)",
     )
     parser.add_argument("--device", default="cpu")
+    parser.add_argument(
+        "--reference-split", type=Path,
+        help="refuse training if sample settings or partition identities differ from this experiment",
+    )
     args = parser.parse_args()
     bag_ranking_weight = args.family_ranking_weight if args.bag_ranking_weight is None else args.bag_ranking_weight
 
@@ -170,6 +185,13 @@ def main():
             },
         },
     }
+    if args.reference_split:
+        reference = json.loads(args.reference_split.read_text(encoding="utf-8"))
+        validate_reference_split(result, reference)
+        result["reference_split"] = {
+            "path": str(args.reference_split), "sha256": _file_sha256(args.reference_split),
+            "all_partition_identities_matched": True,
+        }
     print(json.dumps({
         "phase": "training_attention",
         "partitions": {key: value["rows"] for key, value in result["partitions"].items()},

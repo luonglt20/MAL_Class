@@ -9,7 +9,7 @@ import torch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from compare_ember_attention_baseline import _train_neural_baseline
 from compare_winmet_protocol_baselines import validate_partitions
-from compare_winmet_attention_baseline import _fingerprint
+from compare_winmet_attention_baseline import _fingerprint, validate_reference_split
 from malware_hybrid.dataset import ReportTensorizer
 from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel
 from malware_hybrid.normalization import CapeReportParser
@@ -38,6 +38,19 @@ def test_partition_guard_rejects_overlap_even_if_manifest_fingerprints_match():
     }}
     with pytest.raises(ValueError, match="overlapping"):
         validate_partitions(experiment, partitions, "test")
+
+
+def test_schema_comparison_refuses_partition_drift_before_training():
+    from copy import deepcopy
+    reference = {"sample_cap": 1000, "sample_seed": 44, "split_seed": 44, "split_strategy": "test",
+                 "partitions": {name: {"rows": 10, "sample_ids_sha256": name}
+                                for name in ("train", "validation", "calibration", "withheld_internal_test")}}
+    candidate = deepcopy(reference)
+    candidate["source_sha256"] = "new features may have a different checksum"
+    validate_reference_split(candidate, reference)
+    candidate["partitions"]["withheld_internal_test"]["sample_ids_sha256"] = "changed"
+    with pytest.raises(ValueError, match="withheld_internal_test"):
+        validate_reference_split(candidate, reference)
 
 
 @pytest.mark.parametrize("name", ["bag_of_tokens", "bilstm", "temporal_transformer", "graph_attention", "sequence_graph"])
