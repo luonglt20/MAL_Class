@@ -40,6 +40,9 @@ def _experiment_identity(report: dict) -> dict:
         "epochs": int(report["epochs"]),
         "family_head_variant": report["family_head_variant"],
         "architecture": report.get("architecture", "unspecified"),
+        "temporal_window_policy": report.get("model_config", {}).get(
+            "temporal_window_policy", "legacy_batch_tail"
+        ),
         "signature_static_attention_enabled": report.get("model_config", {}).get(
             "signature_static_attention_enabled", False
         ),

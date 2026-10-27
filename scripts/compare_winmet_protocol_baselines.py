@@ -70,7 +70,7 @@ def main(argv=None):
                       withheld_internal_test=withheld)
     validate_partitions(experiment, partitions, strategy)
     attention, tensorizer = load_checkpoint(checkpoint, args.device)
-    if (asdict(attention.config) != experiment["model_config"]
+    if (asdict(attention.config) != asdict(tensorizer_config_model(experiment))
             or asdict(tensorizer.config) != experiment["tensorizer_config"]
             or _family_training_priors(tensorizer, train) != attention.family_training_priors):
         parser.error("checkpoint config, tensorizer or priors differ from attention experiment")
@@ -126,7 +126,7 @@ def main(argv=None):
 
 def tensorizer_config_model(experiment):
     from malware_hybrid.model import HybridAttentionConfig
-    return HybridAttentionConfig(**experiment["model_config"])
+    return HybridAttentionConfig.from_saved(experiment["model_config"])
 
 
 if __name__ == "__main__":

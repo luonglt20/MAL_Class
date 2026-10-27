@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-27",
+  "status": "validation_diagnostics_not_acceptance",
+  "source_sha256": "c6b13028505f7537dc39bd27a7bdb6850128675b46e3d0f0484adfb30f28882a",
+  "window_policy_of_evaluated_models": "legacy_batch_tail",
+  "encoded_control_implementation_revision": "818f9fa",
+  "seed45_training_report_sha256": "6be492b7363fee4a5ee1bef2f0aa7308f3f129be7b7c7bb03c45ed2f285f0a76",
+  "matched_two_seed_summary_sha256": "360b97fbc8057e10f82ef51875bb667d2fe3f73f1b095b34d7a11e2559b1f50e",
+  "seed44_control_report_sha256": "a5522ec8fa4922c0e47f32c9534ca1f15ae5ef18dae89e1fc5d6d6898f242951",
+  "seed45_control_report_sha256": "0afca76fcbba6f03250adbd4df9d17216de5ae6b2885202f46f6aec21e3f4fe8",
+  "seed45_attention": {"map": 0.41381403277561607, "calibrated_macro_f1": 0.1959507796472683, "top1": 0.5873015873015873, "top3": 0.8253968253968254},
+  "seed45_bag": {"map": 0.36519951397547445, "calibrated_macro_f1": 0.25587092645916176, "top1": 0.6984126984126984, "top3": 0.8888888888888888},
+  "two_seed_mean_attention": {"map": 0.38534148049039374, "calibrated_macro_f1": 0.21208932599639385, "top1": 0.6587301587301587, "top3": 0.8333333333333333},
+  "two_seed_mean_bag": {"map": 0.309438974013833, "calibrated_macro_f1": 0.20562453885983298, "top1": 0.6507936507936507, "top3": 0.8492063492063492},
+  "historical_report_ablation_audit_first100": {
+    "original_encoded_nodes": 87034,
+    "broken_target_encoded_nodes": 92902,
+    "report_edges_cleared_encoded_nodes": 0,
+    "original_retained_event_nodes": 79135,
+    "broken_target_retained_event_nodes": 46280,
+    "original_unknown_graph_tokens": 21,
+    "broken_target_unknown_graph_tokens": 39275
+  },
+  "encoded_control_delta_orientation": "ablated_minus_full",
+  "seed44_deltas": {
+    "remove_resource_relations": {"map": 0.005228758169934622, "calibrated_macro_f1": 0.0},
+    "remove_process_context": {"map": -0.08010390583153426, "calibrated_macro_f1": -0.1481625128683952},
+    "mask_graph_edges_keep_nodes": {"map": -0.013324166761306211, "calibrated_macro_f1": -0.009876208547935306}
+  },
+  "seed45_deltas": {
+    "remove_resource_relations": {"map": 0.0006179441473558867, "calibrated_macro_f1": 0.0},
+    "remove_process_context": {"map": -0.021648813350015006, "calibrated_macro_f1": -0.17885676255325123},
+    "mask_graph_edges_keep_nodes": {"map": -0.05628405166588463, "calibrated_macro_f1": -0.018912998479561932}
+  },
+  "test_metrics": null,
+  "limitations": [
+    "Same small clustered validation split and weak AVClass labels; seeds are initialization replications, not independent datasets.",
+    "Attention loses calibrated macro-F1 and top-k to bag for seed 45; average F1 advantage is only 0.00646.",
+    "Node-preserving controls support a graph/context contribution, not semantic correctness of individual evidence links.",
+    "Temporal same-resource bias has no measured F1 benefit in either initialization; uniform relation biases cancel in softmax.",
+    "A separate batch-padding/window-boundary bug was subsequently reproduced; these metrics retain the legacy window policy."
+  ]
+}

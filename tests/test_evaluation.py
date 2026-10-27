@@ -14,7 +14,7 @@ from malware_hybrid.evaluation import (
     integrated_gradients_event_scores,
 )
 from malware_hybrid.evidence import EvidenceEngine
-from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel, RelationalAttentionBlock
+from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel, RelationalAttentionBlock, TemporalHierarchicalEncoder
 from malware_hybrid.normalization import CapeReportParser
 
 
@@ -22,6 +22,49 @@ FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_temporal_windows_do_not_change_when_batch_padding_increases(self):
+        torch.manual_seed(44)
+        encoder = TemporalHierarchicalEncoder(32, 16, 4, 1, 0., 4, 2, 16, 16).eval()
+        ids = torch.tensor([[2, 3, 4, 5]])
+        times = torch.arange(4).float().unsqueeze(0)
+        ones = torch.ones_like(ids)
+        zeros = torch.zeros_like(ids)
+        mask = ones.bool()
+        resources = torch.tensor([[2, 2, 3, 3]])
+        args = [ids, times, ones, zeros.float(), ones, zeros, ones, mask, resources]
+        padded = [torch.nn.functional.pad(value, (0, 8)) for value in args]
+        with torch.inference_mode():
+            original = encoder(*args, return_attention=False)
+            longer_batch = encoder(*padded, return_attention=False)
+        torch.testing.assert_close(original[0], longer_batch[0][:, :4], atol=1e-6, rtol=1e-6)
+        torch.testing.assert_close(original[2], longer_batch[2], atol=1e-6, rtol=1e-6)
+
+    def test_per_sample_tail_window_is_stable_in_a_mixed_length_batch(self):
+        torch.manual_seed(45)
+        encoder = TemporalHierarchicalEncoder(32, 16, 4, 1, 0., 4, 2, 16, 16).eval()
+        ids = torch.tensor([[2, 3, 4, 5, 6, 7, 8]])
+        ones, zeros = torch.ones_like(ids), torch.zeros_like(ids)
+        args = [ids, zeros.float(), ones, zeros.float(), ones, zeros, ones, ones.bool(), ones]
+        mixed = []
+        for value in args:
+            padded = torch.nn.functional.pad(value, (0, 4))
+            other = torch.ones_like(padded)
+            mixed.append(torch.cat([padded, other], dim=0))
+        with torch.inference_mode():
+            alone = encoder(*args, return_attention=False)
+            batched = encoder(*mixed, return_attention=False)
+        torch.testing.assert_close(alone[0], batched[0][:1, :7], atol=1e-6, rtol=1e-6)
+        torch.testing.assert_close(alone[2], batched[2][:1], atol=1e-6, rtol=1e-6)
+
+    def test_saved_configs_do_not_relabel_legacy_window_semantics(self):
+        values = dict(token_vocab_size=32, edge_vocab_size=8, node_type_vocab_size=8,
+                      n_families=2, behavior_ids=["T1055"])
+        self.assertEqual(HybridAttentionConfig(**values).temporal_window_policy, "per_sample_v1")
+        old = HybridAttentionConfig.from_saved(values)
+        self.assertEqual(old.temporal_window_policy, "legacy_batch_tail")
+        old.d_model, old.n_heads = 16, 4
+        self.assertEqual(HybridAttentionModel(old).temporal_encoder.window_policy, "legacy_batch_tail")
+
     def test_uniform_relation_bias_is_not_absolute_relation_evidence(self):
         # Softmax cancels row-constant shifts. This scopes a limitation of
         # bias-only relation encoding, not a claim about the whole hybrid.

@@ -55,6 +55,8 @@ Lệnh trên cần experiment, JSONL và checkpoint local đã tạo trước đ
 
 Parser trace hiện dùng `cape-process-relations-v3`: nhận diện pseudo-handle của chính process nhưng không coi thao tác self-memory là remote injection. Checkpoint mới lưu phiên bản chuẩn hóa đã train; registry chọn model v3 đã train lại và từ chối trace khác phiên bản. Pilot v3 trên cùng split đạt validation mAP/macro-F1 0.3569/0.2282, so với bag cùng hàm loss 0.2537/0.1554; chưa tốt hơn v2 và chưa đạt nghiệm thu. Các metric PE-v2 ở trên không được gán cho bản v3. Runner WinMET mới dùng cùng ranking loss cho attention và bag mặc định; muốn tái lập baseline lịch sử phải chỉ rõ `--bag-ranking-weight 0`.
 
+Attention theo cửa sổ mới dùng `per_sample_v1`, tránh thay đổi kết quả chỉ vì padding của batch. Checkpoint cũ giữ `legacy_batch_tail`, không đổi nghĩa ngầm; để tái lập training cũ bằng runner WinMET, chỉ rõ `--temporal-window-policy legacy_batch_tail`. Model sửa cửa sổ chưa được thay vào registry trước khi train/test. Các ablation mới `remove_resource_relations`, `remove_process_context`, `mask_graph_edges_keep_nodes` giữ nguyên token/node/nhãn sau encoding; phép phá target/xóa cạnh ở mức report cũ có nhiễu do đổi graph và pruning.
+
 ## Tài liệu và nguồn tham khảo
 
 - [Trạng thái triển khai](docs/implementation-status.md).
