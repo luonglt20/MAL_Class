@@ -57,6 +57,8 @@ Parser trace hiện dùng `cape-process-relations-v3`: nhận diện pseudo-hand
 
 Attention theo cửa sổ mới dùng `per_sample_v1`, tránh thay đổi kết quả chỉ vì padding của batch. Checkpoint cũ giữ `legacy_batch_tail`, không đổi nghĩa ngầm; để tái lập training cũ bằng runner WinMET, chỉ rõ `--temporal-window-policy legacy_batch_tail`. Model sửa cửa sổ chưa được thay vào registry trước khi train/test. Các ablation mới `remove_resource_relations`, `remove_process_context`, `mask_graph_edges_keep_nodes` giữ nguyên token/node/nhãn sau encoding; phép phá target/xóa cạnh ở mức report cũ có nhiễu do đổi graph và pruning.
 
+Biến thể [relation-value attention](docs/relation-value-attention.md) bổ sung quan hệ vào phần value thay vì chỉ bias trước softmax; bật bằng `--temporal-relation-values` trong runner WinMET. Mặc định tắt, checkpoint cũ không tự bật tham số chưa train, và model UI không tự đổi. Unit test/gradient không được dùng thay bằng chứng tăng độ chính xác; cần train/test cùng split với model `per_sample_v1` không bật biến thể này.
+
 ## Tài liệu và nguồn tham khảo
 
 - [Trạng thái triển khai](docs/implementation-status.md).

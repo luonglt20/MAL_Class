@@ -98,6 +98,8 @@ def main():
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--temporal-window-policy", choices=("per_sample_v1", "legacy_batch_tail"),
                         default="per_sample_v1")
+    parser.add_argument("--temporal-relation-values", action="store_true",
+                        help="experimental value-side relation messages; requires new training")
     parser.add_argument(
         "--reference-split", type=Path,
         help="refuse training if sample settings or partition identities differ from this experiment",
@@ -217,6 +219,7 @@ def main():
             "family_ranking_weight": args.family_ranking_weight,
             "modality_dropout": args.modality_dropout,
             "temporal_window_policy": args.temporal_window_policy,
+            "temporal_relation_values": args.temporal_relation_values,
         }
         mismatched = {
             key: (getattr(attention.config, key), value)
@@ -245,6 +248,7 @@ def main():
             modality_dropout=args.modality_dropout,
             selection_metric="family_map", progress=training_progress,
             temporal_window_policy=args.temporal_window_policy,
+            temporal_relation_values=args.temporal_relation_values,
         )
         attention, tensorizer = load_checkpoint(args.checkpoint, args.device)
     if _family_training_priors(tensorizer, train) != attention.family_training_priors:
@@ -270,7 +274,9 @@ def main():
     )
     result.update({
         "architecture": (
-            "signature_static_dynamic_three_branch_v3_sample_windows"
+            "signature_static_dynamic_three_branch_v4_relation_values"
+            if attention.config.temporal_relation_values
+            else "signature_static_dynamic_three_branch_v3_sample_windows"
             if attention.config.temporal_window_policy == "per_sample_v1"
             else "signature_static_dynamic_three_branch_v2"
             if attention.config.signature_static_attention_enabled

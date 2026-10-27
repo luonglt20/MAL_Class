@@ -45,6 +45,12 @@ def _report(seed: int, attention_map: float, bag_map: float) -> dict:
 
 
 class WinmetSeedSummaryTests(unittest.TestCase):
+    def test_rejects_mixing_bias_only_and_relation_value_models(self):
+        first, second = _report(42, 0.3, 0.2), _report(43, 0.5, 0.4)
+        second["model_config"] = {"temporal_relation_values": True}
+        with self.assertRaisesRegex(ValueError, "differ in source, split"):
+            summarize_reports([first, second])
+
     def test_rejects_mixing_temporal_window_policies(self):
         first, second = _report(42, 0.3, 0.2), _report(43, 0.5, 0.4)
         second["model_config"] = {"temporal_window_policy": "per_sample_v1"}
