@@ -146,7 +146,7 @@ class NormalizationTests(unittest.TestCase):
         self.assertIn("file_architecture:x86", tokens)
         self.assertIn("string_category:url", tokens)
         self.assertIn("string_category:registry", tokens)
-        self.assertIn("yara_category:packer", tokens)
+        self.assertFalse(any(token.startswith("yara") for token in tokens))
         self.assertNotIn("yara_category:redline", tokens)
         self.assertNotIn("export_count:b0", tokens)
         self.assertNotIn("overlay_size:zero", tokens)

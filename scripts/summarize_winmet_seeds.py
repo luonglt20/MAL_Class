@@ -38,6 +38,13 @@ def _experiment_identity(report: dict) -> dict:
         "batch_size": int(report["batch_size"]),
         "epochs": int(report["epochs"]),
         "family_head_variant": report["family_head_variant"],
+        "architecture": report.get("architecture", "unspecified"),
+        "signature_static_attention_enabled": report.get("model_config", {}).get(
+            "signature_static_attention_enabled", False
+        ),
+        "yara_input_policy": report.get("tensorizer_config", {}).get(
+            "yara_input_policy", "legacy_unverified_yara_v0"
+        ),
         "partition_fingerprints": {
             name: report["partitions"][name]["sample_ids_sha256"]
             for name in PARTITIONS

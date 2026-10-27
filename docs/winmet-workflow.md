@@ -176,8 +176,10 @@ PYTHONPATH=src:scripts .venv/bin/python scripts/evaluate_winmet_external_cohort.
 ```
 
 The evaluator verifies source/checkpoint fingerprints, reconstructs the original
-split and training priors, requires the source blocks in the exclusion manifest,
-and rejects sample-hash overlap. AVClass labels cover 1,456 rows; only 1,106 rows
+split and training priors, requires source-block exclusions for the same archive,
+and rejects block-ID/sample-hash overlap. Across volumes, it requires verified
+archive entries from the same pinned record without requiring foreign block
+exclusions. AVClass labels cover 1,456 rows; only 1,106 rows
 (76.0%) include a family known to the model, across 48 supported labels. On those
 rows, frozen mAP/calibrated macro-F1/top-1/top-3 were 0.1960/0.1657/0.5235/0.7269.
 The same weights and thresholds without cross-branch attention scored mAP 0.1711

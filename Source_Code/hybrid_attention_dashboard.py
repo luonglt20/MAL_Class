@@ -220,7 +220,12 @@ with analysis_tab:
                 middle.metric("Họ mã độc đã xác nhận", family["label"])
                 right.metric("Độ tin cậy kết luận", f"{family['confidence']:.1%}")
                 coverage = result.get("model_input_coverage")
-                if coverage and not coverage["supported"]:
+                if coverage and not coverage.get("signature_policy_compatible", True):
+                    st.warning(
+                        "Checkpoint cũ đã học YARA chưa được lọc theo chính sách chữ ký cấu trúc. "
+                        "Cần huấn luyện lại; hệ thống trả UNKNOWN và giữ chuỗi bằng chứng độc lập."
+                    )
+                elif coverage and not coverage["supported"]:
                     st.warning(
                         f"Checkpoint chỉ nhận diện {coverage['known_fraction']:.1%} token đầu vào; "
                         "kết luận mô hình trả UNKNOWN. Chọn checkpoint được huấn luyện cho "

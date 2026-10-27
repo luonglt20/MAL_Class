@@ -1,4 +1,4 @@
-"""One-time frozen evaluation on WinMET blocks excluded from prior cohorts."""
+"""Frozen evaluation on disjoint WinMET blocks or a different archive volume."""
 
 from __future__ import annotations
 
@@ -41,6 +41,38 @@ def _archive_sha(manifest: dict, filename: str) -> str | None:
         if Path(item.get("path", "")).name == filename:
             return item.get("sha256")
     return None
+
+
+def validate_block_provenance(source: dict, external: dict) -> bool:
+    """Require explicit exclusions within one archive, or verified cross-volume provenance."""
+    source_blocks = set(source.get("selected_block_ids") or [])
+    external_blocks = set(external.get("selected_block_ids") or [])
+    excluded = set(external.get("excluded_block_ids") or [])
+    if not source_blocks or not external_blocks:
+        raise ValueError("source and external manifests must record selected solid-block IDs")
+    if source_blocks & external_blocks or excluded & external_blocks:
+        raise ValueError("external block IDs overlap source/excluded blocks")
+    if external.get("excluded_block_ids") != sorted(excluded):
+        raise ValueError("external exclusion list is not canonical")
+
+    archives = []
+    for manifest in (source, external):
+        filename = Path(manifest.get("source", "")).name
+        entry = next((item for item in manifest.get("verification", [])
+                      if Path(item.get("path", "")).name == filename), {})
+        if not entry.get("sha256") or not entry.get("record"):
+            raise ValueError("source and external manifests must verify their source archives")
+        archives.append(entry)
+    if archives[0]["record"] != archives[1]["record"]:
+        raise ValueError("source and external archives do not belong to the same pinned WinMET record")
+    source_labels = _archive_sha(source, "reports_consensus_label.json")
+    external_labels = _archive_sha(external, "reports_consensus_label.json")
+    if not source_labels or source_labels != external_labels:
+        raise ValueError("source and external cohorts must verify the same AVClass label file")
+    same_archive = archives[0]["sha256"] == archives[1]["sha256"]
+    if same_archive and not source_blocks.issubset(excluded):
+        raise ValueError("same-archive external sampler did not exclude every source-experiment block")
+    return same_archive
 
 
 def main() -> None:
@@ -86,33 +118,15 @@ def main() -> None:
     source_blocks = set(source_manifest.get("selected_block_ids") or [])
     external_blocks = set(external_manifest.get("selected_block_ids") or [])
     excluded_blocks = set(external_manifest.get("excluded_block_ids") or [])
-    if not source_blocks or not external_blocks:
-        parser.error("source and external manifests must record selected solid-block IDs")
-    if not source_blocks.issubset(excluded_blocks):
-        parser.error("external sampler did not exclude every source-experiment block")
-    if source_blocks & external_blocks or excluded_blocks & external_blocks:
-        parser.error("external block IDs overlap prior/excluded blocks")
+    try:
+        same_archive = validate_block_provenance(source_manifest, external_manifest)
+    except ValueError as error:
+        parser.error(str(error))
 
     external_archive_filename = Path(external_manifest.get("source", "")).name
     source_archive_filename = Path(source_manifest.get("source", "")).name
     source_archive_sha = _archive_sha(source_manifest, source_archive_filename)
     external_archive_sha = _archive_sha(external_manifest, external_archive_filename)
-    if not source_archive_sha or not external_archive_sha:
-        parser.error("source and external manifests must verify their source archives")
-    source_record = next(iter(source_manifest.get("verification", [])), {}).get("record")
-    external_record = next(iter(external_manifest.get("verification", [])), {}).get("record")
-    if not source_record or source_record != external_record:
-        parser.error("source and external archives do not belong to the same pinned WinMET record")
-    same_archive = source_archive_sha == external_archive_sha
-    if same_archive and not source_blocks.issubset(excluded_blocks):
-        parser.error("same-archive external sampler did not exclude every source-experiment block")
-    if source_blocks & external_blocks:
-        parser.error("source and external block IDs overlap")
-    if _archive_sha(external_manifest, "reports_consensus_label.json") != _archive_sha(
-        source_experiment.get("source_manifest", {}), "reports_consensus_label.json",
-    ):
-        parser.error("source and external cohorts use different AVClass label files")
-
     expected_source_manifest = source_experiment.get("source_manifest", {})
     if source_manifest.get("written") != expected_source_manifest.get("written"):
         parser.error("training JSONL sidecar does not match the source experiment")
@@ -120,8 +134,6 @@ def main() -> None:
         parser.error("training sidecar block provenance differs from the source experiment")
     if source_manifest.get("verification") != expected_source_manifest.get("verification"):
         parser.error("training sidecar checksum evidence differs from the source experiment")
-    if external_manifest.get("excluded_block_ids") != sorted(excluded_blocks):
-        parser.error("external exclusion list is not canonical")
 
     torch.set_num_threads(2)
 
@@ -277,7 +289,9 @@ def main() -> None:
         "weights_changed": False,
         "thresholds_changed": False,
         "behavior_head_trained": bool(getattr(model, "behavior_head_trained", False)),
-        "same_archive_block_disjoint": True,
+        "sample_hash_disjoint": True,
+        "solid_block_ids_disjoint": True,
+        "same_archive_block_disjoint": True if same_archive else None,
         "external_dataset_test": False,
         "official_test_opened": False,
     }

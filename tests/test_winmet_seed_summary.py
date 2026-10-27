@@ -45,6 +45,18 @@ def _report(seed: int, attention_map: float, bag_map: float) -> dict:
 
 
 class WinmetSeedSummaryTests(unittest.TestCase):
+    def test_rejects_changed_signature_static_attention_architecture(self):
+        first, second = _report(42, 0.3, 0.2), _report(43, 0.5, 0.4)
+        second["model_config"] = {"signature_static_attention_enabled": True}
+        with self.assertRaisesRegex(ValueError, "differ in source, split"):
+            summarize_reports([first, second])
+
+    def test_rejects_mixing_signature_input_policies(self):
+        first, second = _report(42, 0.3, 0.2), _report(43, 0.5, 0.4)
+        second["tensorizer_config"] = {"yara_input_policy": "reviewed_structural_yara_v1"}
+        with self.assertRaisesRegex(ValueError, "differ in source, split"):
+            summarize_reports([first, second])
+
     def test_aggregates_matched_metrics_and_paired_wins(self):
         result = summarize_reports([_report(42, 0.3, 0.2), _report(43, 0.5, 0.4)])
         self.assertAlmostEqual(result["metrics"]["attention"]["family_map"]["mean"], 0.4)
