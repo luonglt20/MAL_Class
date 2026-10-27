@@ -28,6 +28,7 @@ def _experiment_identity(report: dict) -> dict:
         "split_strategy": report["split_strategy"],
         "family_min_support": int(report["family_min_support"]),
         "family_ranking_weight": float(report["family_ranking_weight"]),
+        "bag_family_ranking_weight": float(report.get("bag_family_ranking_weight", 0.0)),
         # Older reports predate the explicit field; the model config default
         # at that time was 0.15, so recover the effective setting.
         "modality_dropout": float(report.get("modality_dropout", 0.15)),

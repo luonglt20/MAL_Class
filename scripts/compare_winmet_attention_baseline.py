@@ -21,7 +21,7 @@ import torch
 from compare_ember_attention_baseline import (
     _fingerprint,
     _metrics,
-    _train_bag_baseline,
+    _train_neural_baseline,
 )
 from malware_hybrid.training import (
     _family_training_priors,
@@ -64,6 +64,10 @@ def main():
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--family-min-support", type=int, default=5)
     parser.add_argument("--family-ranking-weight", type=float, default=0.0)
+    parser.add_argument(
+        "--bag-ranking-weight", type=float, default=None,
+        help="defaults to attention ranking weight; use 0 only to reproduce historical bag runs",
+    )
     parser.add_argument("--modality-dropout", type=float, default=0.15)
     parser.add_argument("--d-model", type=int, default=32)
     parser.add_argument("--batch-size", type=int, default=4)
@@ -82,6 +86,7 @@ def main():
     )
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
+    bag_ranking_weight = args.family_ranking_weight if args.bag_ranking_weight is None else args.bag_ranking_weight
 
     manifest_path = Path(str(args.reports) + ".manifest.json")
     if not args.reports.is_file() or not manifest_path.is_file():
@@ -95,6 +100,7 @@ def main():
         parser.error(f"refusing to overwrite existing checkpoint: {args.checkpoint}")
     if (args.max_reports < 100 or args.epochs < 1 or args.family_min_support < 1
             or not math.isfinite(args.family_ranking_weight) or args.family_ranking_weight < 0
+            or not math.isfinite(bag_ranking_weight) or bag_ranking_weight < 0
             or not math.isfinite(args.modality_dropout) or not 0 <= args.modality_dropout < 1):
         parser.error("invalid sample, epoch, support, ranking-weight or modality-dropout setting")
 
@@ -143,6 +149,11 @@ def main():
         "split_strategy": split_strategy,
         "family_min_support": args.family_min_support,
         "family_ranking_weight": args.family_ranking_weight,
+        "bag_family_ranking_weight": bag_ranking_weight,
+        "comparison_objective": (
+            "matched_family_ranking_loss_v1" if bag_ranking_weight == args.family_ranking_weight
+            else "explicit_unmatched_family_ranking_loss"
+        ),
         "modality_dropout": args.modality_dropout,
         "d_model": args.d_model,
         "batch_size": args.batch_size,
@@ -221,10 +232,11 @@ def main():
 
     print(json.dumps({"phase": "training_bag_baseline", "family_labels": len(family_ids)}), flush=True)
     set_seed(args.seed)
-    bag, bag_weights, bag_thresholds, bag_threshold_report, bag_epoch, bag_history = _train_bag_baseline(
-        attention.config, tensorizer, train, validation, calibration,
+    bag, bag_weights, bag_thresholds, bag_threshold_report, bag_epoch, bag_history = _train_neural_baseline(
+        "bag_of_tokens", attention.config, tensorizer, train, validation, calibration,
         epochs=args.epochs, batch_size=args.batch_size, seed=args.seed,
         device=torch.device(args.device),
+        family_ranking_weight=bag_ranking_weight,
     )
     bag_validation = _metrics(
         bag, validation, tensorizer, torch.device(args.device), args.batch_size,
