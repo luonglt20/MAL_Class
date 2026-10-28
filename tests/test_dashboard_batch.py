@@ -9,6 +9,7 @@ from malware_hybrid.dataset import ReportTensorizer
 from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.training import save_checkpoint
+from malware_hybrid.serialization import report_to_dict
 
 
 streamlit_testing = pytest.importorskip("streamlit.testing.v1")
@@ -112,6 +113,39 @@ def test_dashboard_classifies_a_local_nested_dataset(tmp_path):
         button.label == "Tải kết quả dataset dạng CSV"
         for button in app.get("download_button")
     )
+
+
+def test_dashboard_streams_prepared_jsonl_and_keeps_record_errors(tmp_path):
+    payload = report_to_dict(CapeReportParser().parse_file(FIXTURE))
+    dataset = tmp_path / "records.jsonl"
+    dataset.write_text(json.dumps(payload) + "\n{bad json}\n", encoding="utf-8")
+    app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(field for field in app.text_input if field.label == "Đường dẫn dataset JSONL").set_value(str(dataset))
+    app.run(timeout=20)
+    next(button for button in app.button if button.label == "Phân loại JSONL").click()
+    app.run(timeout=30)
+    assert len(app.exception) == 0
+    frame = app.dataframe[0].value
+    assert len(frame) == 2
+    assert sum(frame["error"] != "") == 1
+    assert "line:2" in frame.iloc[1]["filename"]
+    assert next(button for button in app.get("download_button")
+                if button.label == "Tải kết quả dataset dạng CSV").proto.ignore_rerun
+
+
+def test_dashboard_jsonl_prefix_warns_instead_of_claiming_full_dataset(tmp_path):
+    payload = report_to_dict(CapeReportParser().parse_file(FIXTURE))
+    dataset = tmp_path / "records.jsonl"
+    dataset.write_text((json.dumps(payload) + "\n") * 2, encoding="utf-8")
+    app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(field for field in app.text_input if field.label == "Đường dẫn dataset JSONL").set_value(str(dataset))
+    next(field for field in app.number_input if field.label == "Giới hạn mẫu JSONL").set_value(1)
+    app.run(timeout=20)
+    next(button for button in app.button if button.label == "Phân loại JSONL").click()
+    app.run(timeout=30)
+    assert len(app.exception) == 0
+    assert len(app.dataframe[0].value) == 1
+    assert any("record_limit" in item.value for item in app.warning)
 
 
 def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path, monkeypatch):

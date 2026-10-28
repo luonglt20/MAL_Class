@@ -27,6 +27,7 @@ from malware_hybrid.batch_analysis import (
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
 from malware_hybrid.inference_service import DEFAULT_MODEL_REGISTRY, RoutedInferencePipeline
+from malware_hybrid.jsonl_analysis import analyze_jsonl_dataset
 from malware_hybrid.training import (
     load_cape_reports,
     load_checkpoint,
@@ -479,6 +480,44 @@ with analysis_tab:
                 render_batch_results(rows, "download_local_batch_predictions")
             except Exception as error:
                 st.error(f"Không thể phân tích thư mục dataset: {error}")
+
+    with st.expander("Phân loại dataset JSONL (CAPE / prepared)"):
+        st.caption(
+            "Đọc tuần tự từng dòng, không nạp cả dataset vào RAM. Không chạy mẫu. "
+            "Giới hạn 8 MiB/dòng, 256 MiB đọc mỗi lượt và tối đa 500 mẫu. "
+            "Prepared JSONL phải do pipeline chuẩn hóa tạo; graph được dựng lại từ events, "
+            "nhãn tham chiếu không dùng để dự đoán. Prefix được phân tích không phải mẫu ngẫu nhiên."
+        )
+        jsonl_path = st.text_input("Đường dẫn dataset JSONL", key="inference_jsonl_path")
+        jsonl_format = st.selectbox("Định dạng JSONL để phân loại",
+                                    ["Prepared JSONL của MAL_Class", "Raw CAPE JSON mỗi dòng"])
+        jsonl_cap = st.number_input("Giới hạn mẫu JSONL", min_value=1, max_value=500, value=100)
+        if st.button("Phân loại JSONL", disabled=not jsonl_path, key="run_jsonl_inference"):
+            try:
+                jsonl_pipeline = load_pipeline(checkpoint, device, str(registry_path), registry_version)
+                jsonl_progress = st.progress(0, text="Đang đọc dataset JSONL...")
+                def jsonl_update(done, scanned):
+                    jsonl_progress.progress(min(done / int(jsonl_cap), 1.),
+                        text=f"Đã xử lý {done} dòng mẫu · đọc {scanned / (1024 * 1024):.1f} MiB")
+                jsonl_rows, jsonl_summary = analyze_jsonl_dataset(
+                    jsonl_path, jsonl_pipeline,
+                    input_format="prepared" if jsonl_format.startswith("Prepared") else "cape",
+                    max_records=int(jsonl_cap), progress=jsonl_update,
+                )
+                if jsonl_summary["complete"]:
+                    jsonl_progress.progress(1., text="Đã đọc hết dataset JSONL")
+                else:
+                    st.warning(
+                        f"Chỉ phân tích một phần dataset: {jsonl_summary['stop_reason']}. "
+                        "Không được xem kết quả prefix này là kết quả toàn bộ dataset."
+                    )
+                st.json(jsonl_summary)
+                if jsonl_rows:
+                    render_batch_results(jsonl_rows, "download_jsonl_predictions")
+                else:
+                    st.info("Không có dòng mẫu trong phần dataset đã đọc.")
+            except Exception as error:
+                st.error(f"Không thể phân tích dataset JSONL: {error}")
 
 with training_tab:
     st.write(
