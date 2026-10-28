@@ -1,0 +1,1477 @@
+{
+  "date": "2026-10-29",
+  "status": "validation_only_not_qualified",
+  "full_report": "artifacts/winmet/resourcev4_attention14_controls_20261029.json",
+  "full_report_sha256": "ecafbaa908ff6155915a9b478b263bc2638350d9b5a964cf21e24247e7b83115",
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "checkpoint_hash_verified_against_source_report": true,
+  "source_sha256": "503ecbc0c11ac9a93e74a75136c99eaae999d1d3731c669e18b9d666b485835a",
+  "partitions": {
+    "train": {
+      "rows": 637,
+      "sample_ids_sha256": "e52f8bf8d9541e008a95c05e79f43f133825f4ba73c1d5b8d2eb9477754b795b"
+    },
+    "validation": {
+      "rows": 107,
+      "sample_ids_sha256": "77e39c616eba0ba79fbceff5d2bd3f4b83958a202dd70da84e11e4df33bdfa4f"
+    },
+    "calibration": {
+      "rows": 101,
+      "sample_ids_sha256": "7e063043e3c280d330dde827393188ad6e8ad8e1fe1da52d2503ab8d30769e79"
+    },
+    "withheld_internal_test": {
+      "rows": 155,
+      "sample_ids_sha256": "9673c8fcd6b361fffa508feee4caa13b28f0a4852a4b3f20b35530a5036ad9d1"
+    }
+  },
+  "baseline": {
+    "family_map": 0.69240468704876,
+    "family_map_labels": 17,
+    "per_family": {
+      "agenttesla": {
+        "support": 5,
+        "evaluated": 100,
+        "recall": 0.8,
+        "precision": 0.25,
+        "average_precision": 0.4192997198879552
+      },
+      "amadey": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "berbew": {
+        "support": 17,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "bladabindi": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "blihan": {
+        "support": 3,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 0.6,
+        "average_precision": 1.0
+      },
+      "cosmu": {
+        "support": 4,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "disabler": {
+        "support": 4,
+        "evaluated": 100,
+        "recall": 0.25,
+        "precision": 1.0,
+        "average_precision": 0.7928571428571428
+      },
+      "equationdrug": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "gamarue": {
+        "support": 2,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.13333333333333333
+      },
+      "gcleaner": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 0.3333333333333333,
+        "average_precision": 0.5
+      },
+      "lazy": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": 0.0,
+        "average_precision": null
+      },
+      "loader": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "noon": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.125
+      },
+      "qbot": {
+        "support": 2,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.8333333333333333
+      },
+      "redline": {
+        "support": 16,
+        "evaluated": 100,
+        "recall": 0.9375,
+        "precision": 0.6818181818181818,
+        "average_precision": 0.9059450393060451
+      },
+      "sload": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "snakelogger": {
+        "support": 2,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.45
+      },
+      "snojan": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": 0.0,
+        "average_precision": null
+      },
+      "stop": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 1.0
+      },
+      "strab": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 0.5,
+        "average_precision": 0.5
+      },
+      "taskun": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.1111111111111111
+      },
+      "tofsee": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "virlock": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      }
+    },
+    "family_calibrated_map": 0.69240468704876,
+    "family_calibrated_map_labels": 17,
+    "per_family_calibrated": {
+      "agenttesla": {
+        "support": 5,
+        "evaluated": 100,
+        "recall": 0.8,
+        "precision": 0.25,
+        "average_precision": 0.4192997198879552
+      },
+      "amadey": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "berbew": {
+        "support": 17,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "bladabindi": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "blihan": {
+        "support": 3,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 0.6,
+        "average_precision": 1.0
+      },
+      "cosmu": {
+        "support": 4,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "disabler": {
+        "support": 4,
+        "evaluated": 100,
+        "recall": 0.25,
+        "precision": 1.0,
+        "average_precision": 0.7928571428571428
+      },
+      "equationdrug": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      },
+      "gamarue": {
+        "support": 2,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.13333333333333333
+      },
+      "gcleaner": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 0.3333333333333333,
+        "average_precision": 0.5
+      },
+      "lazy": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": 0.0,
+        "average_precision": null
+      },
+      "loader": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "noon": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.125
+      },
+      "qbot": {
+        "support": 2,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.8333333333333333
+      },
+      "redline": {
+        "support": 16,
+        "evaluated": 100,
+        "recall": 0.6875,
+        "precision": 1.0,
+        "average_precision": 0.9059450393060451
+      },
+      "sload": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "snakelogger": {
+        "support": 2,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.45
+      },
+      "snojan": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": 0.0,
+        "average_precision": null
+      },
+      "stop": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 1.0
+      },
+      "strab": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 0.5,
+        "average_precision": 0.5
+      },
+      "taskun": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 0.0,
+        "precision": null,
+        "average_precision": 0.1111111111111111
+      },
+      "tofsee": {
+        "support": 0,
+        "evaluated": 100,
+        "recall": null,
+        "precision": null,
+        "average_precision": null
+      },
+      "virlock": {
+        "support": 1,
+        "evaluated": 100,
+        "recall": 1.0,
+        "precision": 1.0,
+        "average_precision": 1.0
+      }
+    },
+    "family_balanced_accuracy": 0.7860861555937918,
+    "family_subset_accuracy": 0.69,
+    "family_macro_f1": 0.4992407489311514,
+    "family_micro_f1": 0.7101449275362319,
+    "family_calibrated_macro_f1": 0.5007314036725802,
+    "family_calibrated_micro_f1": 0.7086614173228346,
+    "family_top1_accuracy": 0.8571428571428571,
+    "family_top3_accuracy": 0.9365079365079365,
+    "family_evaluated_samples": 63,
+    "family_prior_map": 0.03705882352941176,
+    "family_prior_top1_accuracy": 0.25396825396825395,
+    "family_prior_top3_accuracy": 0.6031746031746031,
+    "family_prior_evaluated_samples": 63
+  },
+  "ablations": {
+    "remove_resource_relations": {
+      "metrics": {
+        "family_map": 0.6925804007165801,
+        "family_map_labels": 17,
+        "per_family": {
+          "agenttesla": {
+            "support": 5,
+            "evaluated": 100,
+            "recall": 0.8,
+            "precision": 0.25,
+            "average_precision": 0.4192997198879552
+          },
+          "amadey": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "berbew": {
+            "support": 17,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "bladabindi": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "blihan": {
+            "support": 3,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.6,
+            "average_precision": 1.0
+          },
+          "cosmu": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "disabler": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.25,
+            "precision": 1.0,
+            "average_precision": 0.7928571428571428
+          },
+          "equationdrug": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "gamarue": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.13333333333333333
+          },
+          "gcleaner": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.3333333333333333,
+            "average_precision": 0.5
+          },
+          "lazy": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "loader": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "noon": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.125
+          },
+          "qbot": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 1.0,
+            "average_precision": 0.8333333333333333
+          },
+          "redline": {
+            "support": 16,
+            "evaluated": 100,
+            "recall": 0.9375,
+            "precision": 0.6818181818181818,
+            "average_precision": 0.9089321716589862
+          },
+          "sload": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "snakelogger": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.45
+          },
+          "snojan": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "stop": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          },
+          "strab": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.5,
+            "average_precision": 0.5
+          },
+          "taskun": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.1111111111111111
+          },
+          "tofsee": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "virlock": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          }
+        },
+        "family_calibrated_map": 0.6925804007165801,
+        "family_calibrated_map_labels": 17,
+        "per_family_calibrated": {
+          "agenttesla": {
+            "support": 5,
+            "evaluated": 100,
+            "recall": 0.8,
+            "precision": 0.25,
+            "average_precision": 0.4192997198879552
+          },
+          "amadey": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "berbew": {
+            "support": 17,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "bladabindi": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "blihan": {
+            "support": 3,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.6,
+            "average_precision": 1.0
+          },
+          "cosmu": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "disabler": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.25,
+            "precision": 1.0,
+            "average_precision": 0.7928571428571428
+          },
+          "equationdrug": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "gamarue": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.13333333333333333
+          },
+          "gcleaner": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.3333333333333333,
+            "average_precision": 0.5
+          },
+          "lazy": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "loader": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "noon": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.125
+          },
+          "qbot": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 1.0,
+            "average_precision": 0.8333333333333333
+          },
+          "redline": {
+            "support": 16,
+            "evaluated": 100,
+            "recall": 0.6875,
+            "precision": 1.0,
+            "average_precision": 0.9089321716589862
+          },
+          "sload": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "snakelogger": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.45
+          },
+          "snojan": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "stop": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          },
+          "strab": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.5,
+            "average_precision": 0.5
+          },
+          "taskun": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.1111111111111111
+          },
+          "tofsee": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "virlock": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          }
+        },
+        "family_balanced_accuracy": 0.8007920379467329,
+        "family_subset_accuracy": 0.7,
+        "family_macro_f1": 0.5384564352056611,
+        "family_micro_f1": 0.7194244604316546,
+        "family_calibrated_macro_f1": 0.53994708994709,
+        "family_calibrated_micro_f1": 0.71875,
+        "family_top1_accuracy": 0.8571428571428571,
+        "family_top3_accuracy": 0.9365079365079365,
+        "family_evaluated_samples": 63,
+        "family_prior_map": 0.03705882352941176,
+        "family_prior_top1_accuracy": 0.25396825396825395,
+        "family_prior_top3_accuracy": 0.6031746031746031,
+        "family_prior_evaluated_samples": 63
+      },
+      "delta_vs_original": {
+        "family_map": 0.00017571366782009878,
+        "family_calibrated_macro_f1": 0.039215686274509776,
+        "family_top1_accuracy": 0.0,
+        "family_top3_accuracy": 0.0
+      },
+      "paired_logit_changes": {
+        "notice": "Same-sample logit changes with fixed weights; metric invariance is not proof of input insensitivity.",
+        "samples": 107,
+        "family_logit_values": 2461,
+        "mean_absolute_logit_delta": 0.004460854629150787,
+        "maximum_absolute_logit_delta": 0.10963678359985352,
+        "maximum_absolute_sigmoid_delta": 0.008245021104812622,
+        "argmax_changed_samples": 0,
+        "valid_events": 156344,
+        "events_with_known_resource_identity": 73758
+      }
+    },
+    "mask_graph_edges_keep_nodes": {
+      "metrics": {
+        "family_map": 0.5917299444116052,
+        "family_map_labels": 17,
+        "per_family": {
+          "agenttesla": {
+            "support": 5,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.29411764705882354,
+            "average_precision": 0.4275048480930834
+          },
+          "amadey": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": 0.0,
+            "average_precision": 0.1
+          },
+          "berbew": {
+            "support": 17,
+            "evaluated": 100,
+            "recall": 0.8823529411764706,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "bladabindi": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "blihan": {
+            "support": 3,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.6,
+            "average_precision": 1.0
+          },
+          "cosmu": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.75,
+            "precision": 0.42857142857142855,
+            "average_precision": 0.75
+          },
+          "disabler": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 0.5,
+            "average_precision": 0.6488095238095237
+          },
+          "equationdrug": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "gamarue": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.14835164835164835
+          },
+          "gcleaner": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.3333333333333333,
+            "average_precision": 0.5
+          },
+          "lazy": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "loader": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "noon": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.09090909090909091
+          },
+          "qbot": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.5833333333333333
+          },
+          "redline": {
+            "support": 16,
+            "evaluated": 100,
+            "recall": 0.9375,
+            "precision": 0.6521739130434783,
+            "average_precision": 0.9002442002442003
+          },
+          "sload": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "snakelogger": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.3333333333333333
+          },
+          "snojan": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "stop": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          },
+          "strab": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.5,
+            "average_precision": 0.5
+          },
+          "taskun": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": 0.0,
+            "average_precision": 0.07692307692307693
+          },
+          "tofsee": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "virlock": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.3333333333333333,
+            "average_precision": 1.0
+          }
+        },
+        "family_calibrated_map": 0.5917299444116052,
+        "family_calibrated_map_labels": 17,
+        "per_family_calibrated": {
+          "agenttesla": {
+            "support": 5,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.29411764705882354,
+            "average_precision": 0.4275048480930834
+          },
+          "amadey": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": 0.0,
+            "average_precision": 0.1
+          },
+          "berbew": {
+            "support": 17,
+            "evaluated": 100,
+            "recall": 0.6470588235294118,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "bladabindi": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "blihan": {
+            "support": 3,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.6,
+            "average_precision": 1.0
+          },
+          "cosmu": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.75,
+            "precision": 0.42857142857142855,
+            "average_precision": 0.75
+          },
+          "disabler": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 0.5,
+            "average_precision": 0.6488095238095237
+          },
+          "equationdrug": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "gamarue": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.14835164835164835
+          },
+          "gcleaner": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.3333333333333333,
+            "average_precision": 0.5
+          },
+          "lazy": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "loader": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "noon": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.09090909090909091
+          },
+          "qbot": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.5833333333333333
+          },
+          "redline": {
+            "support": 16,
+            "evaluated": 100,
+            "recall": 0.6875,
+            "precision": 1.0,
+            "average_precision": 0.9002442002442003
+          },
+          "sload": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "snakelogger": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.3333333333333333
+          },
+          "snojan": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "stop": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          },
+          "strab": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.5,
+            "average_precision": 0.5
+          },
+          "taskun": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": 0.0,
+            "average_precision": 0.07692307692307693
+          },
+          "tofsee": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "virlock": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 0.3333333333333333,
+            "average_precision": 1.0
+          }
+        },
+        "family_balanced_accuracy": 0.7554227182045758,
+        "family_subset_accuracy": 0.59,
+        "family_macro_f1": 0.38961161387631976,
+        "family_micro_f1": 0.6351351351351351,
+        "family_calibrated_macro_f1": 0.38336445689386867,
+        "family_calibrated_micro_f1": 0.5909090909090909,
+        "family_top1_accuracy": 0.8253968253968254,
+        "family_top3_accuracy": 0.9365079365079365,
+        "family_evaluated_samples": 63,
+        "family_prior_map": 0.03705882352941176,
+        "family_prior_top1_accuracy": 0.25396825396825395,
+        "family_prior_top3_accuracy": 0.6031746031746031,
+        "family_prior_evaluated_samples": 63
+      },
+      "delta_vs_original": {
+        "family_map": -0.10067474263715481,
+        "family_calibrated_macro_f1": -0.11736694677871151,
+        "family_top1_accuracy": -0.031746031746031744,
+        "family_top3_accuracy": 0.0
+      },
+      "paired_logit_changes": {
+        "notice": "Same-sample logit changes with fixed weights; metric invariance is not proof of input insensitivity.",
+        "samples": 107,
+        "family_logit_values": 2461,
+        "mean_absolute_logit_delta": 0.6287545502936632,
+        "maximum_absolute_logit_delta": 5.108974933624268,
+        "maximum_absolute_sigmoid_delta": 0.7989224195480347,
+        "argmax_changed_samples": 12,
+        "valid_events": 156344,
+        "events_with_known_resource_identity": 73758
+      }
+    },
+    "disable_cross_branch_attention": {
+      "metrics": {
+        "family_map": 0.575238108220267,
+        "family_map_labels": 17,
+        "per_family": {
+          "agenttesla": {
+            "support": 5,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.40876433508012455
+          },
+          "amadey": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "berbew": {
+            "support": 17,
+            "evaluated": 100,
+            "recall": 0.8235294117647058,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "bladabindi": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "blihan": {
+            "support": 3,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "cosmu": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "disabler": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 0.5,
+            "average_precision": 0.5368589743589743
+          },
+          "equationdrug": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          },
+          "gamarue": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.34090909090909094
+          },
+          "gcleaner": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": 0.0,
+            "average_precision": 0.25
+          },
+          "lazy": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "loader": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "noon": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.14285714285714285
+          },
+          "qbot": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.060798548094373864
+          },
+          "redline": {
+            "support": 16,
+            "evaluated": 100,
+            "recall": 0.9375,
+            "precision": 0.7142857142857143,
+            "average_precision": 0.8805264151114991
+          },
+          "sload": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "snakelogger": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.29166666666666663
+          },
+          "snojan": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "stop": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.2
+          },
+          "strab": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.5
+          },
+          "taskun": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.16666666666666666
+          },
+          "tofsee": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "virlock": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          }
+        },
+        "family_calibrated_map": 0.575238108220267,
+        "family_calibrated_map_labels": 17,
+        "per_family_calibrated": {
+          "agenttesla": {
+            "support": 5,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.40876433508012455
+          },
+          "amadey": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "berbew": {
+            "support": 17,
+            "evaluated": 100,
+            "recall": 0.5882352941176471,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "bladabindi": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "blihan": {
+            "support": 3,
+            "evaluated": 100,
+            "recall": 1.0,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "cosmu": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 1.0,
+            "average_precision": 1.0
+          },
+          "disabler": {
+            "support": 4,
+            "evaluated": 100,
+            "recall": 0.5,
+            "precision": 0.5,
+            "average_precision": 0.5368589743589743
+          },
+          "equationdrug": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          },
+          "gamarue": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.34090909090909094
+          },
+          "gcleaner": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": 0.0,
+            "average_precision": 0.25
+          },
+          "lazy": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "loader": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "noon": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.14285714285714285
+          },
+          "qbot": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.060798548094373864
+          },
+          "redline": {
+            "support": 16,
+            "evaluated": 100,
+            "recall": 0.375,
+            "precision": 1.0,
+            "average_precision": 0.8805264151114991
+          },
+          "sload": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "snakelogger": {
+            "support": 2,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.29166666666666663
+          },
+          "snojan": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": 0.0,
+            "average_precision": null
+          },
+          "stop": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.2
+          },
+          "strab": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.5
+          },
+          "taskun": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 0.16666666666666666
+          },
+          "tofsee": {
+            "support": 0,
+            "evaluated": 100,
+            "recall": null,
+            "precision": null,
+            "average_precision": null
+          },
+          "virlock": {
+            "support": 1,
+            "evaluated": 100,
+            "recall": 0.0,
+            "precision": null,
+            "average_precision": 1.0
+          }
+        },
+        "family_balanced_accuracy": 0.6364254257852874,
+        "family_subset_accuracy": 0.63,
+        "family_macro_f1": 0.28710019317229946,
+        "family_micro_f1": 0.6607142857142857,
+        "family_calibrated_macro_f1": 0.26193305605070316,
+        "family_calibrated_micro_f1": 0.5161290322580645,
+        "family_top1_accuracy": 0.8253968253968254,
+        "family_top3_accuracy": 0.9365079365079365,
+        "family_evaluated_samples": 63,
+        "family_prior_map": 0.03705882352941176,
+        "family_prior_top1_accuracy": 0.25396825396825395,
+        "family_prior_top3_accuracy": 0.6031746031746031,
+        "family_prior_evaluated_samples": 63
+      },
+      "delta_vs_original": {
+        "family_map": -0.11716657882849302,
+        "family_calibrated_macro_f1": -0.23879834762187702,
+        "family_top1_accuracy": -0.031746031746031744,
+        "family_top3_accuracy": 0.0
+      }
+    }
+  },
+  "deployment_family_decisions": {
+    "notice": "Actual guarded pipeline decisions, not top-k accuracy. Reference agreement uses available family supervision, not independent adjudication. Unknown/undetected references are not benign.",
+    "samples": 107,
+    "errors": 0,
+    "input_supported_samples": 107,
+    "accepted_primary_samples": 22,
+    "accepted_fraction_all_samples": 0.205607476635514,
+    "accepted_reference_labeled_samples": 22,
+    "accepted_primary_matching_reference": 22,
+    "accepted_primary_reference_precision": 1.0,
+    "abstention_reasons": {
+      "no_confirmed_family_in_prediction_sets": 85
+    }
+  },
+  "test_metrics": null,
+  "limitations": [
+    "One clustered validation split and weak AVClass labels; not independent test performance.",
+    "Accepted-label agreement is conditional on only 22 predictions; 85/107 abstained.",
+    "Removing temporal resource IDs leaves other resource information in graph nodes and edges.",
+    "Attention ablation is not causal verification of specific raw evidence links.",
+    "No benign multimodal FPR or independently annotated behavior gold set."
+  ]
+}
