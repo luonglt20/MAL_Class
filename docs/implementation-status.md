@@ -2,6 +2,8 @@
 
 This is an independent multimodal research project. Legacy reports and scores are reference material, not experimental evidence for this project.
 
+2026-10-29 UI explanation: three-branch inference exposes signed candidate-logit contributions from the same forward, with reconstruction checking and abstention preserved. Real checkpoint/report smoke checks and browser checks for CAPE/PE passed; this changes explanations, not classifier quality. [How to read it and verification scope](family-readout-ui.md).
+
 2026-10-29 completed 14-epoch bag comparison: frozen epoch-12 Attention wins calibrated macro-F1 (0.4540 vs 0.3873), but loses mAP (0.6587 vs 0.6764), top-1 and top-3. Attention was not retrained and the checkpoint hash is unchanged. Architecture superiority remains mixed; no model promotion. [Protocol, caveats and retained evidence](epoch12-baseline-comparison.md).
 
 2026-10-28 resume: the saved epoch-12 candidate has been calibrated without changing weights. Actual guarded validation decisions accept 30/107 samples, with only 25/30 agreeing with AVClass. It remains unregistered/unqualified; improved ranking does not resolve accepted-label errors. [Resume evidence and integration defects](resume-validation-20261028.md).

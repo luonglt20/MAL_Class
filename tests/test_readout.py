@@ -41,6 +41,44 @@ class AnalyticReadout(torch.nn.Module):
 
 
 class ReadoutTests(unittest.TestCase):
+    def test_shared_model_readouts_do_not_overlap_temporary_hooks(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from unittest.mock import patch
+        from time import sleep
+        model = AnalyticReadout().train()
+        batch = {"event_ids": torch.ones(1, 1, dtype=torch.long)}
+        forward = model.forward
+        active = 0
+        peak = 0
+
+        def observe(*args, **kwargs):
+            nonlocal active, peak
+            active += 1
+            peak = max(peak, active)
+            try:
+                sleep(.02)
+                return forward(*args, **kwargs)
+            finally:
+                active -= 1
+
+        with patch.object(model, "forward", side_effect=observe), ThreadPoolExecutor(2) as executor:
+            results = list(executor.map(lambda _: family_attention_readout(model, batch), range(2)))
+        self.assertEqual(peak, 1)
+        self.assertTrue(model.training)
+        self.assertTrue(all(item["reconstruction_error"] < 1e-6 for item in results))
+        self.assertEqual(len(model.family_attention._forward_hooks), 0)
+
+    def test_output_reuse_needs_only_one_forward_and_preserves_logits(self):
+        from unittest.mock import patch
+        model = AnalyticReadout().eval()
+        batch = {"event_ids": torch.ones(1, 1, dtype=torch.long)}
+        expected = model(batch)["family_logits"]
+        with patch.object(model, "forward", wraps=model.forward) as forward:
+            result = family_attention_readout(model, batch, include_model_output=True)
+        self.assertEqual(forward.call_count, 1)
+        torch.testing.assert_close(result["model_output"]["family_logits"], expected)
+        self.assertNotIn("model_output", family_attention_readout(model, batch))
+
     def test_equal_attention_has_opposite_signed_value_contributions(self):
         model = AnalyticReadout().train()
         result = family_attention_readout(model, {"event_ids": torch.ones(1, 1, dtype=torch.long)})

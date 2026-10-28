@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-29",
+  "status": "explanation_ui_integration_verified_not_classifier_improvement",
+  "smoke_report": "artifacts/winmet/attention_readout_pipeline_smoke_20261029.json",
+  "smoke_report_sha256": "38b1fe0da3ab5c2d688b489712068d7f8a9046d93a858601ae8c1e23df381886",
+  "sample_hash": "31c9ccf3ce614f9f9eab26136d5a512d0b23f26be30c2dc017dbdb5b08cfc6ce",
+  "selection": "first_prepared_row_smoke_not_accuracy_evaluation",
+  "sample_executed": false,
+  "checkpoint_smoke_checks": [
+    {
+      "checkpoint": "models/winmet_volume2_relv3_samplewindows_epoch12_calibrated_seed44.pt",
+      "checkpoint_sha256": "d95f6cf5b599740e72bb0892d9b64a0a0ea45dcca1fa13d9a9fc8860807a1b93",
+      "weights_unchanged": true,
+      "comparison_mode": "eval_for_both_forwards",
+      "normal_forward_logit": 2.4621548652648926,
+      "readout_logit": 2.4621548652648926,
+      "reconstruction_error": 2.384185791015625e-07,
+      "family": "UNKNOWN",
+      "abstained": true,
+      "input_supported": true,
+      "json_serializable": true
+    },
+    {
+      "checkpoint": "models/winmet_volume2_relv3_hybrid3_attention_1000_seed44.pt",
+      "checkpoint_sha256": "2415ff5f2a1bd32b9ad92b66d7663ebf214c1d5f13fe9884f60bb3403b286081",
+      "weights_unchanged": true,
+      "comparison_mode": "eval_for_both_forwards",
+      "normal_forward_logit": 0.13275966048240662,
+      "readout_logit": 0.13275966048240662,
+      "reconstruction_error": 5.960464477539063e-08,
+      "family": "UNKNOWN",
+      "abstained": true,
+      "input_supported": true,
+      "json_serializable": true
+    }
+  ],
+  "browser_checks": {
+    "synthetic_cape_fixture": "hybrid model routed; signed contribution table and expanded evidence list rendered; family UNKNOWN",
+    "setuptools_launcher_pe": "static model routed; dynamic contributions zero; signed table rendered; family UNKNOWN",
+    "console_errors": 0,
+    "screenshots": {
+      "output/playwright/attention-signed-readout-20261029.png": "773067886202f99c6c0e1a50b30076158a1238c58016b99e5176706edb9a09c5",
+      "output/playwright/attention-static-readout-20261029.png": "4e3fb742065d80b2bc07d216f8aa3dcab1554e8b1ec09d3f5398d8a76a489fda"
+    }
+  },
+  "tests": {
+    "passed": 254,
+    "subtests_passed": 80,
+    "warning": "upstream Streamlit/Pandas deprecation"
+  },
+  "limitations": [
+    "Signed contextualized values explain one candidate logit, not causal raw-input effects or generic maliciousness.",
+    "Top ten per sign shown; full group sums plus biases reconstruct score.",
+    "No training, threshold/registry changes, accuracy claim or test-set evaluation.",
+    "The known Signature/event faithfulness failures and accepted-label disagreements remain unresolved."
+  ]
+}

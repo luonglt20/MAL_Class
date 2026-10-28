@@ -188,6 +188,9 @@ def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path, monk
 
     assert len(app.exception) == 0
     assert any("Model tự chọn: Test Hybrid Attention" in item.value for item in app.caption)
+    assert any(item.value == "Đóng góp Attention vào điểm family ứng viên"
+               for item in app.get("subheader"))
+    assert any("Đóng góp dương tăng điểm, âm giảm điểm" in item.value for item in app.caption)
     assert any(
         item.value == "Attention trên từng bằng chứng Signature / Static PE"
         for item in app.get("subheader")

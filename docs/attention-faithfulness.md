@@ -113,3 +113,13 @@ samples and fixed family targets. Maximum logit reconstruction error was
 (0/5)**. The mixed result is not acceptance and does not change classifier
 predictions or replace the failed attention-weight ranking. See the
 [signed-readout diagnostic](experiments/winmet-signed-readout-20261027.json).
+
+## Inference and UI integration (2026-10-29)
+
+Compatible three-branch inference now reuses the same forward to expose a signed
+candidate-family readout in JSON and UI. Group sums plus bias reconstruct the
+logit; only the top ten entries per sign are shown. Reconstruction failures are
+suppressed without changing classification. Shared-model readouts serialize
+temporary hooks. This integration does not repair the failed identity-deletion
+gate or establish causal raw-token attribution. See the
+[UI interpretation and verified scope](family-readout-ui.md).

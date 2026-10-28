@@ -273,6 +273,31 @@ with analysis_tab:
                     st.subheader("Phân loại đa nhãn họ mã độc")
                     st.dataframe(pd.DataFrame(family["families"]), use_container_width=True)
                 trace = result["attention_trace"]
+                if trace.get("family_readout_notice"):
+                    st.caption("Chưa hiển thị đóng góp có dấu vì phép kiểm tra tái dựng điểm chưa đạt.")
+                readout = trace.get("family_readout")
+                if readout:
+                    st.subheader("Đóng góp Attention vào điểm family ứng viên")
+                    st.caption(
+                        f"Ứng viên có điểm cao nhất: {readout['target_family']}. "
+                        "Đóng góp dương tăng điểm, âm giảm điểm của ứng viên này; "
+                        "đây là biểu diễn đã kết hợp ngữ cảnh, không phải xác suất đáng ngờ "
+                        "hay bằng chứng nhân quả của token gốc. Kết luận UNKNOWN vẫn giữ nguyên khi abstain."
+                    )
+                    st.dataframe(pd.DataFrame([
+                        {"nguồn": "modality_readout", "nhóm": name, "đóng góp logit": value}
+                        for name, value in readout["modality_contributions"].items()
+                    ] + [
+                        {"nguồn": "evidence_readout", "nhóm": name, "đóng góp logit": value}
+                        for name, value in readout["evidence_group_contributions"].items()
+                    ]), use_container_width=True)
+                    with st.expander("Bằng chứng đóng góp dương / âm và kiểm tra tổng điểm"):
+                        st.caption("Mỗi dấu chỉ hiển thị tối đa 10 điểm; tổng theo nhóm ở trên gồm toàn bộ điểm.")
+                        st.dataframe(pd.DataFrame(readout["positive_evidence"] + readout["negative_evidence"]),
+                                     use_container_width=True)
+                        st.write({key: readout[key] for key in (
+                            "bias", "family_logit", "reconstructed_logit", "reconstruction_error"
+                        )})
                 structural_rows = []
                 atomic_values = {item.token: item.value for item in report.atomic_evidence}
                 for branch in ("signature", "static"):
