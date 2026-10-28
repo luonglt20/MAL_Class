@@ -22,6 +22,7 @@ class CalibrationTests(unittest.TestCase):
         self.assertEqual(family["label"], "UNKNOWN")
         self.assertEqual(family["candidate"], "alpha")
         self.assertTrue(family["abstained"])
+        self.assertEqual(family["reason"], "family_calibration_unavailable")
         self.assertEqual(family["verdict"], "unknown")
 
     def test_benign_requires_separate_bound_and_confidence_matches_label(self):

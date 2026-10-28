@@ -68,6 +68,8 @@ def test_dashboard_batch_upload_renders_results_and_csv_download():
         button.label == "Tải kết quả dataset dạng CSV"
         for button in app.get("download_button")
     )
+    assert next(button for button in app.get("download_button")
+                if button.label == "Tải kết quả dataset dạng CSV").proto.ignore_rerun
 
 
 def test_dashboard_static_pe_without_checkpoint_shows_evidence_not_model_scores():

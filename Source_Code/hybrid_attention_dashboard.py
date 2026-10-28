@@ -166,6 +166,7 @@ def render_batch_results(rows: list[dict], download_key: str):
         file_name="mal_class_batch_predictions.csv",
         mime="text/csv",
         key=download_key,
+        on_click="ignore",
     )
     st.warning(
         "UNKNOWN/không cảnh báo không đồng nghĩa với BENIGN. "
@@ -259,6 +260,8 @@ with analysis_tab:
                         f"Ứng viên chưa xác nhận: {family['candidate']} "
                         f"({family.get('candidate_confidence', 0.0):.1%})"
                     )
+                if family.get("abstained") and family.get("reason"):
+                    st.caption(f"Lý do chưa kết luận family: {family['reason']}")
                 st.caption(
                     f"Chế độ: {result['analysis_mode']} · "
                     f"Nguồn verdict: {result['verdict']['source']} · "

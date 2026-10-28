@@ -18,3 +18,6 @@ KEY_Secert.txt
 .env
 .env.*
 !.env.example
+.DS_Store
+.playwright-cli/
+/output/playwright/

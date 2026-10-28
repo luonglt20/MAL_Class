@@ -2,6 +2,8 @@
 
 This is an independent multimodal research project. Legacy reports and scores are reference material, not experimental evidence for this project.
 
+2026-10-28 resume: the saved epoch-12 candidate has been calibrated without changing weights. Actual guarded validation decisions accept 30/107 samples, with only 25/30 agreeing with AVClass. It remains unregistered/unqualified; improved ranking does not resolve accepted-label errors. [Resume evidence and integration defects](resume-validation-20261028.md).
+
 Latest compatible local research candidate: process-relation v3, seed 44, with validation family mAP/macro-F1 0.3569/0.2282. It is available through automatic UI routing, but is not release-qualified. V3 repairs real process identities without resolving the inconsistent graph/target attention ablations. [Latest validation and limitations](experiments/winmet-relv3-validation-20261027.json) and [paired trace rebuild](experiments/winmet-relv3-preparation-20261027.json) supersede historical parser/input-policy claims, not historical metric records.
 
 New diagnostic caveat: historical target destruction changes graph cardinality/coverage, and report-edge deletion also removes nodes during pruning. Node-preserving controls are now available. A separate temporal padding bug has been reproduced and fixed under the new `per_sample_v1` policy; existing checkpoints retain `legacy_batch_tail` and their original metrics. The corrected-window pilot has completed validation (mAP 0.3657, calibrated macro-F1 0.2546), but is not registered. Its process-context and graph-edge controls reduce scores, while resource-bias removal leaves F1 unchanged. [Corrected-window evidence](experiments/winmet-samplewindows-validation-20261027.json).
