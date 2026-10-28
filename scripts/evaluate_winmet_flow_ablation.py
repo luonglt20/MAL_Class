@@ -95,6 +95,40 @@ def _family_metrics(
     }
 
 
+def _paired_family_logit_change(model, loader, device, mode):
+    """Separate score sensitivity from unchanged ranking/F1 metrics."""
+    if mode not in ENCODED_ABLATIONS:
+        raise ValueError("paired logits require an encoded node-preserving control")
+    count = samples = argmax_changes = 0
+    absolute_sum = max_logit_delta = max_sigmoid_delta = 0.
+    known_resources = event_count = 0
+    model.eval()
+    with torch.inference_mode():
+        for batch in loader:
+            batch = {key: value.to(device) if isinstance(value, torch.Tensor) else value
+                     for key, value in batch.items()}
+            original = model(batch, return_attention=False)["family_logits"]
+            altered = model(ablate_encoded_batch(batch, mode), return_attention=False)["family_logits"]
+            if not torch.isfinite(original).all() or not torch.isfinite(altered).all():
+                raise ValueError("nonfinite family logits during paired control")
+            difference = (original - altered).abs()
+            absolute_sum += float(difference.sum())
+            count += difference.numel()
+            samples += difference.shape[0]
+            argmax_changes += int((original.argmax(-1) != altered.argmax(-1)).sum())
+            max_logit_delta = max(max_logit_delta, float(difference.max()))
+            max_sigmoid_delta = max(max_sigmoid_delta, float((original.sigmoid() - altered.sigmoid()).abs().max()))
+            event_count += int(batch["event_mask"].sum())
+            known_resources += int(((batch["resource_ids"] > 0) & batch["event_mask"]).sum())
+    return {"notice": "Same-sample logit changes with fixed weights; metric invariance is not proof of input insensitivity.",
+            "samples": samples, "family_logit_values": count,
+            "mean_absolute_logit_delta": absolute_sum / count if count else None,
+            "maximum_absolute_logit_delta": max_logit_delta,
+            "maximum_absolute_sigmoid_delta": max_sigmoid_delta,
+            "argmax_changed_samples": argmax_changes,
+            "valid_events": event_count, "events_with_known_resource_identity": known_resources}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("reports", type=Path, help="Verified prepared WinMET JSONL")
@@ -113,6 +147,8 @@ def main() -> None:
     parser.add_argument("--faithfulness-ranking", choices=("attention", "signed_readout"), default="attention")
     parser.add_argument("--deployment-audit", action="store_true",
                         help="measure actual guarded family decisions on the same validation partition")
+    parser.add_argument("--paired-logits", action="store_true",
+                        help="also measure exact paired score changes for encoded controls")
     args = parser.parse_args()
 
     manifest_path = Path(str(args.reports) + ".manifest.json")
@@ -137,6 +173,9 @@ def main() -> None:
 
     with args.source_report.open("r", encoding="utf-8") as source:
         experiment = json.load(source)
+    checkpoint_sha256 = _sha256_file(args.checkpoint)
+    if experiment.get("checkpoint_sha256") and experiment["checkpoint_sha256"] != checkpoint_sha256:
+        parser.error("checkpoint checksum differs from source experiment")
     with manifest_path.open("r", encoding="utf-8") as source:
         prepared_manifest = json.load(source)
     expected_source = Path(experiment.get("source", "")).resolve()
@@ -202,6 +241,7 @@ def main() -> None:
     baseline = _family_metrics(model, validation, tensorizer, device, args.batch_size, weights)
     ablation_results = {}
     for mode in args.modes:
+        print(json.dumps({"ablation_started": mode}), file=sys.stderr, flush=True)
         if mode == "disable_cross_branch_attention":
             metrics = _family_metrics(
                 model, validation, tensorizer, device, args.batch_size, weights,
@@ -236,6 +276,15 @@ def main() -> None:
                 )
             },
         }
+        print(json.dumps({"ablation_completed": mode,
+                          "delta": ablation_results[mode]["delta_vs_original"]}),
+              file=sys.stderr, flush=True)
+        if args.paired_logits and mode in ENCODED_ABLATIONS:
+            loader = DataLoader(HybridDataset(validation, tensorizer), batch_size=args.batch_size,
+                                shuffle=False, collate_fn=collate_samples)
+            ablation_results[mode]["paired_logit_changes"] = _paired_family_logit_change(
+                model, loader, device, mode,
+            )
 
     faithfulness = None
     if args.faithfulness_samples:
@@ -298,7 +347,8 @@ def main() -> None:
         "source_sha256": _sha256_file(args.reports),
         "source_report": str(args.source_report),
         "checkpoint": str(args.checkpoint),
-        "checkpoint_sha256": _sha256_file(args.checkpoint),
+        "checkpoint_sha256": checkpoint_sha256,
+        "checkpoint_hash_verified_against_source_report": bool(experiment.get("checkpoint_sha256")),
         "seed": seed,
         "model_seed": int(experiment["seed"]),
         "device": args.device,
@@ -306,7 +356,7 @@ def main() -> None:
         "sample_seed": seed,
         "split_seed": split_seed,
         "modality_dropout_scope": experiment.get(
-            "modality_dropout_scope", "summary_only_legacy"
+            "modality_dropout_scope", getattr(model, "modality_dropout_scope", None) or "summary_only_legacy"
         ),
         "split_strategy": split_strategy,
         "partitions": {

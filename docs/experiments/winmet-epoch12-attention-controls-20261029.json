@@ -1,0 +1,59 @@
+{
+  "completed_date_local": "2026-10-29",
+  "status": "frozen_validation_diagnostic_not_release_qualification",
+  "checkpoint_sha256": "d95f6cf5b599740e72bb0892d9b64a0a0ea45dcca1fa13d9a9fc8860807a1b93",
+  "source_sha256": "c6b13028505f7537dc39bd27a7bdb6850128675b46e3d0f0484adfb30f28882a",
+  "source_report": "artifacts/winmet/volume2_relv3_epoch12_calibrated_audit_seed44.json",
+  "control_report": "artifacts/winmet/volume2_relv3_epoch12_flow_controls_20261028.json",
+  "control_report_sha256": "fb422f324d81bb3da1c020794c709344b39d61ea634a54f2ada32bc3a3a2841c",
+  "paired_resource_report": "artifacts/winmet/volume2_relv3_epoch12_resource_logits_20261028.json",
+  "paired_resource_report_sha256": "489323c826e69c801b90f4426d0f094c139e6680cfdf03b70a85ff90a7d96ac5",
+  "checkpoint_hash_verified_against_source_report": true,
+  "all_partition_fingerprints_verified": true,
+  "validation_fingerprint": "77e39c616eba0ba79fbceff5d2bd3f4b83958a202dd70da84e11e4df33bdfa4f",
+  "validation_rows": 107,
+  "family_labeled_validation_rows": 100,
+  "known_family_ranking_rows": 63,
+  "positive_support_labels": 17,
+  "device": "mps",
+  "batch_size": 4,
+  "model_seed": 44,
+  "baseline": {"map": 0.6587045409655704, "calibrated_macro_f1": 0.4540105863635275, "top1": 0.7777777777777778, "top3": 0.9047619047619048},
+  "delta_orientation": "ablated_minus_full",
+  "ablation_deltas": {
+    "disable_cross_branch_attention": {"map": -0.08456099587917942, "calibrated_macro_f1": -0.21468285527109052},
+    "shuffle_events_keep_timestamps": {"map": -0.14366084392774436, "calibrated_macro_f1": -0.12503172209054558},
+    "remove_resource_relations": {"map": 0.0, "calibrated_macro_f1": 0.0},
+    "remove_process_context": {"map": -0.18459623752580406, "calibrated_macro_f1": -0.2885322738263914},
+    "mask_graph_edges_keep_nodes": {"map": -0.09073872356573598, "calibrated_macro_f1": -0.04812889199298931}
+  },
+  "paired_resource_score_changes": {
+    "samples": 107,
+    "family_logit_values": 2461,
+    "mean_absolute_logit_delta": 0.004601799087861552,
+    "maximum_absolute_logit_delta": 0.12995004653930664,
+    "maximum_absolute_sigmoid_delta": 0.012228071689605713,
+    "argmax_changed_samples": 0,
+    "valid_events": 155222,
+    "events_with_known_resource_identity": 62464
+  },
+  "identity_faithfulness": {
+    "samples": 10,
+    "sample_ids_sha256": "b5bfd3a1c5ffcbcac47cc8520bcd0355c820c915485cd964361085ef81773dde",
+    "random_repeats": 5,
+    "fractions": [0.05, 0.1, 0.2],
+    "ranking": "direct_family_to_evidence_head_mean_not_rollout",
+    "mean_top_minus_random_aopc": {"signature": -0.03943431032200655, "static": 0.03751675883928936, "temporal_events": -0.01693707267443339, "graph": 0.021377317508061728},
+    "top_beats_random_samples": {"signature": 1, "static": 5, "temporal_events": 3, "graph": 7}
+  },
+  "test_metrics": null,
+  "limitations": [
+    "Cross-branch control disables token-level cross-attention, not every self/fusion/label attention module.",
+    "Temporal resource-identity removal leaves graph entities and other contextual evidence unchanged. Stable F1 is not proof that resource information is unused.",
+    "Nonzero logit changes do not establish a useful semantic resource link or improved decision quality.",
+    "Shuffle preserves timestamp slots but changes event associations and rebuilt graph order; process control changes both context embeddings and relation scores.",
+    "Direct attention identity faithfulness is negative for Signature and temporal events on this small subset. Do not describe high attention as causal suspiciousness.",
+    "One initialization, clustered weak-label validation and repeated validation reuse; no statistical-significance, independent-test, benign-FPR or behavior-gold acceptance claim.",
+    "The prior guarded decision audit still has five reference disagreements among thirty accepted predictions. Neither weights, calibration nor default UI registry changed."
+  ]
+}
