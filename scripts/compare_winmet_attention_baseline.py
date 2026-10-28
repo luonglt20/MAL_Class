@@ -196,8 +196,9 @@ def main():
             "path": str(args.reference_split), "sha256": _file_sha256(args.reference_split),
             "all_partition_identities_matched": True,
         }
+    reused_checkpoint_sha256 = _file_sha256(args.checkpoint) if args.reuse_attention_checkpoint else None
     print(json.dumps({
-        "phase": "training_attention",
+        "phase": "loading_frozen_attention" if args.reuse_attention_checkpoint else "training_attention",
         "partitions": {key: value["rows"] for key, value in result["partitions"].items()},
         "labeled": {key: value.get("family_supervised_rows") for key, value in result["partitions"].items()},
         "source_sha256": report_sha256,
@@ -273,6 +274,8 @@ def main():
         bag_weights, bag_thresholds,
     )
     result.update({
+        "epoch_budget_scope": "bag_only_when_attention_reused" if args.reuse_attention_checkpoint else "both_models_newly_trained",
+        "attention_checkpoint_history_epochs": len(attention_run["history"]),
         "architecture": (
             "signature_static_dynamic_three_branch_v4_relation_values"
             if attention.config.temporal_relation_values
@@ -295,7 +298,15 @@ def main():
         "modality_dropout_scope": attention_run["modality_dropout_scope"],
         "test_metrics": None,
         "behavior_head_trained": attention_run["behavior_head_trained"],
+        "comparison_limitations": [
+            "Bag uses structural evidence and event tokens, not execution graph, time or process context.",
+            "Capacity and information paths differ; this contrast does not isolate attention alone.",
+            "When attention is reused, epochs is the new bag budget, not a claim about completed attention epochs.",
+        ],
     })
+    result["attention_checkpoint_sha256"] = _file_sha256(args.checkpoint)
+    if reused_checkpoint_sha256 and result["attention_checkpoint_sha256"] != reused_checkpoint_sha256:
+        raise RuntimeError("frozen attention checkpoint changed during baseline fitting")
     with args.report.open("x", encoding="utf-8") as output:
         json.dump(result, output, indent=2)
     print(json.dumps({

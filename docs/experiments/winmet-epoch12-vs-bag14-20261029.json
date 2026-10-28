@@ -1,0 +1,69 @@
+{
+  "date": "2026-10-29",
+  "status": "mixed_validation_only_not_qualified",
+  "runner_source_commit": "69ff6f2",
+  "full_report": "artifacts/winmet/volume2_relv3_epoch12_vs_bag14_seed44.json",
+  "full_report_sha256": "e16c5a65eaf91575497a64cdeb76c148b32a9bcb170cb8cbbd594999b66861df",
+  "source_sha256": "c6b13028505f7537dc39bd27a7bdb6850128675b46e3d0f0484adfb30f28882a",
+  "checkpoint": "models/winmet_volume2_relv3_samplewindows_epoch12_calibrated_seed44.pt",
+  "checkpoint_sha256_verified_after_run": "d95f6cf5b599740e72bb0892d9b64a0a0ea45dcca1fa13d9a9fc8860807a1b93",
+  "attention_checkpoint_reused": true,
+  "attention_completed_epochs_observed": 14,
+  "attention_checkpoint_retained_history_epochs": 12,
+  "attention_selected_epoch": 12,
+  "bag_completed_epochs": 14,
+  "bag_selected_epoch": 14,
+  "seed": 44,
+  "partitions": {
+    "train": {
+      "rows": 637,
+      "sample_ids_sha256": "e52f8bf8d9541e008a95c05e79f43f133825f4ba73c1d5b8d2eb9477754b795b"
+    },
+    "validation": {
+      "rows": 107,
+      "sample_ids_sha256": "77e39c616eba0ba79fbceff5d2bd3f4b83958a202dd70da84e11e4df33bdfa4f"
+    },
+    "calibration": {
+      "rows": 101,
+      "sample_ids_sha256": "7e063043e3c280d330dde827393188ad6e8ad8e1fe1da52d2503ab8d30769e79"
+    },
+    "withheld_internal_test": {
+      "rows": 155,
+      "sample_ids_sha256": "9673c8fcd6b361fffa508feee4caa13b28f0a4852a4b3f20b35530a5036ad9d1"
+    }
+  },
+  "attention": {
+    "family_map": 0.6587045409655704,
+    "family_calibrated_macro_f1": 0.4540105863635275,
+    "family_top1_accuracy": 0.7777777777777778,
+    "family_top3_accuracy": 0.9047619047619048
+  },
+  "bag": {
+    "family_map": 0.6763605549543049,
+    "family_calibrated_macro_f1": 0.38730158730158726,
+    "family_top1_accuracy": 0.8095238095238095,
+    "family_top3_accuracy": 0.9365079365079365
+  },
+  "attention_minus_bag": {
+    "family_map": -0.01765601398873451,
+    "family_calibrated_macro_f1": 0.06670899906194022,
+    "family_top1_accuracy": -0.031746031746031744,
+    "family_top3_accuracy": -0.031746031746031744
+  },
+  "reference_split": {
+    "path": "artifacts/winmet/volume2_relv3_epoch12_calibrated_audit_seed44.json",
+    "sha256": "518f6a566bcae97407a36e4cecb3573ef87d7365f15af81d7a019bb13e861091",
+    "all_partition_identities_matched": true
+  },
+  "test_metrics": null,
+  "behavior_head_trained": false,
+  "limitations": [
+    "Single clustered sample and model seed; weak AVClass family reference.",
+    "Both thresholds calibrated on disjoint calibration rows; no bag conformal deployment decision evaluated.",
+    "Bag lacks graph/time/process context; capacity and input paths differ. This is not an attention-only intervention.",
+    "Run started before runner reporting improvements; original full report retained unchanged.",
+    "Bag model weights were not persisted by this historical runner; report/history only.",
+    "Attention wins calibrated macro-F1 but loses mAP, top-1 and top-3; robust architecture superiority not established.",
+    "No registry/default model changes. Attention faithfulness and accepted-label errors remain unresolved."
+  ]
+}

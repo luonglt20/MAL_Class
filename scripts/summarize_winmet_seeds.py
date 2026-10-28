@@ -38,6 +38,7 @@ def _experiment_identity(report: dict) -> dict:
         "d_model": int(report["d_model"]),
         "batch_size": int(report["batch_size"]),
         "epochs": int(report["epochs"]),
+        "attention_checkpoint_reused": bool(report.get("attention_checkpoint_reused", False)),
         "family_head_variant": report["family_head_variant"],
         "architecture": report.get("architecture", "unspecified"),
         "temporal_relation_values": report.get("model_config", {}).get("temporal_relation_values", False),

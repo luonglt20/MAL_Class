@@ -45,6 +45,12 @@ def _report(seed: int, attention_map: float, bag_map: float) -> dict:
 
 
 class WinmetSeedSummaryTests(unittest.TestCase):
+    def test_rejects_mixing_new_attention_training_and_reused_checkpoints(self):
+        first, second = _report(42, .3, .2), _report(43, .5, .4)
+        second["attention_checkpoint_reused"] = True
+        with self.assertRaisesRegex(ValueError, "model settings"):
+            summarize_reports([first, second])
+
     def test_rejects_mixing_bias_only_and_relation_value_models(self):
         first, second = _report(42, 0.3, 0.2), _report(43, 0.5, 0.4)
         second["model_config"] = {"temporal_relation_values": True}
