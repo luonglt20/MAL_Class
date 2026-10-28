@@ -1,4 +1,5 @@
 from copy import deepcopy
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -33,6 +34,16 @@ def test_normalization_provenance_distinguishes_static_from_legacy_unknown():
     unknown = deepcopy(report)
     unknown.metadata.pop("normalization_version")
     assert _normalization_versions([report, unknown]) is None
+
+
+def test_file_resource_v4_is_rejected_by_a_v3_checkpoint_before_forward():
+    report, tensorizer, model = candidate()
+    raw = json.loads((Path(__file__).parent / "fixtures/cape_process_injection.json").read_text())
+    report = CapeReportParser(file_handle_resolution=True).parse(raw)
+    model.normalization_versions = [CAPE_FEATURE_SCHEMA_VERSION]
+    with patch.object(model, "forward", side_effect=AssertionError("must not infer v4 with v3 weights")):
+        result = HybridInferencePipeline(model, tensorizer).predict(report)
+    assert result["family"]["reason"] == "normalization_version_mismatch"
 
 
 @pytest.mark.parametrize("versions", [[CAPE_FEATURE_SCHEMA_VERSION], [], None])

@@ -50,6 +50,27 @@ except ImportError:
 
 @unittest.skipIf(py7zr is None, "install the optional winmet extra")
 class WinMETPreparationTests(unittest.TestCase):
+    def test_opt_in_file_handle_schema_is_recorded_in_prepared_rows_and_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sample_hash = "d" * 64
+            raw = {"target": {"file": {"sha256": sample_hash}}, "behavior": {"processes": [
+                {"process_id": 100, "calls": [
+                    {"api": "NtCreateFile", "status": True, "arguments": {"FileName": "C:\\Temp\\x.exe", "FileHandle": 68}},
+                    {"api": "NtReadFile", "status": True, "arguments": {"FileHandle": 68}},
+                ]}]}}
+            archive = root / "reports.7z"
+            with py7zr.SevenZipFile(archive, "w", password="infected") as bundle:
+                bundle.writestr(json.dumps(raw), sample_hash + ".json")
+            labels = root / "labels.json"
+            labels.write_text(json.dumps({sample_hash: {"avclass": "ExampleFamily"}}))
+            output = root / "prepared.jsonl"
+            manifest = prepare_winmet_archive(archive, labels, output, file_handle_resolution=True)
+            report = next(iter_prepared(output))
+            self.assertEqual(manifest["normalization_version"], "cape-resource-relations-v4")
+            self.assertEqual(report.metadata["normalization_version"], manifest["normalization_version"])
+            self.assertEqual(report.events[0].target, report.events[1].target)
+
     def test_only_json_reports_and_avclass_targets_are_used(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
