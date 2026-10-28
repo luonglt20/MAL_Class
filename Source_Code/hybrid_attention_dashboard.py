@@ -338,6 +338,11 @@ with analysis_tab:
                         if "family_to_modality" in trace
                         else "Bằng chứng Signature / Static PE (chưa có attention)"
                     )
+                    if "family_to_modality" in trace:
+                        st.caption(
+                            "Trọng số Attention thể hiện mức liên kết trong mô hình; "
+                            "trọng số cao chưa chứng minh dấu hiệu độc hại hoặc quyết định dự đoán."
+                        )
                     st.dataframe(pd.DataFrame(structural_rows), use_container_width=True)
 
                 st.subheader("Behavior/TTP evidence")
