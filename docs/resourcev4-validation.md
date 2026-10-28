@@ -50,3 +50,18 @@ notice has been corrected for future runs. Its checkpoint checksum guard now
 refuses a mismatch before loading model or data.
 
 [Holdout metrics and checksums](experiments/winmet-resourcev4-holdout-20261029.json).
+
+## Token-identity attention diagnostic
+
+On the same ten deterministic validation samples used for the earlier v3
+diagnostic, top-attention minus random deletion AOPC averaged −0.01391 for
+Signature (top beats random in 3/10 samples), −0.00528 for Static (4/10),
+−0.01165 for temporal events (1/10), and −0.00775 for graph tokens (4/10).
+All four averages are negative. This diagnostic does not pass the requested
+attention-faithfulness criterion; weights should not be presented as reliable
+evidence importance. It masks token identities only, retains numeric values,
+context, edges and duplicated information, and covers only the graph evidence
+head's prefix. Ten validation samples are insufficient for broad conclusions;
+the results do not establish that the model ignores those branches.
+
+[Diagnostic summary and full-report checksum](experiments/winmet-resourcev4-faithfulness-20261029.json).

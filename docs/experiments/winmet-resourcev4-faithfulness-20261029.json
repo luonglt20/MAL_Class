@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-29",
+  "full_report": "artifacts/winmet/resourcev4_attention14_faithfulness_20261029.json",
+  "full_report_sha256": "afa7d4264fb0d1e47aa520bd8d27831606e5ac8b209d4edeb5d18b2abb3db68d",
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "source_sha256": "503ecbc0c11ac9a93e74a75136c99eaae999d1d3731c669e18b9d666b485835a",
+  "evaluated_partition": "validation",
+  "sample_ids_sha256": "b5bfd3a1c5ffcbcac47cc8520bcd0355c820c915485cd964361085ef81773dde",
+  "notice": "Token-identity-only diagnostic; numeric values, masks, context, edges and cross-branch duplicates remain. Not event deletion, full evidence deletion, rollout or causal proof. Graph rankings cover only the family evidence-head prefix. Sigmoid scores are not calibrated probabilities.",
+  "selection": "smallest SHA256(sample_seed:faithfulness:sample_hash), validation only, no label selection",
+  "ranking": "attention",
+  "summary": {
+    "signature": {
+      "evaluated_samples": 10,
+      "mean_top_minus_random_aopc": -0.013914785037438074,
+      "top_beats_random_samples": 3
+    },
+    "static": {
+      "evaluated_samples": 10,
+      "mean_top_minus_random_aopc": -0.005282572756210963,
+      "top_beats_random_samples": 4
+    },
+    "temporal_events": {
+      "evaluated_samples": 10,
+      "mean_top_minus_random_aopc": -0.01165121227502823,
+      "top_beats_random_samples": 1
+    },
+    "graph": {
+      "evaluated_samples": 10,
+      "mean_top_minus_random_aopc": -0.007751432756582896,
+      "top_beats_random_samples": 4
+    }
+  },
+  "test_metrics": null
+}
