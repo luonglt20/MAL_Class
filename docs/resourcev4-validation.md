@@ -33,3 +33,20 @@ ablation attempt rejected missing family-head metadata; the reference was fixed
 from the saved training report before the successful read-only run.
 
 [Metrics, partition fingerprints and artifact checksums](experiments/winmet-resourcev4-validation-20261029.json).
+
+## Reserved internal holdout
+
+A subsequent one-time frozen evaluation on 155 group-isolated volume-2 reports
+(145 with family supervision; 91 known-family top-k rows) achieved family mAP
+0.6030 over 19 supported labels, calibrated macro-F1 0.3980, top-1 0.7582 and
+top-3 0.9231. No weights or thresholds changed. These results are lower than
+the validation mAP 0.6924 and calibrated macro-F1 0.5007. This is an internal
+clustered holdout with weak AVClass labels, not an independent ground-truth or
+benign false-positive study; the model remains unqualified for release.
+
+The original result notice accidentally says volume 1; its source path and
+manifest identify volume 2. The result remains unchanged and the evaluator's
+notice has been corrected for future runs. Its checkpoint checksum guard now
+refuses a mismatch before loading model or data.
+
+[Holdout metrics and checksums](experiments/winmet-resourcev4-holdout-20261029.json).

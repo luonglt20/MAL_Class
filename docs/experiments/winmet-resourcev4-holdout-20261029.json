@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-29",
+  "full_report": "artifacts/winmet/resourcev4_attention14_internal_holdout_20261029.json",
+  "full_report_sha256": "f0ba27d1dd87eefd3aa55f2194b238be36ff82b8dc84679d4f19fd8011f09a78",
+  "source_sha256": "503ecbc0c11ac9a93e74a75136c99eaae999d1d3731c669e18b9d666b485835a",
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "checkpoint_hash_verified": true,
+  "partitions": {
+    "train": {
+      "rows": 637,
+      "sample_ids_sha256": "e52f8bf8d9541e008a95c05e79f43f133825f4ba73c1d5b8d2eb9477754b795b",
+      "family_supervised_rows": 594
+    },
+    "validation": {
+      "rows": 107,
+      "sample_ids_sha256": "77e39c616eba0ba79fbceff5d2bd3f4b83958a202dd70da84e11e4df33bdfa4f",
+      "family_supervised_rows": 100
+    },
+    "calibration": {
+      "rows": 101,
+      "sample_ids_sha256": "7e063043e3c280d330dde827393188ad6e8ad8e1fe1da52d2503ab8d30769e79",
+      "family_supervised_rows": 89
+    },
+    "withheld_internal_test": {
+      "rows": 155,
+      "sample_ids_sha256": "9673c8fcd6b361fffa508feee4caa13b28f0a4852a4b3f20b35530a5036ad9d1",
+      "family_supervised_rows": 145
+    }
+  },
+  "evaluated_partition": "withheld_internal_test",
+  "metrics": {
+    "family_map": 0.6030137907662473,
+    "family_map_labels": 19,
+    "family_calibrated_macro_f1": 0.397965268903484,
+    "family_top1_accuracy": 0.7582417582417582,
+    "family_top3_accuracy": 0.9230769230769231,
+    "family_evaluated_samples": 91
+  },
+  "weights_changed": false,
+  "thresholds_changed": false,
+  "behavior_head_trained": false,
+  "notice_correction": "Original report notice mistakenly says volume-1; manifest and source path identify WinMET volume 2. Metrics are unaffected.",
+  "limitations": [
+    "Clustered internal holdout, weak AVClass labels, no independent behavior gold or benign hybrid FPR.",
+    "Not an external test or proof of deployment accuracy."
+  ]
+}

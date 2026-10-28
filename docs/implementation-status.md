@@ -2,6 +2,8 @@
 
 This is an independent multimodal research project. Legacy reports and scores are reference material, not experimental evidence for this project.
 
+2026-10-29 v4 reserved internal holdout: 155 reports, family mAP 0.6030 and calibrated macro-F1 0.3980 against weak AVClass labels. This is lower than validation and does not qualify the model for deployment. [Details](resourcev4-validation.md#reserved-internal-holdout).
+
 2026-10-29 v4 resource-linked candidate: 14 epochs completed on a matched split; validation mAP 0.6924, calibrated macro-F1 0.5007. Guarded primary predictions agree with weak AVClass labels on 22/22 accepted rows but abstain on 85/107. Removing temporal resource IDs improves macro-F1; graph-edge and cross-attention ablations reduce metrics. It remains research-only and unregistered. [Details and limits](resourcev4-validation.md).
 
 2026-10-29 UI explanation: three-branch inference exposes signed candidate-logit contributions from the same forward, with reconstruction checking and abstention preserved. Real checkpoint/report smoke checks and browser checks for CAPE/PE passed; this changes explanations, not classifier quality. [How to read it and verification scope](family-readout-ui.md).

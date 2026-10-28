@@ -68,6 +68,9 @@ def main() -> None:
         parser.error("result path must be distinct from every input")
 
     experiment = json.loads(args.source_report.read_text(encoding="utf-8"))
+    checkpoint_sha256 = _sha256_file(args.checkpoint)
+    if experiment.get("checkpoint_sha256") and experiment["checkpoint_sha256"] != checkpoint_sha256:
+        parser.error("checkpoint checksum differs from source experiment")
     prepared_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if Path(experiment.get("source", "")).resolve() != args.reports.resolve():
         parser.error("prepared JSONL path differs from the source experiment")
@@ -154,7 +157,7 @@ def main() -> None:
     result = {
         "notice": (
             "One-time frozen evaluation on the pre-reserved group-isolated internal holdout from a "
-            "bounded WinMET volume-1 sample. Family targets are AVClass consensus weak labels. "
+            "bounded WinMET sample. Family targets are AVClass consensus weak labels. "
             "No weights or thresholds were fit or changed; the official later-time EMBER test was "
             "not opened. This clustered cohort is not a representative full-volume benchmark."
         ),
@@ -163,7 +166,8 @@ def main() -> None:
         "source_manifest": str(manifest_path),
         "source_experiment": str(args.source_report),
         "checkpoint": str(args.checkpoint),
-        "checkpoint_sha256": _sha256_file(args.checkpoint),
+        "checkpoint_sha256": checkpoint_sha256,
+        "checkpoint_hash_verified_against_source_report": bool(experiment.get("checkpoint_sha256")),
         "seed": int(experiment["seed"]),
         "sample_seed": sample_seed,
         "split_seed": split_seed,
