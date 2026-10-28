@@ -12,3 +12,9 @@ artifacts/
 Data/raw/
 data/raw/
 models/
+
+# Local API credentials: never commit these files.
+KEY_Secert.txt
+.env
+.env.*
+!.env.example
