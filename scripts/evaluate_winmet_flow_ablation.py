@@ -22,6 +22,7 @@ from malware_hybrid.evaluation import ENCODED_ABLATIONS, ablate_encoded_batch, a
 from malware_hybrid.faithfulness import family_token_faithfulness
 from malware_hybrid.deployment_audit import audit_family_decisions
 from malware_hybrid.pipeline import HybridInferencePipeline
+from malware_hybrid.pair_intervention import compare_attention_pairs
 from malware_hybrid.training import (
     _family_training_priors,
     _training_loss_weights,
@@ -146,6 +147,9 @@ def main() -> None:
     parser.add_argument("--faithfulness-random-repeats", type=int, default=5)
     parser.add_argument("--faithfulness-ranking", choices=("attention", "signed_readout"), default="attention")
     parser.add_argument("--faithfulness-intervention", choices=("identity", "static_feature"), default="identity")
+    parser.add_argument("--pair-samples", type=int, default=0,
+                        help="validation samples for cross-branch pair interventions")
+    parser.add_argument("--pair-random-controls", type=int, default=3)
     parser.add_argument("--deployment-audit", action="store_true",
                         help="measure actual guarded family decisions on the same validation partition")
     parser.add_argument("--paired-logits", action="store_true",
@@ -164,7 +168,9 @@ def main() -> None:
         parser.error("batch-size must be positive")
     if not 0 <= args.faithfulness_samples <= 100 or not 1 <= args.faithfulness_random_repeats <= 100:
         parser.error("faithfulness samples must be 0..100 and random repeats 1..100")
-    if not args.modes and not args.faithfulness_samples and not args.deployment_audit:
+    if not 0 <= args.pair_samples <= 100 or not 1 <= args.pair_random_controls <= 20:
+        parser.error("pair samples must be 0..100 and random controls 1..20")
+    if not args.modes and not args.faithfulness_samples and not args.pair_samples and not args.deployment_audit:
         parser.error("request at least one ablation or faithfulness sample")
     if args.report.resolve() in {
         args.reports.resolve(), args.checkpoint.resolve(),
@@ -227,6 +233,8 @@ def main() -> None:
         parser.error("reconstructed split fingerprints differ; refusing flow ablation")
     if args.faithfulness_samples > len(validation):
         parser.error("faithfulness sample count exceeds validation partition size")
+    if args.pair_samples > len(validation):
+        parser.error("pair sample count exceeds validation partition size")
 
     model, tensorizer = load_checkpoint(args.checkpoint, args.device)
     if not model.config.signature_branch_enabled:
@@ -332,6 +340,35 @@ def main() -> None:
             "summary": summary, "samples": rows,
         }
 
+    pairs = None
+    if args.pair_samples:
+        selected = sorted(validation, key=lambda row: hashlib.sha256(
+            f"{seed}:faithfulness:{row.sample_hash}".encode()
+        ).hexdigest())[:args.pair_samples]
+        pipeline = HybridInferencePipeline(model, tensorizer, device=args.device)
+        pair_rows = []
+        for index, row in enumerate(selected):
+            measured = compare_attention_pairs(pipeline, row, seed=seed + index,
+                                               random_controls=args.pair_random_controls)
+            measured['sample_hash'] = row.sample_hash
+            pair_rows.append(measured)
+            print(json.dumps({'pair_completed': index + 1, 'requested': len(selected)}),
+                  file=sys.stderr, flush=True)
+        pair_summary = {}
+        for branch in ('signature', 'static'):
+            measured = [row['branches'][branch] for row in pair_rows if row['branches'][branch]['evaluated']]
+            differences = [row['top_minus_random_absolute_interaction'] for row in measured]
+            pair_summary[branch] = {
+                'evaluated_samples': len(measured),
+                'mean_top_minus_random_absolute_interaction': sum(differences) / len(differences) if differences else None,
+                'top_beats_random_samples': sum(value > 0 for value in differences),
+            }
+        pairs = {'selection': 'smallest SHA256(sample_seed:faithfulness:sample_hash), validation only',
+                 'sample_ids_sha256': _fingerprint(selected), 'summary': pair_summary, 'samples': pair_rows,
+                 'notice': 'Absolute non-additive logit sensitivity; graph reconstruction, truncation, '
+                           'duplicate evidence and top-k candidate pruning confound interpretation. '
+                           'Not a calibrated maliciousness score or causal proof.'}
+
     deployment = None
     if args.deployment_audit:
         pipeline = HybridInferencePipeline(model, tensorizer, device=args.device)
@@ -376,6 +413,7 @@ def main() -> None:
         "ablations": ablation_results,
         ("token_identity_faithfulness" if args.faithfulness_intervention == "identity"
          else "static_feature_faithfulness"): faithfulness,
+        "pair_interaction": pairs,
         "deployment_family_decisions": deployment,
         "test_metrics": None,
         "ablation_interpretation": {

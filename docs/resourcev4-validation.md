@@ -141,3 +141,23 @@ original token or a score for maliciousness. The model, calibration and test
 partition remain unchanged. `scripts/compare_faithfulness_rankings.py` checks
 matching sample IDs, targets, budgets, random controls and checkpoint before
 computing paired differences. [Aggregate and report hashes](experiments/winmet-resourcev4-signed-feature30-20261029.json).
+
+## Pair interaction pilot
+
+On ten hash-selected validation reports from the same frozen model, the
+absolute interaction of the top displayed feature/event attention link was
+compared with three distinct uniformly sampled pairs in the same branch and
+report. Mean top-minus-random absolute logit interaction was **−0.000596** for
+Signature (top larger on 6/10 reports) and **+0.000087** for Static (7/10).
+The Signature mean was influenced by one larger random-control interaction;
+the absolute values are small and results do not establish that attention links
+identify important or malicious relationships. Candidate signed interactions
+were positive in 5/10 and 6/10 respectively; neither sign is a verdict.
+
+These ten samples are clustered, selected from validation, and not independently
+annotated. The attention candidate is selected from a pruned top-k list while
+random pairs come from the full encoded pair universe. Removing an event
+rebuilds and rewires the graph, shifts temporal windows, and may expose a
+previously truncated event. Other copies of the same evidence may remain.
+The test is a counterfactual sensitivity pilot, not a causal or accuracy study;
+the withheld test was not evaluated. [Aggregate and report checksum](experiments/winmet-resourcev4-pairs10-20261029.json).

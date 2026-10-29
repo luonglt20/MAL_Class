@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-29",
+  "full_report": "artifacts/winmet/resourcev4_attention14_pairs_10_validation_20261029.json",
+  "full_report_sha256": "1654bcd33ce690c5821c034e6b07d98b467f48075eed4160b914ba281cefcba9",
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "source_sha256": "503ecbc0c11ac9a93e74a75136c99eaae999d1d3731c669e18b9d666b485835a",
+  "evaluated_partition": "validation",
+  "sample_ids_sha256": "b5bfd3a1c5ffcbcac47cc8520bcd0355c820c915485cd964361085ef81773dde",
+  "selection": "smallest SHA256(sample_seed:faithfulness:sample_hash), validation only",
+  "notice": "Absolute non-additive logit sensitivity; graph reconstruction, truncation, duplicate evidence and top-k candidate pruning confound interpretation. Not a calibrated maliciousness score or causal proof.",
+  "samples": 10,
+  "random_controls_per_sample_per_branch": 3,
+  "summary": {
+    "signature": {
+      "evaluated_samples": 10,
+      "mean_top_minus_random_absolute_interaction": -0.0005957921346028646,
+      "top_beats_random_samples": 6
+    },
+    "static": {
+      "evaluated_samples": 10,
+      "mean_top_minus_random_absolute_interaction": 8.690754572550458e-05,
+      "top_beats_random_samples": 7
+    }
+  },
+  "descriptive": {
+    "signature": {
+      "candidate_mean_absolute_interaction": 0.00019693970680236816,
+      "random_mean_absolute_interaction": 0.0007927318414052328,
+      "positive_signed_candidate": 5,
+      "negative_signed_candidate": 5
+    },
+    "static": {
+      "candidate_mean_absolute_interaction": 0.0005811214447021485,
+      "random_mean_absolute_interaction": 0.000494213898976644,
+      "positive_signed_candidate": 6,
+      "negative_signed_candidate": 4
+    }
+  },
+  "test_metrics": null
+}

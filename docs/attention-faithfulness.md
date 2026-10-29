@@ -98,6 +98,16 @@ an event rewires graph edges, shifts windows and may expose a formerly truncated
 event; other occurrences and cross-branch duplicates remain. A large or positive
 interaction is neither proof of a causal behavior chain nor maliciousness.
 
+The optional `--pair-samples` flow-evaluator mode selects validation samples
+using the same deterministic hash ordering as the feature diagnostic. For each
+branch, it compares the absolute paired-logit interaction of the top displayed
+mutual-attention candidate against distinct uniformly sampled encoded
+feature/event pairs on the same report. Candidate generation first retains up
+to eight events per feature, so it is not necessarily the global maximum of
+mutual attention; random candidates come from the full encoded pair universe.
+Absolute interaction is model sensitivity, not direction, semantic correctness,
+or evidence that the pair describes a malicious sequence.
+
 Tests include an analytic model with known token importance, intentionally
 misleading attention (which must score worse than random), deterministic random
 controls, unchanged context/source tensors/parameters, mode restoration,

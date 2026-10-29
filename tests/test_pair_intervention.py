@@ -8,7 +8,7 @@ import torch
 from malware_hybrid.dataset import ReportTensorizer
 from malware_hybrid.graph import ExecutionGraphBuilder
 from malware_hybrid.normalization import CapeReportParser
-from malware_hybrid.pair_intervention import pair_intervention
+from malware_hybrid.pair_intervention import compare_attention_pairs, pair_intervention
 
 FIXTURE = Path(__file__).parent / 'fixtures/cape_process_injection.json'
 
@@ -62,6 +62,7 @@ def test_pair_removal_rejects_incompatible_graph_and_indices():
 
 def test_pair_intervention_runs_on_hybrid_attention_model():
     from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel
+    from malware_hybrid.pipeline import HybridInferencePipeline
 
     report = CapeReportParser().parse_file(FIXTURE)
     tensorizer = ReportTensorizer.fit([report])
@@ -77,3 +78,10 @@ def test_pair_intervention_runs_on_hybrid_attention_model():
     assert math.isfinite(result['interaction_logit'])
     assert all(math.isfinite(value) for value in result['scores'].values())
     assert not model.training
+    pipeline = HybridInferencePipeline(model, tensorizer)
+    first = compare_attention_pairs(pipeline, report, seed=42, random_controls=2)
+    second = compare_attention_pairs(pipeline, report, seed=42, random_controls=2)
+    assert first == second
+    for branch in ('signature', 'static'):
+        assert first['branches'][branch]['evaluated']
+        assert math.isfinite(first['branches'][branch]['top_minus_random_absolute_interaction'])
