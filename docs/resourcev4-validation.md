@@ -103,3 +103,22 @@ same clustered validation split with weak AVClass labels; they are not an
 independent annotation set, and the means do not establish statistical
 significance. Weights, thresholds and the held-out test were not changed.
 [Reproducible aggregate and report checksum](experiments/winmet-resourcev4-faithfulness30-20261029.json).
+
+## Static feature-removal diagnostic
+
+On the identical 30 validation samples and frozen checkpoint, removing the
+highest-attention feature's token, value and mask produced mean top-minus-random
+AOPC **−0.01375** for Signature (11/30 positive) and **−0.00804** for Static
+(7/30 positive). Five matched random controls per fraction were used. Both
+averages are negative, so this stronger intervention also fails to establish
+that direct attention reliably identifies influential features. It does not
+evaluate Dynamic or Graph. Other branches remain intact and may contain
+duplicate signals; masking may create out-of-distribution inputs. These are
+clustered validation diagnostics, not independent ground truth or proof of a
+model defect in a particular sample.
+
+The original local report uses the legacy JSON key `token_identity_faithfulness`
+because the field was renamed after the process started; its stored intervention
+and notice correctly specify `static_feature`. Future runs use the corrected
+`static_feature_faithfulness` key. No model weight, threshold, or test split was
+changed. [Aggregate and full-report checksum](experiments/winmet-resourcev4-feature-removal30-20261029.json).

@@ -60,6 +60,23 @@ workflow. Use a new output path for each experiment.
   attention faithfulness. Independent evidence-pair annotations, full-evidence
   deletion, IG agreement and broader paired uncertainty estimates remain.
 
+## Signature and Static feature removal
+
+`--faithfulness-intervention static_feature` masks the selected Signature or
+Static token, its numeric value, and its validity mask together. It compares
+the same ranked positions against matched-count random removals, using the
+original fixed predicted family and leaving the input tensors and weights
+unchanged. Dynamic events and graph nodes are not removed; information may be
+duplicated across modalities. The operation can shift the representation out
+of the training distribution and does not prove a feature is malicious.
+
+This mode deliberately does not mask temporal positions or graph nodes: the
+windowing code assumes contiguous event masks, and graph deletion additionally
+needs consistent edge and relation updates. Treating either as a zeroed static
+feature would misrepresent execution-flow deletion. The existing identity-only
+mode and old report key remain unchanged; new feature-removal reports use
+`static_feature_faithfulness`.
+
 Tests include an analytic model with known token importance, intentionally
 misleading attention (which must score worse than random), deterministic random
 controls, unchanged context/source tensors/parameters, mode restoration,

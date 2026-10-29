@@ -31,12 +31,21 @@ class KnownImportanceModel(torch.nn.Module):
         return result
 
 
+class ValueImportanceModel(KnownImportanceModel):
+    def forward(self, batch, return_attention=True):
+        result = super().forward(batch, return_attention)
+        value = batch["signature_values"][:, 0] * batch["signature_mask"][:, 0] * 2
+        result["family_logits"] = torch.stack([value, -value], dim=1)
+        return result
+
+
 def example_batch():
     result = {}
     for name, values in [("signature", [5, 3, 2]), ("static", [4, 0]), ("event", [6, 7]), ("graph_node", [8, 9, 10])]:
         result[name + "_ids"] = torch.tensor([values])
         result[name + "_mask"] = result[name + "_ids"] != 0
     result["static_values"] = torch.tensor([[.9, 0.]])
+    result["signature_values"] = torch.tensor([[1., 2., 3.]])
     result["process_ids"] = torch.tensor([[2, 2]])
     result["edge_mask"] = torch.tensor([[True]])
     return result
@@ -75,6 +84,12 @@ class FaithfulnessTests(unittest.TestCase):
         for branch in signed["branches"].values():
             if branch["evaluated"]:
                 self.assertLessEqual(branch["positive_readout_tokens"], branch["valid_tokens"])
+        removed = family_token_faithfulness(model, batch, fractions=(.2, 1.), random_repeats=1,
+                                            intervention="static_feature")
+        self.assertFalse(removed["branches"]["temporal_events"]["evaluated"])
+        for name in ("signature", "static"):
+            if removed["branches"][name]["evaluated"]:
+                self.assertTrue(np.isfinite(removed["branches"][name]["top_minus_random_aopc"]))
 
     def test_known_important_identity_beats_random_and_insertion_recovers(self):
         model = KnownImportanceModel().train()
@@ -103,6 +118,32 @@ class FaithfulnessTests(unittest.TestCase):
     def test_misleading_attention_is_not_forced_to_pass(self):
         report = family_token_faithfulness(KnownImportanceModel(True), example_batch(), fractions=(.2,), random_repeats=16)
         self.assertLess(report["branches"]["signature"]["top_minus_random_aopc"], 0)
+
+    def test_static_feature_removal_changes_mask_and_value_without_mutating_input(self):
+        model = KnownImportanceModel()
+        batch = example_batch()
+        original = copy.deepcopy(batch)
+        result = family_token_faithfulness(model, batch, fractions=(.2,), random_repeats=2,
+                                           intervention="static_feature")
+        self.assertGreater(result["branches"]["signature"]["top_minus_random_aopc"], 0)
+        self.assertFalse(result["branches"]["graph"]["evaluated"])
+        for key in batch:
+            torch.testing.assert_close(batch[key], original[key])
+        for seen in model.seen:
+            for name in ("signature", "static"):
+                removed = original[name + "_mask"] & ~seen[name + "_mask"]
+                self.assertTrue(torch.all(seen[name + "_ids"][removed] == 0))
+                self.assertTrue(torch.all(seen[name + "_values"][removed] == 0))
+            torch.testing.assert_close(seen["event_ids"], original["event_ids"])
+            torch.testing.assert_close(seen["edge_mask"], original["edge_mask"])
+
+    def test_feature_removal_detects_value_contribution_identity_only_misses(self):
+        model = ValueImportanceModel()
+        identity = family_token_faithfulness(model, example_batch(), fractions=(.2,), random_repeats=16)
+        feature = family_token_faithfulness(model, example_batch(), fractions=(.2,), random_repeats=16,
+                                           intervention="static_feature")
+        self.assertEqual(identity["branches"]["signature"]["top_aopc"], 0.)
+        self.assertGreater(feature["branches"]["signature"]["top_minus_random_aopc"], 0.)
 
     def test_seed_repeats_and_explicit_target(self):
         model = KnownImportanceModel().eval()

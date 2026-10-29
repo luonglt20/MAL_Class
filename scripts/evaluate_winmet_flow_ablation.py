@@ -145,6 +145,7 @@ def main() -> None:
                         help="optional seeded validation subset for four-group token-identity controls")
     parser.add_argument("--faithfulness-random-repeats", type=int, default=5)
     parser.add_argument("--faithfulness-ranking", choices=("attention", "signed_readout"), default="attention")
+    parser.add_argument("--faithfulness-intervention", choices=("identity", "static_feature"), default="identity")
     parser.add_argument("--deployment-audit", action="store_true",
                         help="measure actual guarded family decisions on the same validation partition")
     parser.add_argument("--paired-logits", action="store_true",
@@ -300,6 +301,7 @@ def main() -> None:
                 model, batch, seed=seed + index,
                 random_repeats=args.faithfulness_random_repeats,
                 ranking=args.faithfulness_ranking,
+                intervention=args.faithfulness_intervention,
             )
             diagnostic["sample_hash"] = row.sample_hash
             diagnostic["target_family"] = tensorizer.family_vocab.decode(diagnostic["target_index"])
@@ -318,9 +320,14 @@ def main() -> None:
                 "top_beats_random_samples": sum(row["top_minus_random_aopc"] > 0 for row in measured),
             }
         faithfulness = {
-            "notice": "Token-identity-only diagnostic; numeric values, masks, context, edges and cross-branch duplicates remain. Not event deletion, full evidence deletion, rollout or causal proof. Graph rankings cover only the family evidence-head prefix. Sigmoid scores are not calibrated probabilities.",
+            "notice": (
+                "Token-identity-only diagnostic; numeric values, masks, context, edges and cross-branch duplicates remain. Not event deletion, full evidence deletion, rollout or causal proof. Graph rankings cover only the family evidence-head prefix. Sigmoid scores are not calibrated probabilities."
+                if args.faithfulness_intervention == "identity" else
+                "Signature/static feature token, value and mask are removed; dynamic branches and duplicate evidence remain. This is not event deletion, a causal proof, or evidence of semantic suspicion. Sigmoid scores are not calibrated probabilities."
+            ),
             "selection": "smallest SHA256(sample_seed:faithfulness:sample_hash), validation only, no label selection",
             "ranking": args.faithfulness_ranking,
+            "intervention": args.faithfulness_intervention,
             "sample_ids_sha256": _fingerprint(selected),
             "summary": summary, "samples": rows,
         }
@@ -367,7 +374,8 @@ def main() -> None:
         "validation_family_supervised_rows": sum(report.family_supervised for report in validation),
         "baseline": baseline,
         "ablations": ablation_results,
-        "token_identity_faithfulness": faithfulness,
+        ("token_identity_faithfulness" if args.faithfulness_intervention == "identity"
+         else "static_feature_faithfulness"): faithfulness,
         "deployment_family_decisions": deployment,
         "test_metrics": None,
         "ablation_interpretation": {
