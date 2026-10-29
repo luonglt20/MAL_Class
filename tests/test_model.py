@@ -570,6 +570,10 @@ class ModelTests(unittest.TestCase):
         ))
 
         prediction = HybridInferencePipeline(model, tensorizer).predict(report)
+        with patch("malware_hybrid.pipeline.nlargest",
+                   side_effect=lambda n, rows, key: sorted(rows, key=key, reverse=True)):
+            full_sort_prediction = HybridInferencePipeline(model, tensorizer).predict(report)
+        self.assertEqual(prediction["attention_trace"], full_sort_prediction["attention_trace"])
         alignment = prediction["attention_trace"]["static_dynamic_alignment"]
         self.assertTrue(alignment)
         self.assertIn("event_index", alignment[0])
