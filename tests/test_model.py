@@ -577,6 +577,14 @@ class ModelTests(unittest.TestCase):
         self.assertTrue(signature_alignment)
         self.assertIn("mutual_attention", signature_alignment[0])
         self.assertTrue(prediction["attention_trace"]["signature_static_alignment"])
+        signature_items, static_items = tensorizer.evidence_groups(report)
+        for link in prediction["attention_trace"]["signature_static_alignment"]:
+            self.assertEqual(link["signature"], signature_items[link["signature_index"]].token)
+            self.assertEqual(link["static"], static_items[link["static_index"]].token)
+        for link in signature_alignment + alignment:
+            event = report.events[link["event_index"]]
+            for field in ("timestamp", "process_id", "parent_process_id", "thread_id"):
+                self.assertEqual(link[field], getattr(event, field))
         self.assertTrue(prediction["attention_trace"]["cross_branch_evidence_links"])
         self.assertTrue(prediction["attention_trace"]["graph_dynamic_alignment"])
         for link in prediction["attention_trace"]["cross_branch_evidence_links"]:
