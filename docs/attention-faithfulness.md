@@ -77,6 +77,27 @@ feature would misrepresent execution-flow deletion. The existing identity-only
 mode and old report key remain unchanged; new feature-removal reports use
 `static_feature_faithfulness`.
 
+## Cross-branch pair intervention
+
+`malware_hybrid.pair_intervention.pair_intervention` tests one encoded
+Signature/Static feature and one normalized execution event against a fixed
+family logit. It computes four scores: original, feature removed, event removed,
+and both removed. Their difference `full - without_feature - without_event +
+without_both` measures non-additive sensitivity of this model to that specific
+counterfactual. Event removal rebuilds the temporal provenance graph, including
+its order edges. Feature removal clears its token, value and mask. A supplied
+graph that cannot be reproduced from the events is rejected.
+
+Attention event links now include the encoded `feature_index` and `event_index`
+needed to identify a pair even when feature names repeat. The helper is
+research-only and is not automatically run for every dashboard result. It has
+an analytic interaction test and a finite-output test on the actual architecture;
+a local smoke test also ran an existing checkpoint on the synthetic injection
+fixture. That smoke test is not an accuracy or faithfulness evaluation. Deleting
+an event rewires graph edges, shifts windows and may expose a formerly truncated
+event; other occurrences and cross-branch duplicates remain. A large or positive
+interaction is neither proof of a causal behavior chain nor maliciousness.
+
 Tests include an analytic model with known token importance, intentionally
 misleading attention (which must score worse than random), deterministic random
 controls, unchanged context/source tensors/parameters, mode restoration,

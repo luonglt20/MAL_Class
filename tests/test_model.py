@@ -579,6 +579,11 @@ class ModelTests(unittest.TestCase):
         self.assertTrue(prediction["attention_trace"]["signature_static_alignment"])
         self.assertTrue(prediction["attention_trace"]["cross_branch_evidence_links"])
         self.assertTrue(prediction["attention_trace"]["graph_dynamic_alignment"])
+        for link in prediction["attention_trace"]["cross_branch_evidence_links"]:
+            if link["branch"] == "signature_static":
+                continue
+            branch_items = tensorizer.evidence_groups(report)[0 if link["branch"] == "signature" else 1]
+            self.assertEqual(link["evidence"], branch_items[link["feature_index"]].token)
 
         for mode in ("static_only", "dynamic_only"):
             partial = collate_samples([tensorizer.encode(ablate_report(report, mode))])
