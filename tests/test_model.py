@@ -280,6 +280,9 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(result["verdict"]["label"], "UNKNOWN")
         self.assertEqual(result["verdict"]["source"], "not_independently_qualified")
         self.assertEqual(result["verdict"]["reason"], "malware_head_did_not_pass_release_gate")
+        self.assertFalse(result["family"]["malware_verdict_confirmed"])
+        self.assertEqual(result["family"]["classification_scope"],
+                         "family_assignment_is_not_a_malware_verdict")
         self.assertFalse(result["attention_trace"]["behavior_head_trained"])
         self.assertFalse(result["attention_trace"]["behavior_to_modality"])
         self.assertFalse(result["attention_trace"]["per_label_evidence"])

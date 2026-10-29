@@ -1,0 +1,42 @@
+{
+  "scope": "synthetic mixed batch integration only; not accuracy evaluation",
+  "seconds": 1.819,
+  "input_count": 3,
+  "rows": [
+    {
+      "filename": "broken.json",
+      "model_mode": null,
+      "model_id": null,
+      "primary_family": "UNKNOWN",
+      "family_abstained": true,
+      "confirmed_behaviors": "",
+      "suspected_behaviors": "",
+      "pe_parser_isolation": null,
+      "error": "ValueError: file is not valid UTF-8 CAPE/WinMET JSON"
+    },
+    {
+      "filename": "synthetic.exe",
+      "model_mode": "static",
+      "model_id": "ember-sigstatic-e15-conformal",
+      "primary_family": "virlock",
+      "family_abstained": false,
+      "confirmed_behaviors": "",
+      "suspected_behaviors": "",
+      "pe_parser_isolation": "macos_restricted_subprocess_experimental",
+      "error": ""
+    },
+    {
+      "filename": "trace.json",
+      "model_mode": "hybrid",
+      "model_id": "winmet-relv3-seed44",
+      "primary_family": "UNKNOWN",
+      "family_abstained": true,
+      "confirmed_behaviors": "",
+      "suspected_behaviors": "T1055",
+      "pe_parser_isolation": null,
+      "error": ""
+    }
+  ],
+  "sample_execution": "never",
+  "new_training_launched": false
+}
