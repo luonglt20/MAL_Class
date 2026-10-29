@@ -2,6 +2,15 @@
 
 This is an independent multimodal research project. Legacy reports and scores are reference material, not experimental evidence for this project.
 
+The evidence engine now normalizes each event API once per evaluation and
+filters events that cannot match any step of a technique before partitioning.
+Ordering, targets, success checks and partial-chain rules are retained. A local
+comparison against the previous implementation on a synthetic 2,048-event trace
+gave identical outputs for all techniques and took 0.061 s versus 0.710 s over
+20 evaluations. This is a narrow preprocessing benchmark, not end-to-end train
+speed or accuracy evidence. A training process started before the change keeps
+its loaded implementation and is not restarted for this optimization.
+
 The user set a family-classification accuracy target above 85%. Report top-1
 accuracy on a clearly defined, held-out family-labeled set, alongside sample
 count, supported-family coverage, abstention rate, accepted-prediction accuracy,

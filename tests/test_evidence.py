@@ -40,6 +40,7 @@ class EvidenceTests(unittest.TestCase):
 
     def test_chain_survives_many_unrelated_targets_and_processes(self):
         events = copy.deepcopy(self.report.events)
+        baseline = {key: match.public_dict() for key, match in self.engine.evaluate(events).items()}
         for index in range(2_000):
             events.append(ExecutionEvent(
                 index=index + 10,
@@ -58,6 +59,8 @@ class EvidenceTests(unittest.TestCase):
         match = self.engine.evaluate(events)["T1055"]
         self.assertEqual(match.status, "confirmed")
         self.assertEqual(len(match.events), 4)
+        actual = {key: item.public_dict() for key, item in self.engine.evaluate(events).items()}
+        self.assertEqual(actual, baseline)
 
     def test_failed_call_breaks_chain(self):
         self.report.events[2].success = False
