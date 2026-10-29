@@ -230,6 +230,19 @@ with analysis_tab:
                 total_sections = report.metadata.get("section_count")
                 evidence_sections = report.metadata.get("section_evidence_count")
                 category_bytes = report.metadata.get("string_category_scan_bytes")
+                import_count = report.metadata.get("import_count")
+                import_evidence_count = report.metadata.get("import_evidence_count")
+                dll_count = report.metadata.get("import_dll_count")
+                dll_evidence_count = report.metadata.get("import_dll_evidence_count")
+                if (all(isinstance(value, int) for value in (import_count, import_evidence_count, dll_count, dll_evidence_count))
+                        and (import_count > import_evidence_count or dll_count > dll_evidence_count)):
+                    st.caption(
+                        f"Feature import: trích {import_evidence_count}/{import_count} API và "
+                        f"{dll_evidence_count}/{dll_count} DLL đã đọc theo giới hạn EMBER; "
+                        "model còn áp dụng giới hạn tổng số feature."
+                    )
+                if report.metadata.get("import_table_complete") is False:
+                    st.warning("Bảng import đọc chưa đầy đủ; imphash hoàn chỉnh không khả dụng.")
                 if isinstance(category_bytes, int) and category_bytes < report.metadata.get("byte_length", 0):
                     st.caption(
                         "Thống kê chuỗi quét toàn bộ file; nhóm URL/domain/registry chỉ quét "

@@ -70,6 +70,16 @@ string categories. Batch results record the policy and scanned byte count.
 Synthetic same-byte comparisons verify the aligned statistics; broader paired
 PE evaluation remains necessary.
 
+For direct PE imports, the parser continues reading the bounded table to
+calculate import counts and a complete imphash when possible. The model-facing
+DLL/API tokens now follow the EMBER adapter's budget of 16 DLLs and 64 API
+entries; ordinal tokens follow its `dll:ordinalN` form. Counts and truncation
+are disclosed in the UI and batch output. Invalid or incomplete tables still
+do not receive a complete imphash. Duplicate DLL descriptors, malformed names
+and sanitization can differ from the official parser; this is not complete
+extractor parity. This changes direct-PE inputs for existing checkpoints and
+does not by itself establish improved detection accuracy.
+
 This service reads PE bytes and pre-existing JSON reports only. It does not invoke
 an executable, launch an emulator, submit a sample to a remote service, or install
 missing weights. Runtime behavior requires an existing execution report from an

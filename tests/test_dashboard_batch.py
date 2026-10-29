@@ -112,6 +112,20 @@ def test_dashboard_discloses_late_sections_excluded_from_detailed_features():
                and "độ phủ token không chứng minh" in item.value for item in app.caption)
 
 
+def test_dashboard_discloses_incomplete_import_table():
+    from tests.test_pe_static import pe_with_one_import
+
+    data = bytearray(pe_with_one_import())
+    struct.pack_into('<I', data, 0x300, 0x7fffffff)
+    app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(uploader for uploader in app.get('file_uploader')
+         if uploader.label.startswith('Tải PE để phân tích')).upload(
+             'incomplete.exe', bytes(data), 'application/octet-stream')
+    app.run(timeout=20)
+    assert not app.exception
+    assert any('Bảng import đọc chưa đầy đủ' in item.value for item in app.warning)
+
+
 def test_dashboard_classifies_a_local_nested_dataset(tmp_path):
     sample_directory = tmp_path / "family_a"
     sample_directory.mkdir()

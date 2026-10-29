@@ -135,6 +135,17 @@ class PEStaticAnalyzerTests(unittest.TestCase):
         expected = hashlib.md5(b"kernel32.ordinal_foo", usedforsecurity=False).hexdigest()
         self.assertEqual(report.metadata["fuzzy_hashes"]["imphash"], expected)
 
+    def test_ordinal_import_matches_ember_token_without_claiming_imphash(self):
+        data = bytearray(pe_with_one_import())
+        struct.pack_into('<I', data, 0x328, 0x80000005)
+        report = PEStaticAnalyzer().analyze_bytes(bytes(data))
+        reference = ember_row_to_report({"file_type": "Win32", "imports": {"KERNEL32.dll": ["KERNEL32.dll:ordinal5"]}})
+        actual = [item.token for item in report.atomic_evidence if item.kind == 'import_api']
+        expected = [item.token for item in reference.atomic_evidence if item.kind == 'import_api']
+        self.assertEqual(actual, expected)
+        self.assertNotIn('imphash', report.metadata['fuzzy_hashes'])
+        self.assertIn('imphash:unavailable_ordinal_import', {item.token for item in report.atomic_evidence})
+
     def test_imphash_uses_raw_library_name_not_sanitized_model_token(self):
         data = bytearray(pe_with_one_import())
         data[0x350:0x35F] = b"My Library.dll\0"
@@ -156,8 +167,42 @@ class PEStaticAnalyzerTests(unittest.TestCase):
         report = PEStaticAnalyzer().analyze_bytes(bytes(data))
         expected = hashlib.md5(",".join(["kernel32.createfilew"] * 65).encode(), usedforsecurity=False).hexdigest()
         self.assertEqual(report.metadata["import_count"], 65)
+        reference = ember_row_to_report({"file_type": "Win32", "imports": {"KERNEL32.dll": ["CreateFileW"] * 65}})
+        actual_imports = [item.token for item in report.atomic_evidence if item.kind in {'import_dll', 'import_api'}]
+        expected_imports = [item.token for item in reference.atomic_evidence if item.kind in {'import_dll', 'import_api'}]
+        self.assertEqual(actual_imports, expected_imports)
+        self.assertEqual(report.metadata["import_evidence_count"], 64)
         self.assertTrue(report.metadata["import_table_complete"])
         self.assertEqual(report.metadata["fuzzy_hashes"]["imphash"], expected)
+
+    def test_dll_evidence_cap_matches_ember_without_truncating_imphash(self):
+        data = bytearray(minimal_pe())
+        data.extend(b'\x00' * (0x2200 - len(data)))
+        section = 0x98 + 224
+        struct.pack_into('<I', data, section + 8, 0x2000)
+        struct.pack_into('<I', data, section + 16, 0x2000)
+        struct.pack_into('<II', data, 0x98 + 96 + 8, 0x1100, 18 * 20)
+        imports = {}
+        for index in range(17):
+            dll = f'lib{index}.dll'
+            name_offset, thunk_offset = 0x800 + 32 * index, 0x600 + 8 * index
+            raw_name = dll.encode() + b'\x00'
+            data[name_offset:name_offset + len(raw_name)] = raw_name
+            struct.pack_into('<IIIII', data, 0x300 + 20 * index, thunk_offset + 0xe00,
+                             0, 0, name_offset + 0xe00, thunk_offset + 0xe00)
+            struct.pack_into('<II', data, thunk_offset, 0x1e00, 0)
+            imports[dll] = ['CreateFileW']
+        data[0x1000:0x100e] = b'\x00\x00CreateFileW\x00'
+        report = PEStaticAnalyzer().analyze_bytes(bytes(data))
+        reference = ember_row_to_report({'file_type': 'Win32', 'imports': imports})
+        actual = [item.token for item in report.atomic_evidence if item.kind in {'import_dll', 'import_api'}]
+        expected = [item.token for item in reference.atomic_evidence if item.kind in {'import_dll', 'import_api'}]
+        self.assertEqual(actual, expected)
+        self.assertEqual(report.metadata['import_dll_count'], 17)
+        self.assertEqual(report.metadata['import_dll_evidence_count'], 16)
+        self.assertTrue(report.metadata['import_table_complete'])
+        expected_hash = hashlib.md5(','.join(f'lib{i}.createfilew' for i in range(17)).encode(), usedforsecurity=False).hexdigest()
+        self.assertEqual(report.metadata['fuzzy_hashes']['imphash'], expected_hash)
 
     def test_partial_import_table_never_produces_full_imphash(self):
         data = bytearray(pe_with_one_import())
