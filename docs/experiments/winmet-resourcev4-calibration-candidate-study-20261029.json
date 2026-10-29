@@ -1,0 +1,129 @@
+{
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "source_sha256": "503ecbc0c11ac9a93e74a75136c99eaae999d1d3731c669e18b9d666b485835a",
+  "partitions": {
+    "train": {
+      "rows": 637,
+      "sample_ids_sha256": "e52f8bf8d9541e008a95c05e79f43f133825f4ba73c1d5b8d2eb9477754b795b"
+    },
+    "validation": {
+      "rows": 107,
+      "sample_ids_sha256": "77e39c616eba0ba79fbceff5d2bd3f4b83958a202dd70da84e11e4df33bdfa4f"
+    },
+    "calibration": {
+      "rows": 101,
+      "sample_ids_sha256": "7e063043e3c280d330dde827393188ad6e8ad8e1fe1da52d2503ab8d30769e79"
+    },
+    "withheld_internal_test": {
+      "rows": 155,
+      "sample_ids_sha256": "9673c8fcd6b361fffa508feee4caa13b28f0a4852a4b3f20b35530a5036ad9d1"
+    }
+  },
+  "evaluated_partition": "validation",
+  "test_metrics": null,
+  "full_report": "artifacts/winmet/resourcev4_candidate_calibration_study_20261029.json",
+  "full_report_sha256": "557c6f97df4389ac81a41567afd197e3930db1481bbc2f20071222ec74bfea45",
+  "calibration_candidate_study": {
+    "notice": "Exploratory calibration-only selection applied to a validation set previously inspected in other analyses; no conformal guarantee or independent test. AVClass labels are weak. Model and deployed policy remain unchanged.",
+    "selection": {
+      "target_accuracy": 0.85,
+      "minimum_selected": 20,
+      "selected": {
+        "threshold": 0.9,
+        "reference_labeled_samples": 89,
+        "selected_samples": 27,
+        "matching_reference_samples": 24,
+        "coverage": 0.30337078651685395,
+        "reference_agreement": 0.8888888888888888,
+        "wilson_95_descriptive": [
+          0.7194181745602705,
+          0.9614803521050127
+        ],
+        "correct_fraction_all_labeled": 0.2696629213483146
+      },
+      "calibration_results": [
+        {
+          "threshold": 0.5,
+          "reference_labeled_samples": 89,
+          "selected_samples": 51,
+          "matching_reference_samples": 34,
+          "coverage": 0.5730337078651685,
+          "reference_agreement": 0.6666666666666666,
+          "wilson_95_descriptive": [
+            0.5296812196648056,
+            0.7803024423727717
+          ],
+          "correct_fraction_all_labeled": 0.38202247191011235
+        },
+        {
+          "threshold": 0.6,
+          "reference_labeled_samples": 89,
+          "selected_samples": 47,
+          "matching_reference_samples": 33,
+          "coverage": 0.5280898876404494,
+          "reference_agreement": 0.7021276595744681,
+          "wilson_95_descriptive": [
+            0.5602205595363459,
+            0.8134891584898374
+          ],
+          "correct_fraction_all_labeled": 0.3707865168539326
+        },
+        {
+          "threshold": 0.7,
+          "reference_labeled_samples": 89,
+          "selected_samples": 42,
+          "matching_reference_samples": 31,
+          "coverage": 0.47191011235955055,
+          "reference_agreement": 0.7380952380952381,
+          "wilson_95_descriptive": [
+            0.5893098001502445,
+            0.8469751462739642
+          ],
+          "correct_fraction_all_labeled": 0.34831460674157305
+        },
+        {
+          "threshold": 0.8,
+          "reference_labeled_samples": 89,
+          "selected_samples": 31,
+          "matching_reference_samples": 26,
+          "coverage": 0.34831460674157305,
+          "reference_agreement": 0.8387096774193549,
+          "wilson_95_descriptive": [
+            0.6736529727502113,
+            0.9290748009456006
+          ],
+          "correct_fraction_all_labeled": 0.29213483146067415
+        },
+        {
+          "threshold": 0.9,
+          "reference_labeled_samples": 89,
+          "selected_samples": 27,
+          "matching_reference_samples": 24,
+          "coverage": 0.30337078651685395,
+          "reference_agreement": 0.8888888888888888,
+          "wilson_95_descriptive": [
+            0.7194181745602705,
+            0.9614803521050127
+          ],
+          "correct_fraction_all_labeled": 0.2696629213483146
+        }
+      ],
+      "notice": "Calibration-only empirical selection; candidates bypass the conformal guard, reference labels may be weak, and selected accuracy is not a statistical guarantee."
+    },
+    "validation_result": {
+      "threshold": 0.9,
+      "reference_labeled_samples": 100,
+      "selected_samples": 33,
+      "matching_reference_samples": 32,
+      "coverage": 0.33,
+      "reference_agreement": 0.9696969696969697,
+      "wilson_95_descriptive": [
+        0.8468093832683193,
+        0.9946307279103482
+      ],
+      "correct_fraction_all_labeled": 0.32
+    },
+    "calibration_audit_errors": 0
+  },
+  "strict_above_85_selection_verified": true
+}

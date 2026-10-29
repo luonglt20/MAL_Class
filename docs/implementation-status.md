@@ -20,6 +20,13 @@ labels, but only 22/100 labeled reports receive a correct accepted primary
 family; 78 remain unresolved. This is validation evidence, not a held-out
 accuracy result. [Counts and limitations](resourcev4-validation.md).
 
+Calibration-selected candidate pilot: a fixed threshold grid with empirical
+agreement >85% and at least 20 selected calibration samples chose 0.9 (24/27).
+Applied to validation it produced 32/33 agreement, with 33% labeled coverage.
+The checkpoint and deployed policy are unchanged; this is weak-label exploratory
+evidence on a previously inspected validation split, not qualification of the
+end-to-end accuracy target. [Protocol and limitations](resourcev4-validation.md).
+
 2026-10-29 PE parser fix: all bounded PE sections now participate in RVA lookup and overlay accounting, including sections after the tenth. Section-specific model evidence still uses the previous ten-section limit; late-section imports/exports and overlay values may therefore change and need revalidation with existing checkpoints. A synthetic eleven-section PE regression test covers a late import and zero overlay without executing the file.
 
 The single-file UI warns when detailed section evidence is truncated; batch exports include total and included section counts so the same limitation is visible in exported results.

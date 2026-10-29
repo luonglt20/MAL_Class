@@ -20,7 +20,7 @@ from torch.utils.data import DataLoader
 from malware_hybrid.dataset import HybridDataset, collate_samples
 from malware_hybrid.evaluation import ENCODED_ABLATIONS, ablate_encoded_batch, ablate_report
 from malware_hybrid.faithfulness import family_token_faithfulness
-from malware_hybrid.deployment_audit import audit_family_decisions
+from malware_hybrid.deployment_audit import audit_family_decisions, explore_candidate_thresholds, select_candidate_threshold
 from malware_hybrid.pipeline import HybridInferencePipeline
 from malware_hybrid.pair_intervention import compare_attention_pairs
 from malware_hybrid.training import (
@@ -152,6 +152,8 @@ def main() -> None:
     parser.add_argument("--pair-random-controls", type=int, default=3)
     parser.add_argument("--deployment-audit", action="store_true",
                         help="measure actual guarded family decisions on the same validation partition")
+    parser.add_argument("--calibration-candidate-study", action="store_true",
+                        help="explore an empirical candidate threshold on calibration; apply to validation only")
     parser.add_argument("--paired-logits", action="store_true",
                         help="also measure exact paired score changes for encoded controls")
     args = parser.parse_args()
@@ -170,7 +172,7 @@ def main() -> None:
         parser.error("faithfulness samples must be 0..100 and random repeats 1..100")
     if not 0 <= args.pair_samples <= 100 or not 1 <= args.pair_random_controls <= 20:
         parser.error("pair samples must be 0..100 and random controls 1..20")
-    if not args.modes and not args.faithfulness_samples and not args.pair_samples and not args.deployment_audit:
+    if not args.modes and not args.faithfulness_samples and not args.pair_samples and not args.deployment_audit and not args.calibration_candidate_study:
         parser.error("request at least one ablation or faithfulness sample")
     if args.report.resolve() in {
         args.reports.resolve(), args.checkpoint.resolve(),
@@ -369,6 +371,35 @@ def main() -> None:
                            'duplicate evidence and top-k candidate pruning confound interpretation. '
                            'Not a calibrated maliciousness score or causal proof.'}
 
+    candidate_study = None
+    if args.calibration_candidate_study:
+        candidate_pipeline = HybridInferencePipeline(model, tensorizer, device=args.device)
+        def study_progress(partition):
+            def update(done, total):
+                if done % 20 == 0 or done == total:
+                    print(json.dumps({'candidate_study': partition, 'done': done, 'total': total}),
+                          file=sys.stderr, flush=True)
+            return update
+        calibration_audit = audit_family_decisions(candidate_pipeline, calibration,
+                                                    tensorizer.family_vocab.token_to_id,
+                                                    study_progress('calibration'))
+        selection = select_candidate_threshold(calibration_audit['rows'], target_accuracy=.85, min_selected=20)
+        validation_result = None
+        if selection['selected'] is not None:
+            validation_audit = audit_family_decisions(candidate_pipeline, validation,
+                                                      tensorizer.family_vocab.token_to_id,
+                                                      study_progress('validation'))
+            validation_result = explore_candidate_thresholds(
+                validation_audit['rows'], (selection['selected']['threshold'],)
+            )['results'][0]
+        candidate_study = {
+            'notice': 'Exploratory calibration-only selection applied to a validation set previously '
+                      'inspected in other analyses; no conformal guarantee or independent test. '
+                      'AVClass labels are weak. Model and deployed policy remain unchanged.',
+            'selection': selection, 'validation_result': validation_result,
+            'calibration_audit_errors': calibration_audit['errors'],
+        }
+
     deployment = None
     if args.deployment_audit:
         pipeline = HybridInferencePipeline(model, tensorizer, device=args.device)
@@ -414,6 +445,7 @@ def main() -> None:
         ("token_identity_faithfulness" if args.faithfulness_intervention == "identity"
          else "static_feature_faithfulness"): faithfulness,
         "pair_interaction": pairs,
+        "calibration_candidate_study": candidate_study,
         "deployment_family_decisions": deployment,
         "test_metrics": None,
         "ablation_interpretation": {

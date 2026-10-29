@@ -1,7 +1,7 @@
 import unittest
 from types import SimpleNamespace
 
-from malware_hybrid.deployment_audit import audit_family_decisions, explore_candidate_thresholds, summarize_labeled_decisions
+from malware_hybrid.deployment_audit import audit_family_decisions, explore_candidate_thresholds, select_candidate_threshold, summarize_labeled_decisions
 
 
 class DeploymentAuditTests(unittest.TestCase):
@@ -79,6 +79,24 @@ class DeploymentAuditTests(unittest.TestCase):
         rows[0]['family_decision']['candidate_confidence'] = float('nan')
         with self.assertRaises(ValueError):
             explore_candidate_thresholds(rows)
+
+    def test_threshold_selected_from_calibration_only_and_fails_if_insufficient(self):
+        rows = []
+        for index in range(25):
+            rows.append({'reference_families': ['a'], 'input_supported': True,
+                         'family_decision': {'candidate': 'a' if index < 22 else 'b',
+                                             'candidate_confidence': .8 if index < 20 else .6}})
+        chosen = select_candidate_threshold(rows, target_accuracy=.85, min_selected=20,
+                                            thresholds=(.5, .7, .9))
+        self.assertEqual(chosen['selected']['threshold'], .5)
+        self.assertEqual(chosen['selected']['selected_samples'], 25)
+        self.assertEqual(chosen['selected']['matching_reference_samples'], 22)
+        self.assertIsNone(select_candidate_threshold(rows, min_selected=26)['selected'])
+        self.assertIsNone(select_candidate_threshold(rows, min_selected=20, target_accuracy=.88,
+                                                     thresholds=(.5,))['selected'])
+        for kwargs in ({'target_accuracy': 0}, {'min_selected': 0}, {'target_accuracy': float('nan')}):
+            with self.assertRaises(ValueError):
+                select_candidate_threshold(rows, **kwargs)
 
 
 if __name__ == "__main__":

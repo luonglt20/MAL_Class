@@ -41,6 +41,20 @@ the dashboard. The descriptive Wilson interval at 0.8 is 79.2%–97.3%; it
 does not account for clustered samples or weak labels. A threshold selected
 on calibration data would need evaluation on a separate held-out sample.
 
+The follow-up empirical study selected a threshold using calibration alone:
+among the fixed grid 0.5/0.6/0.7/0.8/0.9, maximize selected coverage subject
+to more than 85% reference agreement and at least 20 selected labeled reports.
+It chose 0.9 with 24/27 agreement on 89 labeled calibration reports. Applied
+unchanged to validation, 32/33 candidates agreed with weak references (96.97%),
+covering 33/100 labeled reports. The descriptive Wilson lower limit was 84.68%,
+and the interval ignores clustering. The validation set had already been
+inspected in earlier experiments, and the calibration partition also supplied
+the checkpoint's existing conformal calibration. Thus this remains an
+exploratory candidate study, not an independent test or a conformal guarantee.
+The candidate threshold does not replace the deployed guard; no model weight
+or checkpoint was changed. The withheld test was not evaluated.
+[Full selection grid and source fingerprints](experiments/winmet-resourcev4-calibration-candidate-study-20261029.json).
+
 Frozen interventions relative to v4 baseline: removing temporal resource IDs
 changed mAP by +0.00018 and calibrated macro-F1 by +0.0392; masking graph edges
 changed them by −0.1007 and −0.1174; disabling token-level cross-branch attention
