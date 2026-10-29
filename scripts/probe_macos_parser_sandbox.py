@@ -28,9 +28,16 @@ def main() -> int:
     if not environment.is_dir():
         print(json.dumps({'supported': False, 'reason': 'workspace virtual environment missing'}))
         return 1
+    interpreter = Path(sys.executable).resolve()
+    framework_python = interpreter.parent.parent / 'Resources/Python.app/Contents/MacOS/Python'
+    executables = [interpreter]
+    if framework_python.is_file():
+        executables.append(framework_python.resolve())
+    allowed_exec = ' '.join('(literal ' + quoted(str(path)) + ')' for path in executables)
     profile = (
         '(version 1) (allow default) (deny network*) (deny file-write*) '
-        '(deny process-fork) (deny file-read-data (subpath ' + quoted(str(home)) + ')) '
+        '(deny process-fork) (deny process-exec) (allow process-exec ' + allowed_exec + ') '
+        '(deny file-read-data (subpath ' + quoted(str(home)) + ')) '
         '(allow file-read-data (subpath ' + quoted(str(source)) + ') '
         '(subpath ' + quoted(str(environment)) + '))'
     )
@@ -61,6 +68,7 @@ def connect():
     finally: s.close()
 denied('network_connect_denied', connect)
 denied('process_fork_denied', lambda: subprocess.Popen(['/usr/bin/true']))
+denied('other_program_exec_denied', lambda: os.execv('/usr/bin/true', ['/usr/bin/true']))
 print(json.dumps(checks))
 '''
     # Harmless marker outside allowlisted source/venv; content is never printed.
@@ -80,7 +88,7 @@ print(json.dumps(checks))
         return 1
     checks = json.loads(result.stdout)
     print(json.dumps({'supported': True, 'checks': checks,
-                      'notice': 'Probe only; file metadata and non-home paths are not restricted, exec is not denied, and the UI does not use this profile.'}, indent=2))
+                      'notice': 'Probe only; file metadata and non-home paths are not restricted, interpreter exec remains allowed, and the UI does not use this profile.'}, indent=2))
     return 0 if all(checks.values()) else 1
 
 

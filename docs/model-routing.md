@@ -53,13 +53,23 @@ an executable, launch an emulator, submit a sample to a remote service, or insta
 missing weights. Runtime behavior requires an existing execution report from an
 isolated sandbox.
 
-`scripts/probe_macos_parser_sandbox.py` is a local feasibility probe, not an
-isolation boundary used by inference. On the development Mac it parsed a
+Direct PE upload and batch inference now use an experimental restricted macOS
+subprocess. It passes bytes over standard input, never executes the sample,
+limits CPU time, wall time and response size, and fails closed if the child or
+the macOS restriction mechanism is unavailable. This path currently requires
+macOS and source and virtual environment inside the user's home; other systems
+return an error for PE uploads rather than silently parsing without isolation.
+CAPE JSON parsing and model inference are not placed inside that subprocess.
+
+`scripts/probe_macos_parser_sandbox.py` tests a comparable restriction profile.
+On the development Mac it parsed a
 synthetic PE inside a child restricted from connecting to localhost, writing a
-file, forking, and reading a harmless marker elsewhere in the user's home. The
-profile still permits file metadata access, reads outside the home, and exec;
-it has not been integrated into the application or validated against parser
-compromise. Do not treat this probe as a sandbox for executing malware.
+file, forking, executing another program, and reading a harmless marker elsewhere
+in the user's home. The profile still permits file metadata access, reads outside
+the home, and re-executing the allowlisted interpreter;
+the boundary has not been validated against parser compromise or kernel escape.
+Do not treat it as a VM or a sandbox for executing malware. The parent process
+still reads uploaded bytes before passing them to the child.
 
 Tests use their own temporary registries and tiny checkpoints, so ignored
 workstation models cannot change test outcomes or startup cost. A local smoke

@@ -209,7 +209,8 @@ with analysis_tab:
                     )
                     st.info(
                         "Đang phân tích static-only: mẫu PE được đọc như dữ liệu, không chạy. "
-                        "Behavior động chỉ được suy luận từ sandbox report."
+                        "Bộ đọc chạy trong tiến trình macOS có giới hạn quyền; đây không phải "
+                        "sandbox để chạy mã độc. Behavior động cần sandbox report."
                     )
                 else:
                     report, result = analyze_uploaded_sample(
