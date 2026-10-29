@@ -2,6 +2,8 @@
 
 This is an independent multimodal research project. Legacy reports and scores are reference material, not experimental evidence for this project.
 
+2026-10-29 PE parser fix: all bounded PE sections now participate in RVA lookup and overlay accounting, including sections after the tenth. Section-specific model evidence still uses the previous ten-section limit; late-section imports/exports and overlay values may therefore change and need revalidation with existing checkpoints. A synthetic eleven-section PE regression test covers a late import and zero overlay without executing the file.
+
 2026-10-29 v4 attention identity diagnostic: top-minus-random deletion AOPC is negative on average for all four evidence groups in ten validation samples. Attention weights have not passed the faithfulness criterion. [Method and limits](resourcev4-validation.md#token-identity-attention-diagnostic).
 
 2026-10-29 v4 reserved internal holdout: 155 reports, family mAP 0.6030 and calibrated macro-F1 0.3980 against weak AVClass labels. This is lower than validation and does not qualify the model for deployment. [Details](resourcev4-validation.md#reserved-internal-holdout).

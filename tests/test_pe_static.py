@@ -45,6 +45,29 @@ def pe_with_one_import() -> bytes:
 
 
 class PEStaticAnalyzerTests(unittest.TestCase):
+    def test_import_and_overlay_use_sections_after_feature_limit(self):
+        data = bytearray(0x400 + 11 * 0x200)
+        data[:0x178] = minimal_pe()[:0x178]
+        struct.pack_into("<H", data, 0x86, 11)
+        for index in range(11):
+            struct.pack_into("<8sIIIIIIHHI", data, 0x178 + index * 40,
+                             f"s{index}".encode(), 0x200, 0x1000 * (index + 1),
+                             0x200, 0x400 + index * 0x200, 0, 0, 0, 0, 0x40000040)
+        base = 0x400 + 10 * 0x200
+        struct.pack_into("<II", data, 0x98 + 96 + 8, 0xb100, 40)
+        struct.pack_into("<IIIII", data, base + 0x100, 0xb128, 0, 0, 0xb150, 0xb138)
+        struct.pack_into("<II", data, base + 0x128, 0xb160, 0)
+        data[base + 0x150:base + 0x15d] = b"KERNEL32.dll\0"
+        struct.pack_into("<H", data, base + 0x160, 0)
+        data[base + 0x162:base + 0x16e] = b"CreateFileW\0"
+        report = PEStaticAnalyzer().analyze_bytes(bytes(data))
+        tokens = {item.token for item in report.atomic_evidence}
+        self.assertIn("import_api:createfilew", tokens)
+        self.assertIn("overlay_size:b0", tokens)
+        self.assertTrue(report.metadata["import_table_complete"])
+        self.assertNotIn("section:s10", tokens)
+        self.assertFalse(report.metadata["sample_executed"])
+
     def test_named_symbol_with_ordinal_prefix_is_not_an_ordinal_import(self):
         data = bytearray(pe_with_one_import())
         data[0x362:0x36E] = b"ordinal_Foo\0"
