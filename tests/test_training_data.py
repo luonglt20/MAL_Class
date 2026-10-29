@@ -228,7 +228,9 @@ class TrainerProgressTests(unittest.TestCase):
         validation = copy.deepcopy(train)
         validation.sample_hash = "independent-validation"
         metrics = [
-            {"loss": 1.0, "family_map": score, "family_macro_f1": 0.0}
+            {"loss": 1.0, "family_map": score, "family_macro_f1": 0.0,
+             "family_top1_accuracy": 0.0, "family_top3_accuracy": 0.0,
+             "family_evaluated_samples": 1}
             for score in (0.4, 0.3, 0.2)
         ]
         updates = []
