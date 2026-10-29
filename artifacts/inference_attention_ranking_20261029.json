@@ -1,0 +1,15 @@
+{
+  "scope": "synthetic link ranking only, including equal scores; not full inference or accuracy",
+  "candidate_links": 32768,
+  "retained_links": 30,
+  "identical_ordered_output": true,
+  "full_sort": {
+    "seconds": 0.05558566699983203,
+    "peak_traced_bytes": 9505416
+  },
+  "bounded_ranking": {
+    "seconds": 0.025309167000159505,
+    "peak_traced_bytes": 5312
+  },
+  "training_launched": false
+}
