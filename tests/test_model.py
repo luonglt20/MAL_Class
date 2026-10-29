@@ -587,6 +587,14 @@ class ModelTests(unittest.TestCase):
                 self.assertEqual(link[field], getattr(event, field))
         self.assertTrue(prediction["attention_trace"]["cross_branch_evidence_links"])
         self.assertTrue(prediction["attention_trace"]["graph_dynamic_alignment"])
+        for link in prediction["attention_trace"]["graph_dynamic_alignment"]:
+            self.assertTrue(set(link["adjacent_event_indices"]).issubset(
+                {event.index for event in report.events}))
+            self.assertLessEqual(len(link["adjacent_event_indices"]), 16)
+            self.assertGreaterEqual(link["adjacent_event_count"], len(link["adjacent_event_indices"]))
+            if link["node_type"] == "event":
+                own_index = int(link["node"].split(":")[1])
+                self.assertIn(own_index, link["adjacent_event_indices"])
         for link in prediction["attention_trace"]["cross_branch_evidence_links"]:
             if link["branch"] == "signature_static":
                 continue
