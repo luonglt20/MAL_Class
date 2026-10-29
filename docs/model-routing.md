@@ -80,6 +80,14 @@ and sanitization can differ from the official parser; this is not complete
 extractor parity. This changes direct-PE inputs for existing checkpoints and
 does not by itself establish improved detection accuracy.
 
+Common section-property tokens now use the `CNT_*` and `MEM_*` names emitted by
+the EMBER2024/pefile path, rather than the previously unmatched short names
+such as `read` or `execute`. This covers selected common flags, not every
+reserved or alignment flag. On one local benign launcher, all 13 extracted
+common flag tokens were in the registered static checkpoint's vocabulary; the
+file was parsed in the restricted child and never executed. Vocabulary presence
+and this single sample do not establish accuracy or real-world safety.
+
 This service reads PE bytes and pre-existing JSON reports only. It does not invoke
 an executable, launch an emulator, submit a sample to a remote service, or install
 missing weights. Runtime behavior requires an existing execution report from an

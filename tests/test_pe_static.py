@@ -48,6 +48,25 @@ def pe_with_one_import() -> bytes:
 
 
 class PEStaticAnalyzerTests(unittest.TestCase):
+    def test_common_section_flag_tokens_match_ember_adapter(self):
+        for bits, props in (
+            (0x60000020, ['CNT_CODE', 'MEM_EXECUTE', 'MEM_READ']),
+            (0xc0000040, ['CNT_INITIALIZED_DATA', 'MEM_READ', 'MEM_WRITE']),
+            (0x1f000080, ['CNT_UNINITIALIZED_DATA', 'LNK_NRELOC_OVFL', 'MEM_DISCARDABLE',
+                          'MEM_NOT_CACHED', 'MEM_NOT_PAGED', 'MEM_SHARED']),
+        ):
+            with self.subTest(bits=bits):
+                data = bytearray(minimal_pe())
+                struct.pack_into('<I', data, 0x178 + 36, bits)
+                direct = PEStaticAnalyzer().analyze_bytes(bytes(data))
+                reference = ember_row_to_report({'file_type': 'Win32', 'section': {'sections': [
+                    {'name': '.text', 'props': props}
+                ]}})
+                actual = [item.token for item in direct.atomic_evidence if item.kind == 'section_flags']
+                expected = [item.token for item in reference.atomic_evidence if item.kind == 'section_flags']
+                self.assertEqual(actual, expected)
+                self.assertEqual(direct.metadata['section_flags_policy'], 'ember_common_section_flags_v1')
+
     def test_string_statistics_match_ember_on_the_same_pe_bytes(self):
         data = minimal_pe() + b"\x00four\x00five!\x00" + bytes([0x7f]) * 6 + b"\x00XYZ"
         strings = re.findall(rb"[\x20-\x7f]{5,}", data)

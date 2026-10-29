@@ -18,6 +18,8 @@ The single-file UI warns when detailed section evidence is truncated; batch expo
 
 2026-10-29 direct PE import alignment: model-facing DLL/API budget and ordinal spelling now match EMBER adapter rules on synthetic tables, without truncating the bounded full-table imphash calculation. Incomplete tables and feature caps are surfaced to users. More extractor differences and independent PE validation remain. [Scope](model-routing.md).
 
+2026-10-29 direct PE section properties: common code/data and memory flags now use EMBER's token names. Synthetic adapter comparisons and a vocabulary check on one local launcher passed; this changes inference inputs but does not establish accuracy. [Scope](model-routing.md).
+
 2026-10-29 v4 attention identity diagnostic: top-minus-random deletion AOPC is negative on average for all four evidence groups in ten validation samples. Attention weights have not passed the faithfulness criterion. [Method and limits](resourcev4-validation.md#token-identity-attention-diagnostic).
 
 2026-10-29 expanded v4 diagnostic: 30 validation samples show negative average top-minus-random identity-deletion AOPC for Signature, events and graph; Static is slightly positive but wins on only 9/30. The raw attention-faithfulness gate remains unmet. [Results and limitations](resourcev4-validation.md#expanded-raw-attention-diagnostic).
