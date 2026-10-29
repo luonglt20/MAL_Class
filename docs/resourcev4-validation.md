@@ -122,3 +122,22 @@ because the field was renamed after the process started; its stored intervention
 and notice correctly specify `static_feature`. Future runs use the corrected
 `static_feature_faithfulness` key. No model weight, threshold, or test split was
 changed. [Aggregate and full-report checksum](experiments/winmet-resourcev4-feature-removal30-20261029.json).
+
+### Signed readout on the same intervention
+
+Using the same samples, fixed predicted targets, masks and random controls,
+ranking by signed contextualized readout gave mean top-minus-random AOPC
+**+0.01273** on Signature (18/30 positive) and **−0.00936** on Static (6/30).
+Against raw attention on the same samples, the paired mean change was +0.02648
+for Signature (22 samples improved, six worsened, two tied) and −0.00131 for
+Static (19 improved, ten worsened, one tied). The reconstruction error of the
+linear logits was at most 8.59e-6. Positive Signature results on this small
+validation diagnostic justify further evaluation, not a general faithfulness
+claim; Static remains negative despite more per-sample improvements.
+
+The signed score is a decomposition of **already contextualized** values and
+can include cross-branch information; it is not a causal attribution to the
+original token or a score for maliciousness. The model, calibration and test
+partition remain unchanged. `scripts/compare_faithfulness_rankings.py` checks
+matching sample IDs, targets, budgets, random controls and checkpoint before
+computing paired differences. [Aggregate and report hashes](experiments/winmet-resourcev4-signed-feature30-20261029.json).

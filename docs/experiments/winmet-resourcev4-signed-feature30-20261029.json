@@ -1,0 +1,69 @@
+{
+  "left_ranking": "attention",
+  "right_ranking": "signed_readout",
+  "intervention": "static_feature",
+  "sample_ids_sha256": "f8167eba79c455b54fcc8c3a0162c21e363ebabd846d92d7971f58dc98c92731",
+  "branches": {
+    "signature": {
+      "paired_samples": 30,
+      "mean_right_minus_left_aopc": 0.026479938421915802,
+      "right_better": 22,
+      "left_better": 6,
+      "ties": 2
+    },
+    "static": {
+      "paired_samples": 30,
+      "mean_right_minus_left_aopc": -0.0013145020955966581,
+      "right_better": 19,
+      "left_better": 10,
+      "ties": 1
+    },
+    "temporal_events": {
+      "paired_samples": 0,
+      "mean_right_minus_left_aopc": null,
+      "right_better": 0,
+      "left_better": 0,
+      "ties": 0
+    },
+    "graph": {
+      "paired_samples": 0,
+      "mean_right_minus_left_aopc": null,
+      "right_better": 0,
+      "left_better": 0,
+      "ties": 0
+    }
+  },
+  "date": "2026-10-29",
+  "left_report": "artifacts/winmet/resourcev4_attention14_static_feature_30_validation_20261029.json",
+  "left_report_sha256": "870656e2ebc2167d96616e8ebae1a1417970b5dc23443ca1c5dc9efc511c77ae",
+  "right_report": "artifacts/winmet/resourcev4_attention14_signed_feature_30_validation_20261029.json",
+  "right_report_sha256": "9b0e405cd4b78465df133eb225eadd2cd65b3d1537dd3f2145032e4a7e90b06c",
+  "source_sha256": "503ecbc0c11ac9a93e74a75136c99eaae999d1d3731c669e18b9d666b485835a",
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "partition": "validation",
+  "right_summary": {
+    "signature": {
+      "evaluated_samples": 30,
+      "mean_top_minus_random_aopc": 0.012732015302818683,
+      "top_beats_random_samples": 18
+    },
+    "static": {
+      "evaluated_samples": 30,
+      "mean_top_minus_random_aopc": -0.009359081856285532,
+      "top_beats_random_samples": 6
+    },
+    "temporal_events": {
+      "evaluated_samples": 0,
+      "mean_top_minus_random_aopc": null,
+      "top_beats_random_samples": 0
+    },
+    "graph": {
+      "evaluated_samples": 0,
+      "mean_top_minus_random_aopc": null,
+      "top_beats_random_samples": 0
+    }
+  },
+  "max_logit_reconstruction_error": 8.58306884765625e-06,
+  "test_metrics": null,
+  "notice": "Signature/static feature token, value and mask are removed; dynamic branches and duplicate evidence remain. This is not event deletion, a causal proof, or evidence of semantic suspicion. Sigmoid scores are not calibrated probabilities."
+}
