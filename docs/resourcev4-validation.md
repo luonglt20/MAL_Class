@@ -67,6 +67,25 @@ family discrimination and open-set rejection separately, with training-only
 hard negatives and a fresh test cohort. The aggregate summarizer retains
 confusion counts without exporting individual sample IDs.
 
+## Training expansion support audit
+
+A metadata-only pass over the existing 2,500 prepared reports verifies the
+source checksum, reconstructs the original 1,000-row reservoir and all four
+partition fingerprints, then assigns additional rows using the **same archive
+group destinations**. Re-running a fresh group split on the expanded cohort
+could move previously held-out groups into training; this audit refuses that
+approach and rejects previously unassigned groups.
+
+The resulting partition sizes are 1,676 train, 246 validation, 216 calibration
+and 362 internal test. At five training samples per family, supported families
+increase from 23 to 51; at ten they increase from 12 to 28. Expanded training
+support includes AgentTesla 84, Gamarue 27, SnakeLogger 17 and Blihan 20. Only
+training labels are summarized; no predictions or model fitting were run.
+This is a feasible data expansion, not demonstrated accuracy improvement or a
+new independent benchmark. Old validation/test groups remain in their original
+partitions and all reference labels remain weak AVClass consensus.
+[Support counts and partition fingerprints](experiments/winmet-resourcev4-expansion-support-20261029.json).
+
 Frozen interventions relative to v4 baseline: removing temporal resource IDs
 changed mAP by +0.00018 and calibrated macro-F1 by +0.0392; masking graph edges
 changed them by −0.1007 and −0.1174; disabling token-level cross-branch attention
