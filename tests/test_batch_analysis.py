@@ -1,4 +1,7 @@
 import struct
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +13,7 @@ from malware_hybrid.batch_analysis import (
     batch_error_row,
     batch_result_row,
     discover_dataset_files,
+    read_bounded_file,
 )
 from malware_hybrid.pipeline import HybridInferencePipeline
 
@@ -158,6 +162,22 @@ class BatchAnalysisTests(unittest.TestCase):
             with patch("malware_hybrid.batch_analysis.os.scandir", return_value=scanner):
                 with self.assertRaisesRegex(ValueError, "exceeds 3 directory entries"):
                     discover_dataset_files(directory, max_entries=3)
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "requires POSIX named pipes")
+    def test_bounded_reader_rejects_fifo_without_waiting_for_writer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            fifo = Path(directory) / "replaced.exe"
+            os.mkfifo(fifo)
+            completed = subprocess.run([
+                sys.executable, "-c",
+                "from malware_hybrid.batch_analysis import read_bounded_file; "
+                "import sys; read_bounded_file(sys.argv[1])", str(fifo),
+            ], capture_output=True, text=True, timeout=10)
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertIn("not a regular file", completed.stderr)
+            regular = Path(directory) / "regular.exe"
+            regular.write_bytes(b"MZ")
+            self.assertEqual(read_bounded_file(regular), b"MZ")
 
 
 if __name__ == "__main__":
