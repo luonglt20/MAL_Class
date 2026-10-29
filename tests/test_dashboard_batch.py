@@ -222,6 +222,9 @@ def test_dashboard_renders_three_branch_attention_and_cross_links(tmp_path, monk
 
     assert len(app.exception) == 0
     assert any("Model tự chọn: Test Hybrid Attention" in item.value for item in app.caption)
+    assert any(item.label == "Họ ứng viên · chưa xác nhận mã độc" for item in app.metric)
+    assert any("điểm family không phải xác suất file là mã độc" in item.value
+               for item in app.caption)
     tables = [item.value for item in app.dataframe]
     assert any({"event_index", "timestamp", "process_id", "parent_process_id", "thread_id"}
                .issubset(table.columns) for table in tables)

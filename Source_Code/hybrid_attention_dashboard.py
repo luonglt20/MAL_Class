@@ -261,8 +261,17 @@ with analysis_tab:
                     "Mô hình đang nghiên cứu: không có cảnh báo không có nghĩa là file an toàn. "
                     "Không chạy file trên máy thật dựa vào kết quả này."
                 )
-                middle.metric("Họ mã độc · kết luận hiện tại", family["label"])
-                right.metric("Độ tin cậy kết luận", f"{family['confidence']:.1%}")
+                conditional_family = result["verdict"]["label"] == "UNKNOWN"
+                middle.metric(
+                    "Họ ứng viên · chưa xác nhận mã độc" if conditional_family
+                    else "Họ mã độc · kết luận hiện tại", family["label"]
+                )
+                right.metric("Điểm phân loại family", f"{family['confidence']:.1%}")
+                if conditional_family:
+                    st.caption(
+                        "Verdict UNKNOWN: nhãn family chỉ là ứng viên nếu mẫu là mã độc; "
+                        "điểm family không phải xác suất file là mã độc."
+                    )
                 coverage = result.get("model_input_coverage")
                 selection = result.get("model_selection")
                 if selection and selection["status"] == "unavailable":
