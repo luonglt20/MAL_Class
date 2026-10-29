@@ -2,6 +2,17 @@
 
 This is an independent multimodal research project. Legacy reports and scores are reference material, not experimental evidence for this project.
 
+## Current user constraint (2026-10-29)
+
+Do not start any new training or retraining runs unless the user explicitly
+authorizes training again. Focus on inference, preprocessing, explanations,
+evaluation and usability with existing weights. The already-running expansion
+run is left intact; this is not authorization to restart or extend it.
+
+Imphash prototype lookup now uses an exact-digest index rather than scanning
+unrelated prototypes. Training-owner exclusion and checkpoint roundtrip behavior
+remain covered by tests; no model weights or feature semantics are changed.
+
 The evidence engine now normalizes each event API once per evaluation and
 filters events that cannot match any step of a technique before partitioning.
 Ordering, targets, success checks and partial-chain rules are retained. A local

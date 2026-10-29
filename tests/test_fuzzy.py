@@ -65,6 +65,18 @@ class FuzzyPrototypeTests(unittest.TestCase):
         self.assertTrue(any(item.token == "fuzzy_similarity:imphash:high" for item in evidence))
         self.assertFalse(any("0123456789abcdef" in item.token for item in evidence))
 
+    def test_imphash_lookup_roundtrip_excludes_owner_and_unmatched_hashes(self):
+        train = copy.deepcopy(self.base)
+        train.metadata["fuzzy_hashes"] = {"imphash": "ABCDEF"}
+        index = FuzzyPrototypeIndex.from_dict(FuzzyPrototypeIndex.fit([train]).as_dict())
+        self.assertEqual(index.evidence(train), [])
+        inference = copy.deepcopy(train)
+        inference.sample_hash = "unseen"
+        self.assertEqual(len(index.evidence(inference)), 2)
+        inference.metadata["fuzzy_hashes"] = {"imphash": "different"}
+        with patch.object(index, "_similarity", side_effect=AssertionError("unrelated prototype")):
+            self.assertEqual(index.evidence(inference), [])
+
 
 if __name__ == "__main__":
     unittest.main()
