@@ -2,7 +2,7 @@ import unittest
 import copy
 from pathlib import Path
 
-from malware_hybrid.evidence import DEFAULT_SPECIFICATIONS, EvidenceEngine
+from malware_hybrid.evidence import DEFAULT_SPECIFICATIONS, EvidenceEngine, EvidenceStep, canonical_api
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.schema import ExecutionEvent
 
@@ -69,6 +69,23 @@ class EvidenceTests(unittest.TestCase):
         for specification in DEFAULT_SPECIFICATIONS:
             required = [step for step in specification.steps if not step.optional]
             self.assertGreaterEqual(len(required), 2, specification.technique_id)
+
+    def test_catalog_api_names_match_their_own_canonical_forms(self):
+        for specification in DEFAULT_SPECIFICATIONS:
+            for step in specification.steps:
+                for api in step.apis:
+                    self.assertEqual(canonical_api(api), api, (specification.technique_id, api))
+
+    def test_api_normalization_preserves_data_and_matches_ansi_variants(self):
+        template = copy.deepcopy(self.report.events[0])
+        template.api = "WinHttpReadData"
+        self.assertTrue(EvidenceStep("receive", {"winhttpreaddata"}).accepts(template))
+        self.assertEqual(canonical_api(template.api), "winhttpreaddata")
+        self.assertFalse(EvidenceStep("other", {"winhttpreaddat"}).accepts(template))
+        template.api = "CreateDCA"
+        self.assertTrue(EvidenceStep("screen", {"createdca"}).accepts(template))
+        template.api = "CreateDCW"
+        self.assertTrue(EvidenceStep("screen", {"createdca"}).accepts(template))
 
     def test_missing_early_step_is_partial_not_confirmed(self):
         # The matcher must retain downstream evidence for analyst review while
