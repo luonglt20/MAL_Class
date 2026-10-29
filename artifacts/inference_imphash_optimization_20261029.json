@@ -1,0 +1,11 @@
+{
+  "scope": "synthetic imphash lookup only; not whole-pipeline latency or accuracy",
+  "prototypes": 256,
+  "unseen_reports": 2000,
+  "owner_exclusion_checks": 256,
+  "identical_outputs": true,
+  "full_scan_seconds": 0.10873683299996628,
+  "indexed_seconds": 0.003194916999746056,
+  "speedup": 34.03432170807852,
+  "training_launched": false
+}
