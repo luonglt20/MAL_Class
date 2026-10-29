@@ -84,3 +84,22 @@ of raw inputs; the small validation diagnostic does not qualify explanations.
 No model weights or thresholds changed.
 
 [Signed diagnostic and checksum](experiments/winmet-resourcev4-signed-faithfulness-20261029.json).
+
+## Expanded raw-attention diagnostic
+
+The frozen checkpoint was evaluated on 30 hash-selected validation samples,
+including the original ten, with five matched random controls per fraction.
+Mean top-attention minus random AOPC was **−0.00733** for Signature (11/30
+positive), **+0.00234** for Static (9/30), **−0.01328** for temporal events
+(3/30), and **−0.00367** for graph (14/30). These results do not establish the
+required attention-faithfulness gate. Static attention scores tied on 19/30
+samples; event and graph scores had ties on all 30. A small positive mean in
+Static should not be confused with consistent per-sample improvement.
+
+This is the same identity-only counterfactual described above: numeric values,
+context and edges remain, information may be duplicated across branches, and
+graph rankings only cover the evidence-head prefix. The samples come from the
+same clustered validation split with weak AVClass labels; they are not an
+independent annotation set, and the means do not establish statistical
+significance. Weights, thresholds and the held-out test were not changed.
+[Reproducible aggregate and report checksum](experiments/winmet-resourcev4-faithfulness30-20261029.json).

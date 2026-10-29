@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-29",
+  "full_report": "artifacts/winmet/resourcev4_attention14_faithfulness_30_validation_20261029.json",
+  "full_report_sha256": "825aa165f9a98cf9018fbdbce4d78aedcbc0a42e52b3e952d1a19770576d4dba",
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "source_sha256": "503ecbc0c11ac9a93e74a75136c99eaae999d1d3731c669e18b9d666b485835a",
+  "evaluated_partition": "validation",
+  "sample_ids_sha256": "f8167eba79c455b54fcc8c3a0162c21e363ebabd846d92d7971f58dc98c92731",
+  "selection": "smallest SHA256(sample_seed:faithfulness:sample_hash), validation only, no label selection",
+  "ranking": "attention",
+  "notice": "Token-identity-only diagnostic; numeric values, masks, context, edges and cross-branch duplicates remain. Not event deletion, full evidence deletion, rollout or causal proof. Graph rankings cover only the family evidence-head prefix. Sigmoid scores are not calibrated probabilities.",
+  "samples": 30,
+  "random_repeats": 5,
+  "target_family_counts": {
+    "redline": 12,
+    "agenttesla": 5,
+    "berbew": 5,
+    "blihan": 1,
+    "gamarue": 1,
+    "stop": 1,
+    "amadey": 1,
+    "snojan": 1,
+    "cosmu": 1,
+    "gcleaner": 1,
+    "disabler": 1
+  },
+  "summary": {
+    "signature": {
+      "evaluated_samples": 30,
+      "mean_top_minus_random_aopc": -0.0073326813232981475,
+      "top_beats_random_samples": 11
+    },
+    "static": {
+      "evaluated_samples": 30,
+      "mean_top_minus_random_aopc": 0.002343655943146184,
+      "top_beats_random_samples": 9
+    },
+    "temporal_events": {
+      "evaluated_samples": 30,
+      "mean_top_minus_random_aopc": -0.013278215819348892,
+      "top_beats_random_samples": 3
+    },
+    "graph": {
+      "evaluated_samples": 30,
+      "mean_top_minus_random_aopc": -0.003665722030628887,
+      "top_beats_random_samples": 14
+    }
+  },
+  "diagnostic_counts": {
+    "signature": {
+      "single_token_samples": 0,
+      "attention_tie_samples": 0,
+      "top_equals_random_samples": 0
+    },
+    "static": {
+      "single_token_samples": 1,
+      "attention_tie_samples": 19,
+      "top_equals_random_samples": 1
+    },
+    "temporal_events": {
+      "single_token_samples": 0,
+      "attention_tie_samples": 30,
+      "top_equals_random_samples": 0
+    },
+    "graph": {
+      "single_token_samples": 0,
+      "attention_tie_samples": 30,
+      "top_equals_random_samples": 0
+    }
+  },
+  "test_metrics": null
+}
