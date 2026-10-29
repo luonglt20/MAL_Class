@@ -51,6 +51,8 @@ class BatchAnalysisTests(unittest.TestCase):
         self.assertTrue(row["family_abstained"])
         self.assertEqual(row["analysis_mode"], "partial_analysis")
         self.assertEqual(row["sha256"], report.sample_hash)
+        self.assertEqual(row["pe_section_count"], 1)
+        self.assertEqual(row["pe_section_evidence_count"], 1)
         self.assertEqual(row["error"], "")
 
     def test_cape_json_batch_item_contains_guarded_behavior_evidence(self):
@@ -59,6 +61,7 @@ class BatchAnalysisTests(unittest.TestCase):
         row = batch_result_row("report.json", len(content), report, result)
 
         self.assertEqual(row["analysis_mode"], "hybrid")
+        self.assertIsNone(row["pe_section_evidence_count"])
         self.assertEqual(row["confirmed_behaviors"], "")
         self.assertEqual(row["suspected_behaviors"], "T1055")
         process_injection = next(

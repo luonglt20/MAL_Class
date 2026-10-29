@@ -65,6 +65,8 @@ class PEStaticAnalyzerTests(unittest.TestCase):
         self.assertIn("import_api:createfilew", tokens)
         self.assertIn("overlay_size:b0", tokens)
         self.assertTrue(report.metadata["import_table_complete"])
+        self.assertEqual(report.metadata["section_count"], 11)
+        self.assertEqual(report.metadata["section_evidence_count"], 10)
         self.assertNotIn("section:s10", tokens)
         self.assertFalse(report.metadata["sample_executed"])
 

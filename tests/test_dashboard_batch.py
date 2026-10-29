@@ -92,6 +92,24 @@ def test_dashboard_static_pe_without_checkpoint_shows_evidence_not_model_scores(
     )
 
 
+def test_dashboard_discloses_late_sections_excluded_from_detailed_features():
+    data = bytearray(0x400 + 11 * 0x200)
+    data[:0x178] = minimal_pe()[:0x178]
+    struct.pack_into("<H", data, 0x86, 11)
+    for index in range(11):
+        struct.pack_into("<8sIIIIIIHHI", data, 0x178 + index * 40,
+                         f"s{index}".encode(), 0x200, 0x1000 * (index + 1),
+                         0x200, 0x400 + index * 0x200, 0, 0, 0, 0, 0x40000040)
+    app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
+    next(uploader for uploader in app.get("file_uploader")
+         if uploader.label.startswith("Tải PE để phân tích")).upload(
+             "sections.exe", bytes(data), "application/octet-stream")
+    app.run(timeout=20)
+    assert len(app.exception) == 0
+    assert any("PE có 11 section" in item.value and "10 section đầu" in item.value
+               for item in app.warning)
+
+
 def test_dashboard_classifies_a_local_nested_dataset(tmp_path):
     sample_directory = tmp_path / "family_a"
     sample_directory.mkdir()

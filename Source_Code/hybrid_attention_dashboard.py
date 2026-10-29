@@ -220,6 +220,14 @@ with analysis_tab:
                 report = None
 
             if report is not None:
+                total_sections = report.metadata.get("section_count")
+                evidence_sections = report.metadata.get("section_evidence_count")
+                if (isinstance(total_sections, int) and isinstance(evidence_sections, int)
+                        and total_sections > evidence_sections):
+                    st.warning(
+                        f"PE có {total_sections} section; đặc trưng chi tiết chỉ lấy từ "
+                        f"{evidence_sections} section đầu. Import/export và overlay vẫn xét tất cả section."
+                    )
                 family = result["family"]
                 left, middle, right = st.columns(3)
                 left.metric("Verdict", result["verdict"]["label"])
