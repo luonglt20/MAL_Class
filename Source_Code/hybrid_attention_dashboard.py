@@ -690,7 +690,11 @@ with training_tab:
                 training_bar = st.progress(0, text="Chuẩn bị huấn luyện attention...")
 
                 def training_progress(state):
-                    if state.get("stage") == "batch":
+                    if state.get("stage") == "preparation":
+                        training_bar.progress(0, text=(
+                            f"Chuẩn bị vocabulary: {state['processed_reports']}/{state['total_reports']} report"
+                        ))
+                    elif state.get("stage") == "batch":
                         fraction = (
                             (state["epoch"] - 1)
                             + state["batch"] / max(1, state["batches"])

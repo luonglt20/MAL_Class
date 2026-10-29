@@ -290,6 +290,10 @@ class TrainerProgressTests(unittest.TestCase):
         self.assertFalse(model.behavior_head_trained)
         self.assertIn("batch", {item["stage"] for item in progress})
         self.assertIn("epoch_end", {item["stage"] for item in progress})
+        preparation = [item for item in progress if item['stage'] == 'preparation']
+        self.assertEqual(preparation[0]['processed_reports'], 0)
+        self.assertEqual(preparation[-1]['processed_reports'], len(train))
+        self.assertEqual(preparation[-1]['total_reports'], len(train))
 
     def test_streaming_reader_rejects_invalid_sample_cap(self):
         with self.assertRaisesRegex(ValueError, "max_samples"):
