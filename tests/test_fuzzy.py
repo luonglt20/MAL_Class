@@ -12,6 +12,26 @@ FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
 
 
 class FuzzyPrototypeTests(unittest.TestCase):
+    def test_evidence_cache_is_bounded_and_eviction_preserves_features(self):
+        report = copy.deepcopy(self.base)
+        report.metadata["fuzzy_hashes"] = {"imphash": "abc"}
+        index = FuzzyPrototypeIndex.fit([report])
+        index._EVIDENCE_CACHE_LIMIT = 2
+        report.sample_hash = "first"
+        expected = index.evidence(report)
+        for sample_hash in ("second", "third"):
+            report.sample_hash = sample_hash
+            index.evidence(report)
+        self.assertEqual(len(index._evidence_cache), 2)
+        self.assertFalse(any(key[0] == "first" for key in index._evidence_cache))
+        report.sample_hash = "first"
+        self.assertEqual(index.evidence(report), expected)
+        report.sample_hash = "third"
+        index.evidence(report)
+        report.sample_hash = "fourth"
+        index.evidence(report)
+        self.assertEqual({key[0] for key in index._evidence_cache}, {"third", "fourth"})
+
     def test_missing_backend_is_looked_up_only_once_for_different_hash_pairs(self):
         FuzzyPrototypeIndex._module.cache_clear()
         FuzzyPrototypeIndex._similarity.cache_clear()
