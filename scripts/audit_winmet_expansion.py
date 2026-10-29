@@ -53,7 +53,8 @@ def audit(rows, reference):
     old_counts = Counter(f for r in parts[0] if r.family_supervised for f in r.families)
     return {'source_rows': len(rows), 'original_sample_cap': cap,
             'original_split_verified': True, 'old_group_assignments_preserved': True,
-            'partitions': {name: {'rows': len(part), 'sample_ids_sha256': fingerprint(part)}
+            'partitions': {name: {'rows': len(part), 'sample_ids_sha256': fingerprint(part),
+                                  'archive_groups': sorted({r.metadata['archive_group_id'] for r in part})}
                            for name, part in expanded.items()},
             'train_family_support': dict(sorted(counts.items())),
             'train_support_summary': {str(minimum): {

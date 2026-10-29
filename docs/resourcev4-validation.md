@@ -86,6 +86,20 @@ new independent benchmark. Old validation/test groups remain in their original
 partitions and all reference labels remain weak AVClass consensus.
 [Support counts and partition fingerprints](experiments/winmet-resourcev4-expansion-support-20261029.json).
 
+`scripts/train_winmet_expansion.py` consumes the verified expansion manifest,
+checks all partition identities and the source checksum, and retains only train,
+validation and calibration objects. For retained reports, it checks the saved
+graph against event reconstruction and rebuilds graphs on demand to reduce RAM
+use. Test event/graph objects are not deserialized. The run uses MPS, seed 44,
+d32, batch 4, family support 5, labelwise head, ranking weight 0.5, no modality
+dropout, and a 14-epoch budget; model selection uses validation mAP and uncertainty
+calibration uses calibration only. The expanded label space differs from the
+earlier 23-label model, so accuracy differences cannot be attributed solely to
+architecture. No model is promoted until results and attention controls are
+evaluated. Checkpoint and report paths are
+`models/winmet_resourcev4_expanded2500_seed44_e14.pt` and
+`artifacts/winmet/resourcev4_expanded2500_seed44_e14.json` respectively.
+
 Frozen interventions relative to v4 baseline: removing temporal resource IDs
 changed mAP by +0.00018 and calibrated macro-F1 by +0.0392; masking graph edges
 changed them by −0.1007 and −0.1174; disabling token-level cross-branch attention

@@ -6,19 +6,64 @@
   "partitions": {
     "train": {
       "rows": 1676,
-      "sample_ids_sha256": "0e3a83b5a11c9d54c14f5dac6a9ba02cbfbf89bf6caaa701736ff9c1a5883792"
+      "sample_ids_sha256": "0e3a83b5a11c9d54c14f5dac6a9ba02cbfbf89bf6caaa701736ff9c1a5883792",
+      "archive_groups": [
+        "01c43365828ff8ab",
+        "084818a6a54673fc",
+        "12924eab960be785",
+        "187df9ed1d34f9aa",
+        "190e8569a90d7bdf",
+        "198bd1082cac4a36",
+        "1d90acb963f16825",
+        "4711258e124e846f",
+        "50397975862192cb",
+        "52bed85d95a0fc69",
+        "6516cb3cd273509b",
+        "6f44776c803d52bc",
+        "79b6bed1f27a9c12",
+        "807840d5a885973d",
+        "885084aeb8807f1d",
+        "967e716f7c4e09bf",
+        "9f02cc75cbf9b8de",
+        "a3eb1049d999f50e",
+        "a522bc5077775b3c",
+        "ad5398b0303adba7",
+        "b0cbc96b3cd1e4fd",
+        "b8efb68c7b43ab14",
+        "c646c4a365a5675c",
+        "c90158538dddeea1",
+        "ddd356546b8c20e2",
+        "ebda917cf2a6ce5d"
+      ]
     },
     "validation": {
       "rows": 246,
-      "sample_ids_sha256": "ea9cb22efef8e3f894767dcf33c5102ff8cbd37d4d6abc504e11a85869d29f49"
+      "sample_ids_sha256": "ea9cb22efef8e3f894767dcf33c5102ff8cbd37d4d6abc504e11a85869d29f49",
+      "archive_groups": [
+        "2e866716c473ce1f",
+        "34191e43591a93b3",
+        "d76cfa2c5ed14824"
+      ]
     },
     "calibration": {
       "rows": 216,
-      "sample_ids_sha256": "356b1602e076230ca094586de65727499d94d0b5257a40a1bac6f99367574f03"
+      "sample_ids_sha256": "356b1602e076230ca094586de65727499d94d0b5257a40a1bac6f99367574f03",
+      "archive_groups": [
+        "5894132f66833b68",
+        "95176c40c57e470b",
+        "acbf162f29861902"
+      ]
     },
     "withheld_internal_test": {
       "rows": 362,
-      "sample_ids_sha256": "f14120f30d5a9937aaf6c52e29766c3de4d602743c6816cffb21af6e9869c3f9"
+      "sample_ids_sha256": "f14120f30d5a9937aaf6c52e29766c3de4d602743c6816cffb21af6e9869c3f9",
+      "archive_groups": [
+        "0b03cc7461764ef4",
+        "568049fe7b36b44e",
+        "595ce13762812307",
+        "68a4e733e006f7eb",
+        "c8192bf8cff21e80"
+      ]
     }
   },
   "train_family_support": {
