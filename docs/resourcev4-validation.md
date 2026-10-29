@@ -32,6 +32,13 @@ The checkpoint is research-only and is not registered in the UI. The first
 ablation attempt rejected missing family-head metadata; the reference was fixed
 from the saved training report before the successful read-only run.
 
+Raw CAPE uploads now select the v4 parser when a manually loaded checkpoint
+records only the v4 schema, or when a research registry explicitly specifies
+that schema. Prepared JSONL keeps its recorded schema and incompatibilities are
+still rejected. A real v4-checkpoint smoke test on a synthetic four-event CAPE
+fixture used the compatible schema, returned `UNKNOWN`, and did not execute
+the sample. This is integration verification, not model qualification.
+
 [Metrics, partition fingerprints and artifact checksums](experiments/winmet-resourcev4-validation-20261029.json).
 
 ## Reserved internal holdout

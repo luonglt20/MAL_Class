@@ -33,6 +33,19 @@ def write_registry(root):
 
 
 class InferenceServiceTests(unittest.TestCase):
+    def test_raw_cape_parser_follows_registered_v4_hybrid_schema(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            registry = write_registry(root)
+            config = json.loads(registry.read_text())
+            config["models"]["hybrid"]["normalization_version"] = "cape-resource-relations-v4"
+            registry.write_text(json.dumps(config))
+            router = RoutedInferencePipeline(registry, pipeline_loader=lambda *args: HybridInferencePipeline())
+            fixture = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
+            sample = router.parser.parse(json.loads(fixture.read_text()))
+            self.assertEqual(sample.metadata["normalization_version"], "cape-resource-relations-v4")
+            self.assertEqual(router.predict(sample)["model_selection"]["status"], "research")
+
     def test_pinned_trace_schema_rejects_missing_or_changed_normalization_before_loading(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -7,7 +7,7 @@ import pytest
 
 from malware_hybrid.dataset import ReportTensorizer
 from malware_hybrid.model import HybridAttentionConfig, HybridAttentionModel
-from malware_hybrid.normalization import CAPE_FEATURE_SCHEMA_VERSION, CapeReportParser
+from malware_hybrid.normalization import CAPE_FEATURE_SCHEMA_VERSION, FILE_HANDLE_SCHEMA_VERSION, CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
 from malware_hybrid.training import _normalization_versions, load_checkpoint, save_checkpoint
 
@@ -44,6 +44,24 @@ def test_file_resource_v4_is_rejected_by_a_v3_checkpoint_before_forward():
     with patch.object(model, "forward", side_effect=AssertionError("must not infer v4 with v3 weights")):
         result = HybridInferencePipeline(model, tensorizer).predict(report)
     assert result["family"]["reason"] == "normalization_version_mismatch"
+
+
+def test_v4_checkpoint_parses_uploaded_cape_with_compatible_schema():
+    from malware_hybrid.batch_analysis import analyze_uploaded_sample
+    _, tensorizer, model = candidate()
+    model.normalization_versions = [FILE_HANDLE_SCHEMA_VERSION]
+    pipeline = HybridInferencePipeline(model, tensorizer)
+    raw = (Path(__file__).parent / "fixtures/cape_process_injection.json").read_bytes()
+    report, result = analyze_uploaded_sample("trace.json", raw, pipeline)
+    assert report.metadata["normalization_version"] == FILE_HANDLE_SCHEMA_VERSION
+    assert result["model_input_coverage"]["normalization_compatible"] is True
+    assert result["model_input_coverage"]["supported"] is True
+    # An explicitly supplied parser remains authoritative, and the normal
+    # compatibility guard prevents accidental inference with a v3 trace.
+    explicit = HybridInferencePipeline(model, tensorizer, parser=CapeReportParser())
+    with patch.object(model, "forward", side_effect=AssertionError("must not infer v3 with v4 model")):
+        _, rejected = analyze_uploaded_sample("trace.json", raw, explicit)
+    assert rejected["family"]["reason"] == "normalization_version_mismatch"
 
 
 @pytest.mark.parametrize("versions", [[CAPE_FEATURE_SCHEMA_VERSION], [], None])
