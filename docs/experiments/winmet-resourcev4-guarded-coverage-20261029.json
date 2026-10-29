@@ -24,5 +24,62 @@
       "unresolved_samples": 41
     }
   },
+  "candidate_threshold_exploration": {
+    "notice": "Exploratory only: candidate scores are uncalibrated sigmoid outputs; thresholding bypasses the guarded conformal decision. Wilson intervals ignore clustering; weak reference labels and validation-selected thresholds require independent testing.",
+    "results": [
+      {
+        "threshold": 0.5,
+        "reference_labeled_samples": 100,
+        "selected_samples": 62,
+        "matching_reference_samples": 44,
+        "coverage": 0.62,
+        "reference_agreement": 0.7096774193548387,
+        "wilson_95_descriptive": [
+          0.5871211868886292,
+          0.8077659361460481
+        ],
+        "correct_fraction_all_labeled": 0.44
+      },
+      {
+        "threshold": 0.7,
+        "reference_labeled_samples": 100,
+        "selected_samples": 55,
+        "matching_reference_samples": 41,
+        "coverage": 0.55,
+        "reference_agreement": 0.7454545454545455,
+        "wilson_95_descriptive": [
+          0.6169787660766216,
+          0.8418802724267501
+        ],
+        "correct_fraction_all_labeled": 0.41
+      },
+      {
+        "threshold": 0.8,
+        "reference_labeled_samples": 100,
+        "selected_samples": 38,
+        "matching_reference_samples": 35,
+        "coverage": 0.38,
+        "reference_agreement": 0.9210526315789473,
+        "wilson_95_descriptive": [
+          0.792003210797347,
+          0.972785898605735
+        ],
+        "correct_fraction_all_labeled": 0.35
+      },
+      {
+        "threshold": 0.9,
+        "reference_labeled_samples": 100,
+        "selected_samples": 33,
+        "matching_reference_samples": 32,
+        "coverage": 0.33,
+        "reference_agreement": 0.9696969696969697,
+        "wilson_95_descriptive": [
+          0.8468093832683193,
+          0.9946307279103482
+        ],
+        "correct_fraction_all_labeled": 0.32
+      }
+    ]
+  },
   "notice": "Guarded primary-family agreement with available reference labels; unknown references are excluded, abstentions and errors are unresolved. Not multi-label exact-match accuracy or independent ground truth."
 }

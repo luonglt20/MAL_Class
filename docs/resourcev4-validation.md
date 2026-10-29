@@ -29,6 +29,18 @@ they do not establish that the user's >85% target is met. The new summarizer
 computes these denominators from saved decision rows without re-running the
 model. [Aggregate and source-report fingerprint](experiments/winmet-resourcev4-guarded-coverage-20261029.json).
 
+Exploratory thresholding of the **saved candidates** shows the coverage/error
+tradeoff: at a sigmoid score threshold of 0.8, 38 of the 100 labeled validation
+reports have a candidate and 35 agree with their weak reference (92.1% among
+selected, 35% correct over all labeled reports). At 0.7, 41/55 agree (74.5%
+among selected, 41% over all labeled). Candidates here were already filtered
+by the existing per-label policy and are not necessarily unfiltered top-1
+predictions. These post-hoc thresholds bypass the conformal guard, are not
+calibrated probabilities, and cannot qualify the model or justify changing
+the dashboard. The descriptive Wilson interval at 0.8 is 79.2%–97.3%; it
+does not account for clustered samples or weak labels. A threshold selected
+on calibration data would need evaluation on a separate held-out sample.
+
 Frozen interventions relative to v4 baseline: removing temporal resource IDs
 changed mAP by +0.00018 and calibrated macro-F1 by +0.0392; masking graph edges
 changed them by −0.1007 and −0.1174; disabling token-level cross-branch attention

@@ -7,7 +7,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from malware_hybrid.deployment_audit import summarize_labeled_decisions
+from malware_hybrid.deployment_audit import explore_candidate_thresholds, summarize_labeled_decisions
 
 
 def summarize(document: dict, source_sha256: str) -> dict:
@@ -30,6 +30,7 @@ def summarize(document: dict, source_sha256: str) -> dict:
         'evaluated_partition': document.get('evaluated_partition'),
         'samples': len(rows), 'errors': audit.get('errors'),
         'summary': summarize_labeled_decisions(rows),
+        'candidate_threshold_exploration': explore_candidate_thresholds(rows),
         'notice': ('Guarded primary-family agreement with available reference labels; '
                    'unknown references are excluded, abstentions and errors are unresolved. '
                    'Not multi-label exact-match accuracy or independent ground truth.'),

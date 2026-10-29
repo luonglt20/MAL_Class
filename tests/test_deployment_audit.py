@@ -1,7 +1,7 @@
 import unittest
 from types import SimpleNamespace
 
-from malware_hybrid.deployment_audit import audit_family_decisions, summarize_labeled_decisions
+from malware_hybrid.deployment_audit import audit_family_decisions, explore_candidate_thresholds, summarize_labeled_decisions
 
 
 class DeploymentAuditTests(unittest.TestCase):
@@ -55,6 +55,30 @@ class DeploymentAuditTests(unittest.TestCase):
         result = summarize_labeled_decisions(rows)["all_reference_labeled"]
         self.assertEqual(result["correct_accepted_samples"], 1)
         self.assertEqual(result["correct_fraction_all_labeled"], .5)
+
+    def test_candidate_exploration_counts_abstentions_and_unsupported_inputs(self):
+        rows = [
+            {"reference_families": ["a"], "input_supported": True,
+             "family_decision": {"candidate": "a", "candidate_confidence": .9}, "accepted": False},
+            {"reference_families": ["b"], "input_supported": True,
+             "family_decision": {"candidate": "a", "candidate_confidence": .8}, "accepted": False},
+            {"reference_families": ["a"], "input_supported": False,
+             "family_decision": {"candidate": "a", "candidate_confidence": 1.}},
+            {"reference_families": ["a"], "input_supported": True,
+             "family_decision": {"candidate": None}},
+        ]
+        results = explore_candidate_thresholds(rows, thresholds=(.8, .9))["results"]
+        self.assertEqual(results[0]["selected_samples"], 2)
+        self.assertEqual(results[0]["reference_agreement"], .5)
+        self.assertEqual(results[0]["correct_fraction_all_labeled"], .25)
+        self.assertEqual(results[1]["coverage"], .25)
+        self.assertEqual(results[1]["reference_agreement"], 1.)
+        self.assertLess(results[1]["wilson_95_descriptive"][0], 1.)
+        with self.assertRaises(ValueError):
+            explore_candidate_thresholds(rows, thresholds=(float('nan'),))
+        rows[0]['family_decision']['candidate_confidence'] = float('nan')
+        with self.assertRaises(ValueError):
+            explore_candidate_thresholds(rows)
 
 
 if __name__ == "__main__":
