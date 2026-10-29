@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Probe a prospective macOS parser profile; this is not production isolation."""
+"""Probe the production parser restriction profile with harmless operations."""
 from __future__ import annotations
 
 import json
@@ -10,9 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-
-def quoted(value: str) -> str:
-    return '"' + value.replace('\\', '\\\\').replace('"', '\\"') + '"'
+from malware_hybrid.isolated_pe import _profile
 
 
 def main() -> int:
@@ -24,23 +22,11 @@ def main() -> int:
     if not root.is_relative_to(home):
         print(json.dumps({'supported': False, 'reason': 'workspace is outside the protected home'}))
         return 1
-    source, environment = root / 'src', root / '.venv'
-    if not environment.is_dir():
-        print(json.dumps({'supported': False, 'reason': 'workspace virtual environment missing'}))
+    source, environment = root / 'src', Path(sys.prefix).resolve()
+    if not environment.is_relative_to(home) or environment == home:
+        print(json.dumps({'supported': False, 'reason': 'virtual environment must be inside home'}))
         return 1
-    interpreter = Path(sys.executable).resolve()
-    framework_python = interpreter.parent.parent / 'Resources/Python.app/Contents/MacOS/Python'
-    executables = [interpreter]
-    if framework_python.is_file():
-        executables.append(framework_python.resolve())
-    allowed_exec = ' '.join('(literal ' + quoted(str(path)) + ')' for path in executables)
-    profile = (
-        '(version 1) (allow default) (deny network*) (deny file-write*) '
-        '(deny process-fork) (deny process-exec) (allow process-exec ' + allowed_exec + ') '
-        '(deny file-read-data (subpath ' + quoted(str(home)) + ')) '
-        '(allow file-read-data (subpath ' + quoted(str(source)) + ') '
-        '(subpath ' + quoted(str(environment)) + '))'
-    )
+    profile = _profile(source.resolve(), environment, home, Path(sys.executable).resolve())
     child = r'''import errno, json, os, socket, struct, subprocess, sys
 from malware_hybrid.pe_static import PEStaticAnalyzer
 data = bytearray(0x400)
@@ -88,7 +74,7 @@ print(json.dumps(checks))
         return 1
     checks = json.loads(result.stdout)
     print(json.dumps({'supported': True, 'checks': checks,
-                      'notice': 'Probe only; file metadata and non-home paths are not restricted, interpreter exec remains allowed, and the UI does not use this profile.'}, indent=2))
+                      'notice': 'The tested parser profile permits file metadata, reads outside home and re-executing the interpreter; this probe is not an escape-resistance test.'}, indent=2))
     return 0 if all(checks.values()) else 1
 
 

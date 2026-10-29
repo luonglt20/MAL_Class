@@ -61,7 +61,7 @@ macOS and source and virtual environment inside the user's home; other systems
 return an error for PE uploads rather than silently parsing without isolation.
 CAPE JSON parsing and model inference are not placed inside that subprocess.
 
-`scripts/probe_macos_parser_sandbox.py` tests a comparable restriction profile.
+`scripts/probe_macos_parser_sandbox.py` tests the same restriction-profile builder used by the parser.
 On the development Mac it parsed a
 synthetic PE inside a child restricted from connecting to localhost, writing a
 file, forking, executing another program, and reading a harmless marker elsewhere
@@ -70,6 +70,14 @@ the home, and re-executing the allowlisted interpreter;
 the boundary has not been validated against parser compromise or kernel escape.
 Do not treat it as a VM or a sandbox for executing malware. The parent process
 still reads uploaded bytes before passing them to the child.
+
+On 2026-10-29, a local 11,776-byte setuptools launcher was read through this
+restricted process and routed to the pinned EMBER Signature–Static model on
+CPU. The parser reported 61 imports, the router selected the research model,
+and both family and malware verdict abstained as `UNKNOWN`; no sample ran. The
+probe's restriction checks use the same profile builder as the application and
+are part of the macOS test suite. This is an integration check on one benign
+launcher, not a measurement of malware detection or model generalization.
 
 Tests use their own temporary registries and tiny checkpoints, so ignored
 workstation models cannot change test outcomes or startup cost. A local smoke

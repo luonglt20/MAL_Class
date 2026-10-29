@@ -1,6 +1,10 @@
 import platform
+import json
+import os
 import subprocess
+import sys
 from dataclasses import asdict
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -33,3 +37,13 @@ def test_restricted_parser_fails_closed_when_platform_unsupported():
     with patch('malware_hybrid.isolated_pe.platform.system', return_value='Linux'):
         with pytest.raises(RuntimeError, match='requires macOS'):
             analyze_pe_isolated(minimal_pe())
+
+
+@pytest.mark.skipif(platform.system() != 'Darwin', reason='macOS sandbox-exec required')
+def test_actual_parser_profile_blocks_probed_operations():
+    script = Path(__file__).resolve().parents[1] / 'scripts/probe_macos_parser_sandbox.py'
+    env = dict(os.environ, PYTHONPATH=str(script.parents[1] / 'src'))
+    run = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, timeout=20, env=env)
+    assert run.returncode == 0, run.stdout
+    result = json.loads(run.stdout)
+    assert result['supported'] and all(result['checks'].values())
