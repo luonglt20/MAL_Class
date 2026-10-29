@@ -60,6 +60,16 @@ Synthetic tests compare the two feature paths on the same bytes; a local benign
 launcher still returned UNKNOWN under both policies. This is integration
 evidence, not a malware-family accuracy measurement.
 
+Direct PE string statistics now follow the official EMBER2024 printable-run
+rule (at least five consecutive bytes in `0x20..0x7f`), calculate the
+histogram from those runs only, and include the string entropy statistic. This
+changes the features seen by existing checkpoints and applies across the full
+bounded file. The separate project-specific URL/domain/registry category scan
+still covers only the first 10 MiB and does not claim equivalence to all EMBER
+string categories. Batch results record the policy and scanned byte count.
+Synthetic same-byte comparisons verify the aligned statistics; broader paired
+PE evaluation remains necessary.
+
 This service reads PE bytes and pre-existing JSON reports only. It does not invoke
 an executable, launch an emulator, submit a sample to a remote service, or install
 missing weights. Runtime behavior requires an existing execution report from an

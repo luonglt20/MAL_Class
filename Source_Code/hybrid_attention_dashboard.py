@@ -229,6 +229,12 @@ with analysis_tab:
                     )
                 total_sections = report.metadata.get("section_count")
                 evidence_sections = report.metadata.get("section_evidence_count")
+                category_bytes = report.metadata.get("string_category_scan_bytes")
+                if isinstance(category_bytes, int) and category_bytes < report.metadata.get("byte_length", 0):
+                    st.caption(
+                        "Thống kê chuỗi quét toàn bộ file; nhóm URL/domain/registry chỉ quét "
+                        f"{category_bytes / (1024 * 1024):.0f} MiB đầu."
+                    )
                 if (isinstance(total_sections, int) and isinstance(evidence_sections, int)
                         and total_sections > evidence_sections):
                     st.warning(

@@ -3,6 +3,7 @@ import unittest
 import hashlib
 import tempfile
 import numpy as np
+import re
 from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
@@ -47,6 +48,36 @@ def pe_with_one_import() -> bytes:
 
 
 class PEStaticAnalyzerTests(unittest.TestCase):
+    def test_string_statistics_match_ember_on_the_same_pe_bytes(self):
+        data = minimal_pe() + b"\x00four\x00five!\x00" + bytes([0x7f]) * 6 + b"\x00XYZ"
+        strings = re.findall(rb"[\x20-\x7f]{5,}", data)
+        counts = np.bincount(np.frombuffer(b''.join(strings), dtype=np.uint8) - 0x20, minlength=96)
+        total = int(counts.sum())
+        p = counts.astype(np.float32) / total
+        nz = np.flatnonzero(counts)
+        entropy = float(np.sum(-p[nz] * np.log2(p[nz])))
+        reference = ember_row_to_report({"file_type": "Win32", "strings": {
+            "numstrings": len(strings), "printables": total,
+            "avlength": total / len(strings), "entropy": entropy, "printabledist": counts.tolist(),
+        }})
+        parsed = PEStaticAnalyzer().analyze_bytes(data)
+        kinds = {"string_stat", "printable_histogram"}
+        expected = {item.token: item.value for item in reference.atomic_evidence if item.kind in kinds}
+        actual = {item.token: item.value for item in parsed.atomic_evidence if item.kind in kinds}
+        self.assertEqual(actual.keys(), expected.keys())
+        for token in actual:
+            self.assertAlmostEqual(actual[token], expected[token], places=10)
+        self.assertEqual(parsed.metadata["string_stats_policy"], "ember2024_printable_runs_v1")
+
+    def test_string_statistics_cover_bytes_beyond_category_scan_limit(self):
+        import math
+        data = minimal_pe() + b'\x00' * (10 * 1024 * 1024 - len(minimal_pe())) + b'\x00LONGSTRING\x00'
+        parsed = PEStaticAnalyzer().analyze_bytes(data)
+        count = next(item.value for item in parsed.atomic_evidence if item.token == 'string_stat:numstrings')
+        expected = len(re.findall(rb"[\x20-\x7f]{5,}", data))
+        self.assertAlmostEqual(count, math.log1p(expected))
+        self.assertEqual(parsed.metadata['string_category_scan_bytes'], 10 * 1024 * 1024)
+
     def test_byte_entropy_matches_ember_feature_groups_on_same_pe_bytes(self):
         # Independently construct the 16x16 EMBER histogram, including its
         # fixed denominator for short windows and overlapping full windows.
