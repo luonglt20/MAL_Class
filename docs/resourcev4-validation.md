@@ -65,3 +65,15 @@ head's prefix. Ten validation samples are insufficient for broad conclusions;
 the results do not establish that the model ignores those branches.
 
 [Diagnostic summary and full-report checksum](experiments/winmet-resourcev4-faithfulness-20261029.json).
+
+The same ten validation samples were then ranked by signed contextualized
+readout contribution, using the same identity-only masking and five random
+controls per fraction. Top-minus-random AOPC averaged +0.01130 for Signature
+(6/10 wins), −0.02987 for Static (1/10), +0.00981 for events (9/10), and
++0.00034 for graph (5/10). This improves the diagnostic for Signature and
+events over raw attention ranking, but Static remains negative and graph is
+near zero. Signed readout decomposes contextualized values, not causal effects
+of raw inputs; the small validation diagnostic does not qualify explanations.
+No model weights or thresholds changed.
+
+[Signed diagnostic and checksum](experiments/winmet-resourcev4-signed-faithfulness-20261029.json).
