@@ -41,6 +41,13 @@ Older v2 traces are rejected by this registration rather than reinterpreted.
 PE-only static routing is unaffected. V3 has its own validation metrics; historical
 PE-v2 accuracy is not silently applied to changed graph data.
 
+For direct PE uploads, the bounded local parser and the EMBER feature extractor
+are different sources. Matching token vocabulary does not verify that their
+feature distributions or predictions are equivalent. The PE parser detects a
+bounded certificate table but does not verify an Authenticode signature or trust
+chain; the UI and batch output disclose that limitation. Evaluation on paired
+PE bytes and EMBER-style features remains necessary.
+
 This service reads PE bytes and pre-existing JSON reports only. It does not invoke
 an executable, launch an emulator, submit a sample to a remote service, or install
 missing weights. Runtime behavior requires an existing execution report from an

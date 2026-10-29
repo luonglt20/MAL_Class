@@ -53,6 +53,8 @@ class BatchAnalysisTests(unittest.TestCase):
         self.assertEqual(row["sha256"], report.sample_hash)
         self.assertEqual(row["pe_section_count"], 1)
         self.assertEqual(row["pe_section_evidence_count"], 1)
+        self.assertEqual(row["pe_authenticode_validation"], "not_performed")
+        self.assertEqual(row["static_feature_provenance"], "bounded_local_pe_parser")
         self.assertEqual(row["error"], "")
 
     def test_cape_json_batch_item_contains_guarded_behavior_evidence(self):

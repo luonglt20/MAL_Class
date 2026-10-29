@@ -108,6 +108,8 @@ def test_dashboard_discloses_late_sections_excluded_from_detailed_features():
     assert len(app.exception) == 0
     assert any("PE có 11 section" in item.value and "10 section đầu" in item.value
                for item in app.warning)
+    assert any("Chưa xác minh tính hợp lệ của chữ ký số" in item.value
+               and "độ phủ token không chứng minh" in item.value for item in app.caption)
 
 
 def test_dashboard_classifies_a_local_nested_dataset(tmp_path):

@@ -220,6 +220,12 @@ with analysis_tab:
                 report = None
 
             if report is not None:
+                if report.metadata.get("source") == "uploaded_pe_static_analysis":
+                    st.caption(
+                        "PE được trích xuất bằng bộ đọc cục bộ; feature có thể khác dữ liệu "
+                        "EMBER dùng huấn luyện. Chưa xác minh tính hợp lệ của chữ ký số; "
+                        "độ phủ token không chứng minh model phù hợp với file này."
+                    )
                 total_sections = report.metadata.get("section_count")
                 evidence_sections = report.metadata.get("section_evidence_count")
                 if (isinstance(total_sections, int) and isinstance(evidence_sections, int)
