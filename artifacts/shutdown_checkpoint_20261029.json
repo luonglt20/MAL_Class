@@ -1,0 +1,13 @@
+{
+  "checkpoint": "models/winmet_resourcev4_expanded2500_seed44_e14.pt",
+  "bytes": 37826262,
+  "sha256": "a564c9e8e903860c568541236d6f8c71add43bc29ea7b16a34d704eaa7857c03",
+  "selected_epoch": 4,
+  "last_saved_epoch": 4,
+  "family_top1_accuracy": 0.6022099447513812,
+  "family_top3_accuracy": 0.7292817679558011,
+  "family_evaluated_samples": 181,
+  "calibration_complete": false,
+  "training_stopped_for_shutdown": true,
+  "restart_authorized": false
+}
