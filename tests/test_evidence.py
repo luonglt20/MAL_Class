@@ -5,6 +5,7 @@ from pathlib import Path
 from malware_hybrid.evidence import DEFAULT_SPECIFICATIONS, EvidenceEngine, EvidenceStep, canonical_api
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.schema import ExecutionEvent
+from malware_hybrid.calibration import DecisionPolicy
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "cape_process_injection.json"
@@ -86,6 +87,18 @@ class EvidenceTests(unittest.TestCase):
         self.assertTrue(EvidenceStep("screen", {"createdca"}).accepts(template))
         template.api = "CreateDCW"
         self.assertTrue(EvidenceStep("screen", {"createdca"}).accepts(template))
+
+    def test_network_receive_and_file_write_do_not_prove_download_data_flow(self):
+        first, second = copy.deepcopy(self.report.events[:2])
+        first.api, first.target, first.resource_type = "WinHttpReadData", "socket:1", "socket"
+        second.api, second.target, second.resource_type = "WriteFile", "file:2", "file"
+        match = self.engine.evaluate([first, second])["T1105"]
+        self.assertEqual(match.coverage, 1.0)
+        self.assertEqual(match.status, "suspected")
+        self.assertIn("network_to_file_data_flow_unverified", match.reasons)
+        status, reasons = DecisionPolicy().behavior_status("T1105", 1.0, match)
+        self.assertEqual(status, "suspected")
+        self.assertIn("network_to_file_data_flow_unverified", reasons)
 
     def test_missing_early_step_is_partial_not_confirmed(self):
         # The matcher must retain downstream evidence for analyst review while

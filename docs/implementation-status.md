@@ -8,6 +8,8 @@ The single-file UI warns when detailed section evidence is truncated; batch expo
 
 2026-10-29 evidence matching fix: catalog API names and event names now undergo the same canonicalization, and the final `a` in `WinHttpReadData` is retained. This restores matching for the affected WinHTTP and CreateDC variants. Previously generated weak labels and trained checkpoints are unchanged and should be regenerated and independently revalidated before attributing any performance improvement to this fix.
 
+2026-10-29 T1105 safeguard: a successful network read followed by a file write in the same process establishes temporal co-occurrence only. Because current normalized events do not prove that received bytes became that file, the evidence engine caps this pattern at `suspected`, including when the behavior model scores it highly. Supporting confirmation requires independently validated network-to-file data-flow evidence. Existing datasets and checkpoints are unchanged; the change reduces the opportunity for false confirmation but does not quantify false-positive rates.
+
 2026-10-29 v4 attention identity diagnostic: top-minus-random deletion AOPC is negative on average for all four evidence groups in ten validation samples. Attention weights have not passed the faithfulness criterion. [Method and limits](resourcev4-validation.md#token-identity-attention-diagnostic).
 
 2026-10-29 v4 reserved internal holdout: 155 reports, family mAP 0.6030 and calibrated macro-F1 0.3980 against weak AVClass labels. This is lower than validation and does not qualify the model for deployment. [Details](resourcev4-validation.md#reserved-internal-holdout).
