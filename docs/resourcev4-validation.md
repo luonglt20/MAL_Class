@@ -100,6 +100,15 @@ evaluated. Checkpoint and report paths are
 `models/winmet_resourcev4_expanded2500_seed44_e14.pt` and
 `artifacts/winmet/resourcev4_expanded2500_seed44_e14.json` respectively.
 
+`scripts/evaluate_winmet_expansion.py` is the validation runner for that
+expanded candidate. It requires an explicit checkpoint SHA-256, the identical
+training manifest and a completed calibrated training report, then verifies
+training priors and the selected epoch. It uses the preserved expansion loader
+and compares frozen cross-attention/graph controls on validation only. It
+refuses an early checkpoint with an incomplete training report. This runner
+has guard tests but has not yet produced expanded-model metrics while training
+is in progress; its presence is not evidence of achieved accuracy.
+
 Frozen interventions relative to v4 baseline: removing temporal resource IDs
 changed mAP by +0.00018 and calibrated macro-F1 by +0.0392; masking graph edges
 changed them by −0.1007 and −0.1174; disabling token-level cross-branch attention
