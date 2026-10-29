@@ -48,6 +48,18 @@ bounded certificate table but does not verify an Authenticode signature or trust
 chain; the UI and batch output disclose that limitation. Evaluation on paired
 PE bytes and EMBER-style features remains necessary.
 
+The direct PE byte-entropy feature now follows the [official EMBER2024 extractor](https://github.com/FutureComputing4AI/EMBER2024/blob/main/src/thrember/features.py):
+2,048-byte windows, 1,024-byte stride, a high-nibble histogram and the same
+short-window denominator. Its 16 row sums match the groups produced by this
+project's EMBER adapter. The former PE path instead grouped per-block full-byte
+entropy and stopped at 10 MiB, so it did not match the model's training input.
+The batch output records the new policy. This changes inference features for
+existing checkpoints; old PE results are not directly comparable, and the
+corrected model has not been independently revalidated on paired labeled PEs.
+Synthetic tests compare the two feature paths on the same bytes; a local benign
+launcher still returned UNKNOWN under both policies. This is integration
+evidence, not a malware-family accuracy measurement.
+
 This service reads PE bytes and pre-existing JSON reports only. It does not invoke
 an executable, launch an emulator, submit a sample to a remote service, or install
 missing weights. Runtime behavior requires an existing execution report from an

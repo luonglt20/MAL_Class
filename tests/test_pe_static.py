@@ -2,11 +2,13 @@ import struct
 import unittest
 import hashlib
 import tempfile
+import numpy as np
 from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
 
 from malware_hybrid.pe_static import PEFormatError, PEStaticAnalyzer
+from malware_hybrid.ember_adapter import ember_row_to_report
 
 
 def minimal_pe() -> bytes:
@@ -45,6 +47,31 @@ def pe_with_one_import() -> bytes:
 
 
 class PEStaticAnalyzerTests(unittest.TestCase):
+    def test_byte_entropy_matches_ember_feature_groups_on_same_pe_bytes(self):
+        # Independently construct the 16x16 EMBER histogram, including its
+        # fixed denominator for short windows and overlapping full windows.
+        for data in (minimal_pe(), minimal_pe() + bytes(range(256)) * 16,
+                     minimal_pe() + b'\x00' * 2048 + bytes(range(256)) * 16):
+            with self.subTest(size=len(data)):
+                values = np.frombuffer(data, dtype=np.uint8)
+                blocks = [values] if len(values) < 2048 else [
+                    values[start:start + 2048] for start in range(0, len(values) - 2048 + 1, 1024)
+                ]
+                histogram = np.zeros((16, 16), dtype=np.int64)
+                for block in blocks:
+                    counts = np.bincount(block >> 4, minlength=16)
+                    probabilities = counts.astype(np.float32) / 2048
+                    populated = np.flatnonzero(counts)
+                    entropy = np.sum(-probabilities[populated] * np.log2(probabilities[populated])) * 2
+                    histogram[min(15, int(entropy * 2))] += counts
+                expected_report = ember_row_to_report({"file_type": "Win32", "byteentropy": histogram.flatten().tolist()})
+                actual_report = PEStaticAnalyzer().analyze_bytes(data)
+                expected = {item.token: item.value for item in expected_report.atomic_evidence if item.kind == "byte_entropy"}
+                actual = {item.token: item.value for item in actual_report.atomic_evidence if item.kind == "byte_entropy"}
+                self.assertEqual(actual.keys(), expected.keys())
+                for token in actual:
+                    self.assertAlmostEqual(actual[token], expected[token], places=10)
+                self.assertEqual(actual_report.metadata["byte_entropy_policy"], "ember2024_window2048_stride1024_v1")
     def test_import_and_overlay_use_sections_after_feature_limit(self):
         data = bytearray(0x400 + 11 * 0x200)
         data[:0x178] = minimal_pe()[:0x178]
