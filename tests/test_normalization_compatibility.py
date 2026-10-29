@@ -74,6 +74,15 @@ def test_checkpoint_preserves_exact_normalization_provenance(tmp_path, versions)
     assert loaded.normalization_versions == versions
 
 
+def test_checkpoint_preserves_ember_signature_policy(tmp_path):
+    _, tensorizer, model = candidate()
+    model.ember_signature_policies = ["authenticode_count_v2"]
+    checkpoint = tmp_path / "model.pt"
+    save_checkpoint(checkpoint, model, tensorizer)
+    loaded, _ = load_checkpoint(checkpoint)
+    assert loaded.ember_signature_policies == ["authenticode_count_v2"]
+
+
 @pytest.mark.parametrize("versions", [["cape-pe-locations-v2"], []])
 def test_manual_checkpoint_mismatch_abstains_without_neural_forward(versions):
     report, tensorizer, model = candidate()

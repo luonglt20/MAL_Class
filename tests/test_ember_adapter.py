@@ -5,6 +5,22 @@ from malware_hybrid.dataset import ReportTensorizer
 
 
 class EmberAdapterTests(unittest.TestCase):
+    def test_official_authenticode_count_is_opt_in_and_not_a_trust_verdict(self):
+        for payload, state in (({"num_certs": 2, "parse_error": 0}, "present"),
+                               ({"num_certs": 0, "parse_error": 0}, "absent"),
+                               ({"num_certs": 0, "parse_error": 1}, "unknown"),
+                               ({}, "unknown"),
+                               ({"num_certs": -1, "parse_error": 0}, "unknown")):
+            with self.subTest(payload=payload):
+                row = {"file_type": "Win32", "authenticode": payload}
+                newer = ember_row_to_report(row, signature_policy="authenticode_count_v2")
+                legacy = ember_row_to_report(row)
+                self.assertIn("authenticode:" + state, {item.token for item in newer.atomic_evidence})
+                self.assertIn("authenticode:absent", {item.token for item in legacy.atomic_evidence})
+                self.assertEqual(newer.metadata["ember_signature_policy"], "authenticode_count_v2")
+        with self.assertRaises(ValueError):
+            ember_row_to_report({"file_type": "Win32"}, signature_policy="invented")
+
     def test_reference_labels_do_not_leak_into_atomic_evidence(self):
         report = ember_row_to_report({
             "sha256": "abc123",

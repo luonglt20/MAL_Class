@@ -79,6 +79,35 @@ class BestCheckpointTests(unittest.TestCase):
         )
 
 class EmberReservoirSamplingTests(unittest.TestCase):
+    def test_opt_in_signature_policy_is_preserved_by_both_readers(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            archive = Path(temporary_directory) / "small.zip"
+            row = {"sha256": "signed", "file_type": "Win32", "authenticode": {"num_certs": 1, "parse_error": 0}}
+            with zipfile.ZipFile(archive, "w") as bundle:
+                bundle.writestr("week.jsonl", json.dumps(row) + "\n")
+            loaded = load_ember_win32_archive(archive, rows_per_week=1, max_samples=1,
+                                               signature_policy="authenticode_count_v2")
+            streamed = list(iter_ember_win32_archive(archive, signature_policy="authenticode_count_v2"))
+            for report in loaded + streamed:
+                self.assertIn("authenticode:present", {item.token for item in report.atomic_evidence})
+                self.assertEqual(report.metadata["ember_signature_policy"], "authenticode_count_v2")
+            with self.assertRaisesRegex(ValueError, "signature policy"):
+                load_ember_win32_archive(archive, rows_per_week=1, max_samples=1, signature_policy="invalid")
+            with self.assertRaisesRegex(ValueError, "signature policy"):
+                list(iter_ember_win32_archive(archive, signature_policy="invalid"))
+
+    def test_training_rejects_mixed_ember_signature_policies(self):
+        from malware_hybrid.ember_adapter import ember_row_to_report
+        from malware_hybrid.training import train_model
+        row = {"sha256": "one", "file_type": "Win32", "authenticode": {"num_certs": 1, "parse_error": 0}}
+        old = ember_row_to_report(row)
+        new = ember_row_to_report(row, signature_policy="authenticode_count_v2")
+        with self.assertRaisesRegex(ValueError, "cannot mix EMBER"):
+            train_model([old], [new], "unused.pt")
+        del old.metadata["ember_signature_policy"]
+        with self.assertRaisesRegex(ValueError, "unknown provenance"):
+            train_model([old], [new], "unused.pt")
+
     def test_weekly_reservoir_is_deterministic_and_not_a_prefix(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             archive = Path(temporary_directory) / "small.zip"

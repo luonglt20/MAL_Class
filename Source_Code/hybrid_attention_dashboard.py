@@ -271,6 +271,12 @@ with analysis_tab:
                     )
                 elif coverage and report.events and coverage.get("normalization_provenance") == "unknown_legacy":
                     st.caption("Checkpoint cũ chưa lưu phiên bản chuẩn hóa trace; tương thích schema chưa được xác minh.")
+                if (coverage and report.metadata.get("authenticode_present") is True
+                        and coverage.get("ember_signature_policies") is None):
+                    st.warning(
+                        "PE có bảng chứng chỉ nhưng checkpoint chưa ghi phiên bản feature chữ ký EMBER. "
+                        "Tác động của sự khác biệt trích xuất chữ ký lên dự đoán chưa được kiểm định."
+                    )
                 if family.get("abstained") and family.get("candidate"):
                     st.caption(
                         f"Ứng viên chưa xác nhận: {family['candidate']} "
