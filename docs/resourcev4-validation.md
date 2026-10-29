@@ -55,6 +55,18 @@ The candidate threshold does not replace the deployed guard; no model weight
 or checkpoint was changed. The withheld test was not evaluated.
 [Full selection grid and source fingerprints](experiments/winmet-resourcev4-calibration-candidate-study-20261029.json).
 
+The saved validation candidate errors also separate two problems. Of 63 rows
+with at least one known family, 51 expose a candidate and seven candidates
+disagree with their reference; six of these point to AgentTesla and one to
+Blihan. Among 37 rows with only unseen reference families, 11 expose a candidate
+and all 11 disagree. None of these 18 wrong candidates was accepted as a primary
+family by the guarded pipeline. The remaining rows without a candidate are
+unresolved, not correctly classified. These are weak-reference observations,
+not permission to relabel samples. Future model changes should address known
+family discrimination and open-set rejection separately, with training-only
+hard negatives and a fresh test cohort. The aggregate summarizer retains
+confusion counts without exporting individual sample IDs.
+
 Frozen interventions relative to v4 baseline: removing temporal resource IDs
 changed mAP by +0.00018 and calibrated macro-F1 by +0.0392; masking graph edges
 changed them by −0.1007 and −0.1174; disabling token-level cross-branch attention

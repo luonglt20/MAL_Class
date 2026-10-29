@@ -1,10 +1,31 @@
 import unittest
 from types import SimpleNamespace
 
-from malware_hybrid.deployment_audit import audit_family_decisions, explore_candidate_thresholds, select_candidate_threshold, summarize_labeled_decisions
+from malware_hybrid.deployment_audit import audit_family_decisions, explore_candidate_thresholds, select_candidate_threshold, summarize_candidate_errors, summarize_labeled_decisions
 
 
 class DeploymentAuditTests(unittest.TestCase):
+    def test_error_analysis_separates_known_unseen_and_multilabel_matches(self):
+        rows = [
+            {'reference_families': ['a'], 'reference_known_family': True, 'accepted': False,
+             'family_decision': {'candidate': 'b'}},
+            {'reference_families': ['new'], 'reference_known_family': False, 'accepted': False,
+             'family_decision': {'candidate': 'b'}},
+            {'reference_families': ['a', 'b'], 'reference_known_family': True, 'accepted': True,
+             'family_decision': {'candidate': 'b'}},
+            {'reference_families': ['a'], 'reference_known_family': True, 'accepted': False,
+             'family_decision': {'candidate': None}},
+            {'reference_families': [], 'reference_known_family': False, 'accepted': True,
+             'family_decision': {'candidate': 'b'}},
+        ]
+        groups = summarize_candidate_errors(rows)['groups']
+        self.assertEqual(groups['known_reference']['labeled_samples'], 3)
+        self.assertEqual(groups['known_reference']['wrong_candidate_samples'], 1)
+        self.assertEqual(groups['known_reference']['unresolved_without_candidate'], 1)
+        self.assertEqual(groups['unseen_reference']['wrong_candidate_samples'], 1)
+        self.assertEqual(groups['unseen_reference']['wrong_candidates_accepted'], 0)
+        self.assertEqual(groups['known_reference']['confusions'][0]['reference_families'], ['a'])
+
     def test_unknown_references_abstentions_and_errors_are_not_hidden(self):
         reports = [SimpleNamespace(sample_hash=str(i), families=families,
                                    family_supervised=bool(families))

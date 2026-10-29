@@ -81,5 +81,145 @@
       }
     ]
   },
+  "candidate_error_analysis": {
+    "groups": {
+      "known_reference": {
+        "labeled_samples": 63,
+        "candidate_samples": 51,
+        "wrong_candidate_samples": 7,
+        "unresolved_without_candidate": 12,
+        "wrong_candidates_accepted": 0,
+        "wrong_candidate_destinations": {
+          "agenttesla": 6,
+          "blihan": 1
+        },
+        "confusions": [
+          {
+            "reference_families": [
+              "gamarue"
+            ],
+            "candidate": "agenttesla",
+            "samples": 2
+          },
+          {
+            "reference_families": [
+              "snakelogger"
+            ],
+            "candidate": "agenttesla",
+            "samples": 2
+          },
+          {
+            "reference_families": [
+              "gcleaner"
+            ],
+            "candidate": "blihan",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "noon"
+            ],
+            "candidate": "agenttesla",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "taskun"
+            ],
+            "candidate": "agenttesla",
+            "samples": 1
+          }
+        ]
+      },
+      "unseen_reference": {
+        "labeled_samples": 37,
+        "candidate_samples": 11,
+        "wrong_candidate_samples": 11,
+        "unresolved_without_candidate": 26,
+        "wrong_candidates_accepted": 0,
+        "wrong_candidate_destinations": {
+          "snojan": 1,
+          "agenttesla": 6,
+          "gcleaner": 1,
+          "blihan": 1,
+          "strab": 1,
+          "lazy": 1
+        },
+        "confusions": [
+          {
+            "reference_families": [
+              "tnega"
+            ],
+            "candidate": "agenttesla",
+            "samples": 2
+          },
+          {
+            "reference_families": [
+              "cryptos"
+            ],
+            "candidate": "agenttesla",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "dofoil"
+            ],
+            "candidate": "blihan",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "dofoil"
+            ],
+            "candidate": "gcleaner",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "msilmamut"
+            ],
+            "candidate": "agenttesla",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "msilzilla"
+            ],
+            "candidate": "agenttesla",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "nanocore"
+            ],
+            "candidate": "strab",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "orcus"
+            ],
+            "candidate": "agenttesla",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "pennywise"
+            ],
+            "candidate": "lazy",
+            "samples": 1
+          },
+          {
+            "reference_families": [
+              "picsys"
+            ],
+            "candidate": "snojan",
+            "samples": 1
+          }
+        ]
+      }
+    },
+    "notice": "Candidate errors against available weak references, not primary accepted-decision errors. Unseen references require open-set evaluation; this analysis must not be used to relabel samples."
+  },
   "notice": "Guarded primary-family agreement with available reference labels; unknown references are excluded, abstentions and errors are unresolved. Not multi-label exact-match accuracy or independent ground truth."
 }
