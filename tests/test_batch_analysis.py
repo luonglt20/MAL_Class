@@ -2,6 +2,7 @@ import struct
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch, MagicMock
 
 from malware_hybrid.batch_analysis import (
     analyze_local_dataset,
@@ -144,6 +145,19 @@ class BatchAnalysisTests(unittest.TestCase):
                     discover_dataset_files(alias)
             finally:
                 alias.unlink(missing_ok=True)
+
+    def test_directory_scan_stops_enumerating_at_entry_budget(self):
+        def entries():
+            for _ in range(4):
+                yield MagicMock()
+            raise AssertionError("scanner consumed beyond the entry budget")
+
+        with tempfile.TemporaryDirectory() as directory:
+            scanner = MagicMock()
+            scanner.__enter__.return_value = entries()
+            with patch("malware_hybrid.batch_analysis.os.scandir", return_value=scanner):
+                with self.assertRaisesRegex(ValueError, "exceeds 3 directory entries"):
+                    discover_dataset_files(directory, max_entries=3)
 
 
 if __name__ == "__main__":
