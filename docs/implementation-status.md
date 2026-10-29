@@ -2,6 +2,18 @@
 
 This is an independent multimodal research project. Legacy reports and scores are reference material, not experimental evidence for this project.
 
+The user set a family-classification accuracy target above 85%. Report top-1
+accuracy on a clearly defined, held-out family-labeled set, alongside sample
+count, supported-family coverage, abstention rate, accepted-prediction accuracy,
+and macro-F1/mAP for the multi-label task. A conditional top-1 score on known
+families must not be presented as end-to-end accuracy for all EXEs. The static
+EMBER candidate previously achieved 89.45% top-1 on 1,005 family-evaluable
+rows of an internal holdout; this used precomputed EMBER features from the
+training archive, not direct EXE extraction or an independent later-time test.
+The resource-v4 hybrid candidate achieved 75.82% top-1 on 91 known-family
+rows of a small weak-label internal holdout. Thus the requested target is not
+yet demonstrated for the end-to-end EXE or hybrid product.
+
 2026-10-29 PE parser fix: all bounded PE sections now participate in RVA lookup and overlay accounting, including sections after the tenth. Section-specific model evidence still uses the previous ten-section limit; late-section imports/exports and overlay values may therefore change and need revalidation with existing checkpoints. A synthetic eleven-section PE regression test covers a late import and zero overlay without executing the file.
 
 The single-file UI warns when detailed section evidence is truncated; batch exports include total and included section counts so the same limitation is visible in exported results.

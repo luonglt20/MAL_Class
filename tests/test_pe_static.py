@@ -48,6 +48,27 @@ def pe_with_one_import() -> bytes:
 
 
 class PEStaticAnalyzerTests(unittest.TestCase):
+    def test_directory_tokens_match_ember_adapter_for_same_header(self):
+        names = ('EXPORT', 'IMPORT', 'RESOURCE', 'EXCEPTION', 'SECURITY', 'BASERELOC',
+                 'DEBUG', 'COPYRIGHT', 'GLOBALPTR', 'TLS', 'LOAD_CONFIG', 'BOUND_IMPORT',
+                 'IAT', 'DELAY_IMPORT', 'COM_DESCRIPTOR', 'RESERVED')
+        for count in (0, 2, 16):
+            with self.subTest(count=count):
+                data = bytearray(minimal_pe())
+                struct.pack_into('<I', data, 0x98 + 92, count)
+                # A nonzero size tests value handling without parsing imports or exports.
+                if count > 2:
+                    struct.pack_into('<II', data, 0x98 + 96 + 2 * 8, 0x1200, 48)
+                entries = [{'has_relocs': 0, 'has_dynamic_relocs': 0}]
+                entries.extend({'name': names[i], 'size': 48 if i == 2 else 0}
+                               for i in range(count))
+                direct = PEStaticAnalyzer().analyze_bytes(bytes(data))
+                reference = ember_row_to_report({'file_type': 'Win32', 'datadirectories': entries})
+                actual = [(item.token, item.value) for item in direct.atomic_evidence if item.kind == 'data_directory']
+                expected = [(item.token, item.value) for item in reference.atomic_evidence if item.kind == 'data_directory']
+                self.assertEqual(actual, expected)
+                self.assertEqual(direct.metadata['data_directory_policy'], 'ember_adapter_first16_v1')
+
     def test_common_section_flag_tokens_match_ember_adapter(self):
         for bits, props in (
             (0x60000020, ['CNT_CODE', 'MEM_EXECUTE', 'MEM_READ']),

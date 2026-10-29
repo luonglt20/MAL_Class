@@ -54,6 +54,7 @@ class BatchAnalysisTests(unittest.TestCase):
         self.assertEqual(row["pe_section_count"], 1)
         self.assertEqual(row["pe_section_evidence_count"], 1)
         self.assertEqual(row["pe_section_flags_policy"], "ember_common_section_flags_v1")
+        self.assertEqual(row["pe_data_directory_policy"], "ember_adapter_first16_v1")
         self.assertEqual(row["pe_authenticode_validation"], "not_performed")
         self.assertEqual(row["static_feature_provenance"], "bounded_local_pe_parser")
         self.assertEqual(row["pe_byte_entropy_policy"], "ember2024_window2048_stride1024_v1")

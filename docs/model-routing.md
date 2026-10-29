@@ -48,6 +48,14 @@ bounded certificate table but does not verify an Authenticode signature or trust
 chain; the UI and batch output disclose that limitation. Evaluation on paired
 PE bytes and EMBER-style features remains necessary.
 
+Direct PE data-directory feature tokens now reproduce the existing EMBER
+adapter's first-16-entry convention, including its zero-valued `unknown`
+placeholder and up to 15 named directories. This placeholder is an adapter
+artifact, not an additional PE directory. The change improves token alignment
+but does not establish classification accuracy; other extraction differences
+remain and predictions from older direct-PE parser versions are not directly
+comparable.
+
 The direct PE byte-entropy feature now follows the [official EMBER2024 extractor](https://github.com/FutureComputing4AI/EMBER2024/blob/main/src/thrember/features.py):
 2,048-byte windows, 1,024-byte stride, a high-nibble histogram and the same
 short-window denominator. Its 16 row sums match the groups produced by this
