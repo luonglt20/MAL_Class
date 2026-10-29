@@ -14,6 +14,12 @@ The resource-v4 hybrid candidate achieved 75.82% top-1 on 91 known-family
 rows of a small weak-label internal holdout. Thus the requested target is not
 yet demonstrated for the end-to-end EXE or hybrid product.
 
+The saved v4 guarded validation decisions show why accuracy and coverage must
+both be reported: 22/22 accepted labeled predictions agree with weak AVClass
+labels, but only 22/100 labeled reports receive a correct accepted primary
+family; 78 remain unresolved. This is validation evidence, not a held-out
+accuracy result. [Counts and limitations](resourcev4-validation.md).
+
 2026-10-29 PE parser fix: all bounded PE sections now participate in RVA lookup and overlay accounting, including sections after the tenth. Section-specific model evidence still uses the previous ten-section limit; late-section imports/exports and overlay values may therefore change and need revalidation with existing checkpoints. A synthetic eleven-section PE regression test covers a late import and zero overlay without executing the file.
 
 The single-file UI warns when detailed section evidence is truncated; batch exports include total and included section counts so the same limitation is visible in exported results.

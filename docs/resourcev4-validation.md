@@ -19,6 +19,16 @@ The higher observed agreement on fewer predictions does not establish accuracy
 or a false-positive guarantee; independent annotations and benign hybrid
 validation remain needed.
 
+Of the 100 validation reports with family reference labels, 22 were accepted
+and agreed with a reference family: accepted-label agreement is 22/22, while
+the fraction correct over **all** labeled reports is 22/100. The other 78 were
+unresolved. Restricting to 63 reports with at least one known family gives
+22/63 correct and 41 unresolved. These are guarded-decision counts against
+weak labels, not the top-1 ranking metric or multilabel exact-match accuracy;
+they do not establish that the user's >85% target is met. The new summarizer
+computes these denominators from saved decision rows without re-running the
+model. [Aggregate and source-report fingerprint](experiments/winmet-resourcev4-guarded-coverage-20261029.json).
+
 Frozen interventions relative to v4 baseline: removing temporal resource IDs
 changed mAP by +0.00018 and calibrated macro-F1 by +0.0392; masking graph edges
 changed them by −0.1007 and −0.1174; disabling token-level cross-branch attention

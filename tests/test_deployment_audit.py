@@ -1,7 +1,7 @@
 import unittest
 from types import SimpleNamespace
 
-from malware_hybrid.deployment_audit import audit_family_decisions
+from malware_hybrid.deployment_audit import audit_family_decisions, summarize_labeled_decisions
 
 
 class DeploymentAuditTests(unittest.TestCase):
@@ -29,11 +29,32 @@ class DeploymentAuditTests(unittest.TestCase):
         self.assertFalse(measured["rows"][2]["reference_known_family"])
         self.assertIsNone(measured["rows"][3]["primary_matches_reference"])
         self.assertEqual(measured["rows"][2]["verdict"], "UNKNOWN")
+        all_labeled = measured["labeled_decision_summary"]["all_reference_labeled"]
+        self.assertEqual(all_labeled["reference_labeled_samples"], 4)
+        self.assertEqual(all_labeled["accepted_samples"], 2)
+        self.assertEqual(all_labeled["correct_fraction_all_labeled"], .25)
+        self.assertEqual(all_labeled["accepted_reference_accuracy"], .5)
+        self.assertEqual(all_labeled["unresolved_samples"], 2)
+        known = measured["labeled_decision_summary"]["known_family_reference_labeled"]
+        self.assertEqual(known["reference_labeled_samples"], 3)
+        self.assertAlmostEqual(known["correct_fraction_all_labeled"], 1 / 3)
 
     def test_empty_audit_has_no_fabricated_precision(self):
         measured = audit_family_decisions(None, [], [])
         self.assertIsNone(measured["accepted_primary_reference_precision"])
         self.assertIsNone(measured["accepted_fraction_all_samples"])
+        self.assertIsNone(measured["labeled_decision_summary"]["all_reference_labeled"]["correct_fraction_all_labeled"])
+
+    def test_multilabel_reference_requires_accepted_matching_label(self):
+        rows = [
+            {"reference_families": ["a", "b"], "reference_known_family": True,
+             "accepted": True, "primary_matches_reference": True},
+            {"reference_families": ["a"], "reference_known_family": True,
+             "accepted": False, "primary_matches_reference": True},
+        ]
+        result = summarize_labeled_decisions(rows)["all_reference_labeled"]
+        self.assertEqual(result["correct_accepted_samples"], 1)
+        self.assertEqual(result["correct_fraction_all_labeled"], .5)
 
 
 if __name__ == "__main__":

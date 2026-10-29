@@ -1,0 +1,28 @@
+{
+  "source_report_sha256": "ecafbaa908ff6155915a9b478b263bc2638350d9b5a964cf21e24247e7b83115",
+  "checkpoint_sha256": "ed9d08cb2bb7d0fd31c199ac2f289b6b4946a73fd8c3b0702b66b302636971fc",
+  "evaluated_partition": "validation",
+  "samples": 107,
+  "errors": 0,
+  "summary": {
+    "all_reference_labeled": {
+      "reference_labeled_samples": 100,
+      "accepted_samples": 22,
+      "correct_accepted_samples": 22,
+      "accepted_fraction": 0.22,
+      "accepted_reference_accuracy": 1.0,
+      "correct_fraction_all_labeled": 0.22,
+      "unresolved_samples": 78
+    },
+    "known_family_reference_labeled": {
+      "reference_labeled_samples": 63,
+      "accepted_samples": 22,
+      "correct_accepted_samples": 22,
+      "accepted_fraction": 0.3492063492063492,
+      "accepted_reference_accuracy": 1.0,
+      "correct_fraction_all_labeled": 0.3492063492063492,
+      "unresolved_samples": 41
+    }
+  },
+  "notice": "Guarded primary-family agreement with available reference labels; unknown references are excluded, abstentions and errors are unresolved. Not multi-label exact-match accuracy or independent ground truth."
+}
