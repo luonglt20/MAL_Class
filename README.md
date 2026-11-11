@@ -64,6 +64,13 @@ Attention theo cửa sổ mới dùng `per_sample_v1`, tránh thay đổi kết 
 
 Biến thể [relation-value attention](docs/relation-value-attention.md) bổ sung quan hệ vào phần value thay vì chỉ bias trước softmax; bật bằng `--temporal-relation-values` trong runner WinMET. Mặc định tắt, checkpoint cũ không tự bật tham số chưa train, và model UI không tự đổi. Unit test/gradient không được dùng thay bằng chứng tăng độ chính xác; cần train/test cùng split với model `per_sample_v1` không bật biến thể này.
 
+### Luồng PE với checkpoint WinMET và readout top‑1 cố định
+
+- Parser PE local sinh token kiểu EMBER. Checkpoint WinMET học token kiểu CAPE `static.pe`. Với checkpoint có vocabulary CAPE, [static_dialect.py](src/malware_hybrid/static_dialect.py) dựng lại khối CAPE từ cấu trúc đã parse (không đọc lại, không chạy binary) và token hóa bằng đúng hàm lúc train. Hiện chưa chạy PEiD/YARA cục bộ.
+- Checkpoint học từ report sandbox (có ghi `normalization_versions`) sẽ từ chối dự đoán family khi đầu vào chỉ có static (`static_only_input_not_validated_for_dynamic_checkpoint`), trừ khi checkpoint ghi nhận `static_only_validated`. Lý do: trên validation, head của e4 chỉ đạt 21,5% top‑1 khi bỏ event, thấp hơn baseline prior 22,1%, và xếp họ mã độc lên đầu cho launcher lành tính.
+- Readout top‑1 cố định được lưu ở sidecar `<checkpoint>.readout.json`, kèm `.prototypes.npz` nếu dùng kNN; cả hai khóa SHA‑256 với checkpoint. Readout là head của model hoặc kNN trên tóm tắt ba nhánh attention, với prototype chỉ lấy từ train và ngưỡng fit trên calibration. UI và CSV hiển thị `top1_family/top1_score/top1_accepted` đúng theo quy tắc đã đánh giá. Tạo sidecar bằng `scripts/freeze_top1_readout.py`.
+- Mở rộng dữ liệu: `scripts/build_expansion_v2_manifest.py` giữ nguyên mọi phân vùng v1 và test v1, thêm archive group mới vào train/validation và một test độc lập thứ hai `withheld_test_v2`, đồng thời khử trùng SHA‑256. `scripts/evaluate_winmet_expansion_test.py` chấm một phân vùng test đúng một lần (có lock file).
+
 ## Tài liệu và nguồn tham khảo
 
 - [Trạng thái triển khai](docs/implementation-status.md).

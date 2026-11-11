@@ -34,3 +34,31 @@ The frozen checkpoint and expansion source matched their recorded checksums. All
 | Graph edges masked, nodes retained | 57.46% | 72.93% | 19.88% | 29.73% |
 
 These are inference-time ablations of the uncalibrated checkpoint on weak-label validation. Cross-attention improves macro-F1 and mAP in this comparison while aggregate top-1 is unchanged. Retaining graph edges improves top-1 by 2.76 percentage points. See artifacts/winmet/epoch4_shutdown_validation_ablation.json for metrics and fingerprints.
+
+## 2026-11-11 Claude Code session
+
+Checkpoint, manifest (`e9ca…4671`) and source (`503e…835a`) checksums matched; partition fingerprints were re-verified on load and the withheld test was never constructed.
+
+### Exploratory validation (`artifacts/winmet/epoch4_shutdown_exploratory_selective_20261111.json`)
+
+Script: `scripts/explore_stopped_checkpoint.py`. Validation 246 rows = 181 with a family in the 51-label vocabulary, 47 labelled with out-of-vocabulary families, 18 unlabelled. Top-1 uses the 181 eligible rows (41 families present). Thresholds were fitted on calibration (216 rows, 149 eligible) and only read on validation.
+
+| View / readout | Val top-1 | Val top-3 | Selective top-1 at calibration threshold | Eligible coverage | OOV families accepted |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Hybrid, model head | 60.22% | 72.93% | 87.78% | 49.7% (90/181) | 4/47 |
+| Hybrid, frozen-embedding kNN-5 | 60.22% | 72.93% | 90.91% | 48.6% (88/181) | 8/47 |
+| Hybrid without cross-attention, kNN-5 | 65.19% | 79.56% | 91.92% | 54.7% (99/181) | 7/47 |
+| PE-only (events removed), model head | 21.55% | 34.81% | not reachable | – | – |
+| PE-only, kNN-15 | 56.91% | 74.03% | 92.19% | 35.4% (64/181) | 11/47 |
+
+Training-prior baseline top-1 is 22.10%. Selective accuracy is conditional on acceptance and is not the >85% full top-1 target. kNN readouts use train-partition labels with frozen weights; they were compared on validation only.
+
+### PE upload fixes
+
+- The local PE parser emitted EMBER-style static tokens while WinMET checkpoints learned CAPE `static.pe` tokens (44% known tokens on benign launchers). `src/malware_hybrid/static_dialect.py` rebuilds a CAPE static block from the parsed structure and tokenizes it with `CapeReportParser._static_evidence`; it is applied only for CAPE-vocabulary checkpoints (coverage 89%). Gaps: no PEiD/YARA locally, approximate string extraction.
+- With correct tokens, the e4 model ranked malware families first (sigmoid ≈0.70–0.78) on 14/14 benign pip/setuptools launchers. Because PE-only validation top-1 is below the prior baseline, `pipeline.py` now abstains (`static_only_input_not_validated_for_dynamic_checkpoint`) when a checkpoint trained on sandbox reports receives static-only input, unless it records `static_only_validated`. EMBER static routing is unaffected.
+- Live dashboard check with the e4 checkpoint on a safe folder (2 launchers, 2 malformed PE, 1 CAPE fixture): 5/5 processed, per-file errors retained, CSV button present. Full test suite: 334 passed, 94 subtests.
+
+### Training evidence
+
+The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.118; mAP 0.153→0.221→0.279→0.336). No training was launched in this session.

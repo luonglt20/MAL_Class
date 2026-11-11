@@ -66,6 +66,17 @@ class PipelineTests(unittest.TestCase):
             rejected = pipeline.predict(report)
         self.assertFalse(rejected["model_input_coverage"]["supported"])
         self.assertNotIn("family_readout", rejected["attention_trace"])
+        # A dynamic-report checkpoint must abstain on static-only input.
+        model.normalization_versions = [report.metadata["normalization_version"]]
+        static_only = CapeReportParser().parse_file(FIXTURE)
+        static_only.events.clear()
+        with patch.object(model, "forward", side_effect=AssertionError("must not infer")):
+            static_result = pipeline.predict(static_only)
+        self.assertFalse(static_result["model_input_coverage"]["static_only_input_supported"])
+        self.assertEqual(static_result["family"]["reason"], "static_only_input_not_validated_for_dynamic_checkpoint")
+        self.assertEqual(static_result["attention_trace"]["mode"], "evidence_only_static_input_rejected")
+        model.static_only_validated = True
+        self.assertTrue(pipeline.predict(static_only)["model_input_coverage"]["static_only_input_supported"])
 
     def test_evidence_only_pipeline_maps_frameworks(self):
         result = HybridInferencePipeline().predict_file(FIXTURE)

@@ -44,7 +44,7 @@ def main():
     training = json.loads(args.training_report.read_text())
     validate_inputs(args.checkpoint, args.checkpoint_sha256, manifest, training)
     torch.set_num_threads(2)
-    reports = load_expansion(manifest['source'], manifest)
+    reports = load_expansion(manifest.get('source'), manifest)
     model, tensorizer = load_checkpoint(args.checkpoint, args.device)
     if _family_training_priors(tensorizer, reports['train']) != model.family_training_priors:
         raise ValueError('model priors differ from preserved training partition')
@@ -64,7 +64,7 @@ def main():
     result = {'checkpoint_sha256': args.checkpoint_sha256,
               'manifest_sha256': hashlib.sha256(args.manifest.read_bytes()).hexdigest(),
               'training_report_sha256': hashlib.sha256(args.training_report.read_bytes()).hexdigest(),
-              'source_sha256': manifest['source_sha256'], 'partitions': manifest['partitions'],
+              'source_sha256': manifest.get('source_sha256') or manifest.get('sources'), 'partitions': manifest['partitions'],
               'evaluated_partition': 'validation', 'baseline': baseline, 'controls': controls,
               'test_metrics': None,
               'notice': 'Weak-label validation with preserved groups; expanded label vocabulary differs '

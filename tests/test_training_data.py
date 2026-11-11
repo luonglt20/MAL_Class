@@ -251,6 +251,57 @@ class TrainerProgressTests(unittest.TestCase):
         self.assertEqual(model.selected_epoch, 1)
         self.assertEqual(updates[-1]["stage"], "early_stop")
 
+    def test_pre_encoding_and_event_release_keep_results_identical(self):
+        base = CapeReportParser(max_events=64).parse_file(
+            Path(__file__).parent / "fixtures" / "cape_process_injection.json"
+        )
+
+        def run(**memory_options):
+            reports = []
+            for index in range(20):
+                report = copy.deepcopy(base)
+                report.sample_hash = f"{index:064x}"
+                reports.append(report)
+            train, validation, calibration, _, _ = research_split(reports, seed=42)
+            with tempfile.TemporaryDirectory() as directory:
+                result = train_model(
+                    train, validation, Path(directory) / "memory.pt", epochs=2,
+                    batch_size=2, seed=42, device="cpu", d_model=16, window_size=64,
+                    window_overlap=32, family_min_support=1, behavior_min_support=1,
+                    calibration_reports=calibration, train_behavior_head=False,
+                    modality_dropout=0.4, **memory_options,
+                )
+            return result, train
+
+        baseline, _ = run()
+        cached, train = run(pre_encode=True, release_encoded_events=True, mps_empty_cache_every=1)
+        self.assertEqual(cached["history"], baseline["history"])
+        self.assertTrue(all(report.events == [] for report in train))
+        with self.assertRaisesRegex(ValueError, "requires pre_encode"):
+            train_model([base], [], "unused.pt", release_encoded_events=True)
+
+    def test_balanced_sampling_and_warmup_cosine_train_and_validate_options(self):
+        base = CapeReportParser(max_events=64).parse_file(
+            Path(__file__).parent / "fixtures" / "cape_process_injection.json"
+        )
+        reports = []
+        for index in range(20):
+            report = copy.deepcopy(base)
+            report.sample_hash = f"{index:064x}"
+            reports.append(report)
+        train, validation, calibration, _, _ = research_split(reports, seed=42)
+        with tempfile.TemporaryDirectory() as directory:
+            result = train_model(
+                train, validation, Path(directory) / "ab.pt", epochs=2, batch_size=2,
+                seed=42, device="cpu", d_model=16, window_size=64, window_overlap=32,
+                family_min_support=1, behavior_min_support=1,
+                calibration_reports=calibration, train_behavior_head=False,
+                learning_rate=6e-4, lr_schedule="warmup_cosine", balanced_sampling=True,
+            )
+        self.assertEqual(result["epochs_completed"], 2)
+        with self.assertRaisesRegex(ValueError, "lr_schedule"):
+            train_model([base], [], "unused.pt", lr_schedule="step")
+
     def test_modality_dropout_rejects_values_outside_probability_range(self):
         report = CapeReportParser(max_events=64).parse_file(
             Path(__file__).parent / "fixtures" / "cape_process_injection.json"

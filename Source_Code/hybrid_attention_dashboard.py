@@ -26,6 +26,7 @@ from malware_hybrid.batch_analysis import (
 )
 from malware_hybrid.normalization import CapeReportParser
 from malware_hybrid.pipeline import HybridInferencePipeline
+from malware_hybrid.prototype_readout import load_readout
 from malware_hybrid.inference_service import DEFAULT_MODEL_REGISTRY, RoutedInferencePipeline
 from malware_hybrid.jsonl_analysis import analyze_jsonl_dataset
 from malware_hybrid.training import (
@@ -158,7 +159,7 @@ def _csv_cell(value):
 def render_batch_results(rows: list[dict], download_key: str):
     frame = pd.DataFrame(rows)
     priority = [
-        "filename", "verdict", "primary_family", "family_candidates",
+        "filename", "verdict", "top1_family", "top1_score", "top1_accepted", "primary_family", "family_candidates",
         "family_abstained", "family_abstain_reason", "model_input_supported",
         "model_known_token_fraction", "confirmed_behaviors", "suspected_behaviors", "error",
     ]
@@ -194,7 +195,9 @@ def load_pipeline(checkpoint_path: str, selected_device: str, model_registry: st
         torch.set_num_threads(min(torch.get_num_threads(), 4))
     if checkpoint_path:
         model, tensorizer = load_checkpoint(checkpoint_path, selected_device)
-        return HybridInferencePipeline(model, tensorizer, device=selected_device)
+        manual = HybridInferencePipeline(model, tensorizer, device=selected_device)
+        manual.top1_readout = load_readout(checkpoint_path)
+        return manual
     return RoutedInferencePipeline(model_registry, device=selected_device)
 
 
@@ -301,6 +304,13 @@ with analysis_tab:
                     )
                 elif coverage and not coverage.get("normalization_compatible", True):
                     st.warning("Schema trace khác checkpoint đã học; cần train lại. Family giữ UNKNOWN.")
+                elif coverage and not coverage.get("static_only_input_supported", True):
+                    st.warning(
+                        "Checkpoint này học từ report sandbox có event; với đầu vào chỉ có static, "
+                        "family head chưa được kiểm định (validation PE-only thấp hơn baseline prior). "
+                        "Family giữ UNKNOWN. Dùng chế độ tự chọn (model Signature–Static) cho PE "
+                        "hoặc cung cấp CAPE/WinMET report."
+                    )
                 elif coverage and not coverage["supported"]:
                     st.warning(
                         f"Checkpoint chỉ nhận diện {coverage['known_fraction']:.1%} token đầu vào; "
@@ -314,6 +324,14 @@ with analysis_tab:
                     st.warning(
                         "PE có bảng chứng chỉ nhưng checkpoint chưa ghi phiên bản feature chữ ký EMBER. "
                         "Tác động của sự khác biệt trích xuất chữ ký lên dự đoán chưa được kiểm định."
+                    )
+                top1 = family.get("top1_readout")
+                if top1:
+                    decision = "chấp nhận" if top1["accepted"] else "từ chối (dưới ngưỡng)"
+                    st.info(
+                        f"Top‑1 theo readout đã đánh giá ({top1['readout']}): **{top1['label']}** · "
+                        f"điểm {top1['score']:.3f} · ngưỡng {top1['threshold']:.3f} ({top1['threshold_fit_on']}) · "
+                        f"{decision}. Đây là phân loại họ, không phải verdict mã độc."
                     )
                 if family.get("abstained") and family.get("candidate"):
                     st.caption(
