@@ -19,7 +19,7 @@ V2_REMAINING=$W/volume2_remaining_blocks_resourcev4_20261111.jsonl
 V1_MANIFEST=$W/resourcev4_expansion_training_manifest_20261029.json
 V2_MANIFEST=$W/resourcev4_expansion_v2_manifest_20261111.json
 TAG=v2
-VARIANTS=(b16_cosine baseline balanced d64 baseline_seed45)
+VARIANTS=(b16_cosine b16_cosine_balanced)
 log() { print -r -- "$(date '+%F %T') $*"; }
 
 log "stage 1: waiting for verified $ARCHIVE"
@@ -54,7 +54,7 @@ if [[ -n "${WAIT_PID:-}" ]]; then
   while kill -0 $WAIT_PID 2>/dev/null; do sleep 60; done
 fi
 log "stage 4: A/B variants ${VARIANTS[*]}"
-"$PY" scripts/run_winmet_ab.py $V2_MANIFEST --tag $TAG --epochs 14 --patience 3 --only ${VARIANTS[@]}
+"$PY" scripts/run_winmet_ab.py $V2_MANIFEST --tag $TAG --epochs 6 --patience 3 --only ${VARIANTS[@]}
 
 log "stage 5: summary"
 "$PY" scripts/summarize_winmet_ab.py --tag $TAG --output $W/winmet_ab_${TAG}_summary

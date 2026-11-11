@@ -24,6 +24,7 @@ VARIANTS = {
     'd64': ['--d-model', '64'],
     'b16_cosine': ['--batch-size', '16', '--lr', '6e-4', '--lr-schedule', 'warmup_cosine'],
     'balanced': ['--balanced-sampling'],
+    'b16_cosine_balanced': ['--batch-size', '16', '--lr', '6e-4', '--lr-schedule', 'warmup_cosine', '--balanced-sampling'],
 }
 
 
