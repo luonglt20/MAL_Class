@@ -22,3 +22,15 @@ Deliver a local UI that accepts Windows PE files and datasets, extracts features
 3. Compare baseline, cross-branch attention disabled, and graph edges masked while retaining graph nodes. Report accuracy, macro-F1 and coverage with family support. Track confidence and abstention on benign and unknown-family controls. Attention associations require separate faithfulness evidence.
 4. The user previously prohibited restarting training. Continue evaluation and implementation under that constraint. Obtain explicit authorization before launching training. If authorized, record the new run configuration, choose changes on validation, calibrate on the designated calibration partition, then evaluate the selected frozen candidate on the independent test set.
 5. Promote a checkpoint only after its provenance and measured behavior support it. Verify the normal UI path with that checkpoint, including file safety, failure handling and exports. Keep the goal open while the >85% target or required verification remains unmet.
+
+## Epoch 4 validation ablation completed
+
+The frozen checkpoint and expansion source matched their recorded checksums. All three runs used the same preserved validation partition (246 reports, 181 eligible for top-k). The independent test remains reserved.
+
+| Configuration | Top-1 | Top-3 | Macro-F1 | mAP |
+| --- | ---: | ---: | ---: | ---: |
+| Full checkpoint | 60.22% | 72.93% | 24.13% | 33.55% |
+| Cross-attention disabled | 60.22% | 70.72% | 14.38% | 30.07% |
+| Graph edges masked, nodes retained | 57.46% | 72.93% | 19.88% | 29.73% |
+
+These are inference-time ablations of the uncalibrated checkpoint on weak-label validation. Cross-attention improves macro-F1 and mAP in this comparison while aggregate top-1 is unchanged. Retaining graph edges improves top-1 by 2.76 percentage points. See artifacts/winmet/epoch4_shutdown_validation_ablation.json for metrics and fingerprints.
