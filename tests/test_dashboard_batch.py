@@ -1,4 +1,5 @@
 from pathlib import Path
+import csv
 import hashlib
 import json
 import struct
@@ -50,13 +51,23 @@ def minimal_pe() -> bytes:
     return bytes(data)
 
 
-def test_dashboard_batch_upload_renders_results_and_csv_download():
+def test_dashboard_batch_upload_renders_results_and_csv_download(monkeypatch):
+    import streamlit as st
+
+    downloads = []
+    original_download_button = st.download_button
+
+    def capture_download(label, data, **kwargs):
+        downloads.append(data)
+        return original_download_button(label, data, **kwargs)
+
+    monkeypatch.setattr(st, "download_button", capture_download)
     app = AppTest.from_file(str(DASHBOARD)).run(timeout=20)
     batch_uploader = next(
         uploader for uploader in app.get("file_uploader")
         if uploader.label == "Chọn nhiều file để phân loại"
     )
-    batch_uploader.upload("sample.exe", minimal_pe(), "application/octet-stream")
+    batch_uploader.upload("=1+1.exe", minimal_pe(), "application/octet-stream")
     batch_uploader.upload("process-injection.json", FIXTURE.read_bytes(), "application/json")
     app.run(timeout=20)
 
@@ -65,6 +76,8 @@ def test_dashboard_batch_upload_renders_results_and_csv_download():
 
     assert len(app.exception) == 0
     assert len(app.dataframe) == 1
+    rows = list(csv.DictReader(downloads[-1].decode("utf-8-sig").splitlines()))
+    assert {row["filename"] for row in rows} == {"'=1+1.exe", "process-injection.json"}
     assert any(
         button.label == "Tải kết quả dataset dạng CSV"
         for button in app.get("download_button")

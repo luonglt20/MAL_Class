@@ -146,6 +146,15 @@ def attention_sankey(trace: dict):
     ))
 
 
+def _csv_cell(value):
+    if isinstance(value, str) and (
+        value.startswith(("\t", "\r", "\n"))
+        or value.lstrip().startswith(("=", "+", "-", "@", "＝", "＋", "－", "＠"))
+    ):
+        return "'" + value
+    return value
+
+
 def render_batch_results(rows: list[dict], download_key: str):
     frame = pd.DataFrame(rows)
     priority = [
@@ -161,9 +170,10 @@ def render_batch_results(rows: list[dict], download_key: str):
     col_a.metric("Tổng file", len(frame))
     col_b.metric("Phân tích được", len(successful))
     col_c.metric("Lỗi/không hỗ trợ", len(frame) - len(successful))
+    csv_frame = frame.apply(lambda column: column.map(_csv_cell))
     st.download_button(
         "Tải kết quả dataset dạng CSV",
-        frame.to_csv(index=False).encode("utf-8-sig"),
+        csv_frame.to_csv(index=False).encode("utf-8-sig"),
         file_name="mal_class_batch_predictions.csv",
         mime="text/csv",
         key=download_key,
