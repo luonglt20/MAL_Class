@@ -88,8 +88,10 @@ The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.
 - Census v5 (`docs/results/20261113/behavior_label_census_v5.json`): 8,464/8,500 train reports carry behavioral CAPE signatures; 218 kinds, 52 with >= 200 train rows. T1547.001 confirmed 0 -> 417; T1112 confirmed 1,540 -> 944 (stricter handle rule).
 - `scripts/behavior_signature_baseline.py` (52 signatures from events only, TF-IDF + LR, C=4 fixed, validation): unigram mAP 0.796 / micro-F1 0.854 / macro-F1 0.696; with adjacent event pairs mAP 0.803 / 0.858 / 0.702. Pairs help 34/50 labels; paired bootstrap delta mAP +0.007 (95% CI +0.002..+0.013). Rule T1547.001 on validation: 41 confirmed, all with `persistence_autorun`; 128 signature reports missed.
 
+- Attention with a behavior head on v5 signature targets (`--behavior-targets cape-signatures`, 6 epochs, `models/winmet_v5_behavior_signatures_e6.pt`): behavior mAP 0.626 / micro-F1 0.703 / macro-F1 0.599 on the same 52 labels and 782 validation reports, below the bigram baseline on all 52 labels; still rising each epoch (0.45 -> 0.63). Family on the same model: top-1 62.5%, mAP 0.413. History: `docs/results/20261113/attention_v5_behavior_signatures_history.json`.
+
 ### Next steps
-1. Train the attention model's behavior head on v5 signature targets (absent signature = negative on reports that have signatures) and compare with the bigram baseline on validation.
+1. Behavior with attention: select the checkpoint by behavior mAP, train longer, and try a larger model on a GPU; keep the bigram TF-IDF + LR as the behavior baseline.
 2. Map CAPE signature names to ATT&CK (needs the CAPE community signatures repository; ask before downloading), build behavior targets from signatures, train the behavior head on v5 and compare an order-free bag model with the ordered/graph model on behavior.
 3. Train the family model on v5 (new checkpoint; v4 checkpoints reject v5 traces) and keep TF-IDF + LR as the main baseline.
 
