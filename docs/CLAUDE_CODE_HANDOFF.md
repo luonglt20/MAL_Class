@@ -84,8 +84,12 @@ The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.
 - On 300 raw reports: T1547.001 confirmed v4 0 -> v5 15, all 15 with `persistence_autorun`, 0 without (`docs/results/20261113/v4_v5_rule_check_300_raw_reports.log`; signature-to-technique pairing is by name, not an official CAPE mapping).
 - v5 data prepared by replaying the v4 blocks and samples (`scripts/run_v5_reprepare.sh`): `artifacts/winmet/*resourcev5*.jsonl`. v5 manifest `artifacts/winmet/resourcev5_expansion_v2_manifest_20261113.json` (copy in `docs/results/20261113/`) reloads with every partition fingerprint identical to v4.
 
+### v5 behavior results (2026-11-13, late)
+- Census v5 (`docs/results/20261113/behavior_label_census_v5.json`): 8,464/8,500 train reports carry behavioral CAPE signatures; 218 kinds, 52 with >= 200 train rows. T1547.001 confirmed 0 -> 417; T1112 confirmed 1,540 -> 944 (stricter handle rule).
+- `scripts/behavior_signature_baseline.py` (52 signatures from events only, TF-IDF + LR, C=4 fixed, validation): unigram mAP 0.796 / micro-F1 0.854 / macro-F1 0.696; with adjacent event pairs mAP 0.803 / 0.858 / 0.702. Pairs help 34/50 labels; paired bootstrap delta mAP +0.007 (95% CI +0.002..+0.013). Rule T1547.001 on validation: 41 confirmed, all with `persistence_autorun`; 128 signature reports missed.
+
 ### Next steps
-1. Re-run `PYTHONPATH=src .venv/bin/python scripts/behavior_label_census.py artifacts/winmet/resourcev5_expansion_v2_manifest_20261113.json --output artifacts/winmet/behavior_label_census_v5.json` (interrupted by shutdown).
+1. Train the attention model's behavior head on v5 signature targets (absent signature = negative on reports that have signatures) and compare with the bigram baseline on validation.
 2. Map CAPE signature names to ATT&CK (needs the CAPE community signatures repository; ask before downloading), build behavior targets from signatures, train the behavior head on v5 and compare an order-free bag model with the ordered/graph model on behavior.
 3. Train the family model on v5 (new checkpoint; v4 checkpoints reject v5 traces) and keep TF-IDF + LR as the main baseline.
 
