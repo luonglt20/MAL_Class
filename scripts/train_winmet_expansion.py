@@ -100,7 +100,7 @@ def main():
     # Defaults reproduce the 2026-10-29 expanded run exactly.
     parser.add_argument('--d-model', type=int, default=32)
     parser.add_argument('--modality-dropout', type=float, default=0.)
-    parser.add_argument('--selection-metric', choices=('loss', 'family_map', 'family_top1'), default='family_map')
+    parser.add_argument('--selection-metric', choices=('loss', 'family_map', 'family_top1', 'behavior_map'), default='family_map')
     parser.add_argument('--patience', type=int, default=None)
     parser.add_argument('--seed', type=int, default=44)
     # Memory-only options; they do not change the computed results.

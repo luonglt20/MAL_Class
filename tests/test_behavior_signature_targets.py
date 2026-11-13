@@ -52,3 +52,17 @@ def test_training_with_signature_targets_trains_and_scores_the_behavior_head():
     assert result['behavior_head_trained'] is True
     assert tensorizer.config.behavior_target_policy == 'cape_signatures_v1'
     assert result['history'][-1]['behavior_map'] is not None
+
+
+def test_behavior_map_selection_needs_a_trained_behavior_head():
+    with tempfile.TemporaryDirectory() as directory:
+        result = train_model(
+            _reports(6, 't'), _reports(4, 'v'), Path(directory) / 'b.pt', epochs=1, batch_size=2, d_model=16,
+            window_size=8, window_overlap=4, family_min_support=1, behavior_min_support=2,
+            train_behavior_head=True, behavior_target_policy='cape_signatures_v1', selection_metric='behavior_map')
+        assert result['selected_epoch'] == 1
+        with pytest.raises(ValueError, match='behavior_map selection'):
+            train_model(_reports(6, 't'), _reports(4, 'v'), Path(directory) / 'c.pt', epochs=1, batch_size=2,
+                        d_model=16, window_size=8, window_overlap=4, family_min_support=1, behavior_min_support=2,
+                        train_behavior_head=False, behavior_target_policy='cape_signatures_v1',
+                        selection_metric='behavior_map')
