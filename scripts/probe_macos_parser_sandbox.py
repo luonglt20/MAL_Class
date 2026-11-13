@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-from malware_hybrid.isolated_pe import _profile
+from malware_hybrid.isolated_pe import _profile, protected_read_root
 
 
 def main() -> int:
@@ -18,15 +18,13 @@ def main() -> int:
         print(json.dumps({'supported': False, 'reason': 'macOS sandbox-exec unavailable'}))
         return 1
     root = Path(__file__).resolve().parents[1]
-    home = Path.home().resolve()
-    if not root.is_relative_to(home):
-        print(json.dumps({'supported': False, 'reason': 'workspace is outside the protected home'}))
+    source, environment = (root / 'src').resolve(), Path(sys.prefix).resolve()
+    try:
+        protected = protected_read_root(source, environment, Path.home().resolve())
+    except RuntimeError as error:
+        print(json.dumps({'supported': False, 'reason': str(error)}))
         return 1
-    source, environment = root / 'src', Path(sys.prefix).resolve()
-    if not environment.is_relative_to(home) or environment == home:
-        print(json.dumps({'supported': False, 'reason': 'virtual environment must be inside home'}))
-        return 1
-    profile = _profile(source.resolve(), environment, home, Path(sys.executable).resolve())
+    profile = _profile(source, environment, protected, Path(sys.executable).resolve())
     child = r'''import errno, json, os, socket, struct, subprocess, sys
 from malware_hybrid.pe_static import PEStaticAnalyzer
 data = bytearray(0x400)
@@ -47,6 +45,8 @@ def denied(name, action):
     except OSError as error:
         checks[name] = error.errno in (errno.EPERM, errno.EACCES)
 denied('home_read_denied', lambda: open(sys.argv[1], 'rb'))
+if len(sys.argv) > 2:
+    denied('user_home_read_denied', lambda: open(sys.argv[2], 'rb'))
 denied('file_write_denied', lambda: open('/tmp/mal-sandbox-probe-write-' + str(os.getpid()), 'xb'))
 def connect():
     s = socket.socket()
@@ -57,12 +57,15 @@ denied('process_fork_denied', lambda: subprocess.Popen(['/usr/bin/true']))
 denied('other_program_exec_denied', lambda: os.execv('/usr/bin/true', ['/usr/bin/true']))
 print(json.dumps(checks))
 '''
+    # An existing file in the real home (never printed) checks that a shared
+    # workspace outside home still cannot read the user's files.
+    home_probe = [str(path) for path in (Path.home() / '.zshrc', Path.home() / '.profile') if path.is_file()][:1]
     # Harmless marker outside allowlisted source/venv; content is never printed.
     with tempfile.NamedTemporaryFile(prefix='mal-sandbox-probe-', dir=root) as marker:
         marker.write(b'probe'); marker.flush()
         try:
             result = subprocess.run(
-                ['/usr/bin/sandbox-exec', '-p', profile, sys.executable, '-c', child, marker.name],
+                ['/usr/bin/sandbox-exec', '-p', profile, sys.executable, '-c', child, marker.name, *home_probe],
                 cwd='/tmp', env={'PYTHONPATH': str(source), 'PYTHONDONTWRITEBYTECODE': '1'},
                 capture_output=True, text=True, timeout=15, check=False,
             )
@@ -74,7 +77,7 @@ print(json.dumps(checks))
         return 1
     checks = json.loads(result.stdout)
     print(json.dumps({'supported': True, 'checks': checks,
-                      'notice': 'The tested parser profile permits file metadata, reads outside home and re-executing the interpreter; this probe is not an escape-resistance test.'}, indent=2))
+                      'notice': 'The tested parser profile permits file metadata, reads outside the protected directory and re-executing the interpreter; this probe is not an escape-resistance test.'}, indent=2))
     return 0 if all(checks.values()) else 1
 
 

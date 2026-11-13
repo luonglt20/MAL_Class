@@ -280,6 +280,37 @@ class TrainerProgressTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "requires pre_encode"):
             train_model([base], [], "unused.pt", release_encoded_events=True)
 
+    def test_packed_reports_keep_results_identical(self):
+        from malware_hybrid.packed_reports import PackedReports
+
+        base = CapeReportParser(max_events=64).parse_file(
+            Path(__file__).parent / "fixtures" / "cape_process_injection.json"
+        )
+
+        def run(pack):
+            reports = []
+            for index in range(20):
+                report = copy.deepcopy(base)
+                report.sample_hash = f"{index:064x}"
+                reports.append(report)
+            train, validation, calibration, _, _ = research_split(reports, seed=42)
+            if pack:
+                train, validation = PackedReports(train), PackedReports(validation)
+            with tempfile.TemporaryDirectory() as directory:
+                return train_model(
+                    train, validation, Path(directory) / "packed.pt", epochs=2,
+                    batch_size=2, seed=42, device="cpu", d_model=16, window_size=64,
+                    window_overlap=32, family_min_support=1, behavior_min_support=1,
+                    calibration_reports=calibration, train_behavior_head=False,
+                    modality_dropout=0.4, pre_encode=True, release_encoded_events=True,
+                )
+
+        self.assertEqual(run(pack=True)["history"], run(pack=False)["history"])
+        packed = PackedReports([base])
+        self.assertEqual(packed[0], base)
+        self.assertIsNot(packed[0], packed[0])
+        self.assertEqual(list(packed[:1]), [base])
+
     def test_balanced_sampling_and_warmup_cosine_train_and_validate_options(self):
         base = CapeReportParser(max_events=64).parse_file(
             Path(__file__).parent / "fixtures" / "cape_process_injection.json"

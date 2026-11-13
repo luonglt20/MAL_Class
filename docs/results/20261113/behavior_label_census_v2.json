@@ -1,0 +1,227 @@
+{
+  "totals": {
+    "train": {
+      "reports": 8500,
+      "with_events": 8500
+    },
+    "validation": {
+      "reports": 783,
+      "with_events": 783
+    },
+    "calibration": {
+      "reports": 216,
+      "with_events": 216
+    }
+  },
+  "per_technique": {
+    "train": {
+      "T1055": {
+        "not_detected": 7989,
+        "suspected": 508,
+        "confirmed": 3
+      },
+      "T1105": {
+        "not_detected": 3578,
+        "suspected": 4922
+      },
+      "T1547.001": {
+        "not_detected": 5909,
+        "suspected": 2591
+      },
+      "T1057": {
+        "suspected": 6814,
+        "not_detected": 1263,
+        "confirmed": 423
+      },
+      "T1082": {
+        "not_detected": 4198,
+        "suspected": 3532,
+        "confirmed": 770
+      },
+      "T1083": {
+        "suspected": 1135,
+        "confirmed": 3899,
+        "not_detected": 3466
+      },
+      "T1112": {
+        "suspected": 6665,
+        "confirmed": 1540,
+        "not_detected": 295
+      },
+      "T1071.001": {
+        "not_detected": 8325,
+        "suspected": 163,
+        "confirmed": 12
+      },
+      "T1543.003": {
+        "not_detected": 7769,
+        "confirmed": 153,
+        "suspected": 578
+      },
+      "T1569.002": {
+        "not_detected": 7670,
+        "confirmed": 435,
+        "suspected": 395
+      },
+      "T1056.001": {
+        "not_detected": 8500
+      },
+      "T1113": {
+        "not_detected": 8500
+      },
+      "T1087.001": {
+        "not_detected": 8498,
+        "suspected": 2
+      },
+      "T1016": {
+        "not_detected": 8352,
+        "suspected": 148
+      },
+      "T1486": {
+        "not_detected": 8109,
+        "suspected": 383,
+        "confirmed": 8
+      }
+    },
+    "validation": {
+      "T1055": {
+        "not_detected": 739,
+        "suspected": 43,
+        "confirmed": 1
+      },
+      "T1105": {
+        "not_detected": 329,
+        "suspected": 454
+      },
+      "T1547.001": {
+        "not_detected": 554,
+        "suspected": 229
+      },
+      "T1057": {
+        "not_detected": 114,
+        "suspected": 640,
+        "confirmed": 29
+      },
+      "T1082": {
+        "not_detected": 375,
+        "suspected": 349,
+        "confirmed": 59
+      },
+      "T1083": {
+        "not_detected": 314,
+        "confirmed": 363,
+        "suspected": 106
+      },
+      "T1112": {
+        "suspected": 623,
+        "not_detected": 27,
+        "confirmed": 133
+      },
+      "T1071.001": {
+        "not_detected": 768,
+        "suspected": 15
+      },
+      "T1543.003": {
+        "not_detected": 727,
+        "suspected": 45,
+        "confirmed": 11
+      },
+      "T1569.002": {
+        "not_detected": 718,
+        "confirmed": 29,
+        "suspected": 36
+      },
+      "T1056.001": {
+        "not_detected": 783
+      },
+      "T1113": {
+        "not_detected": 783
+      },
+      "T1087.001": {
+        "not_detected": 782,
+        "suspected": 1
+      },
+      "T1016": {
+        "not_detected": 769,
+        "suspected": 14
+      },
+      "T1486": {
+        "not_detected": 750,
+        "suspected": 33
+      }
+    },
+    "calibration": {
+      "T1055": {
+        "not_detected": 204,
+        "suspected": 12
+      },
+      "T1105": {
+        "not_detected": 113,
+        "suspected": 103
+      },
+      "T1547.001": {
+        "not_detected": 160,
+        "suspected": 56
+      },
+      "T1057": {
+        "suspected": 173,
+        "not_detected": 36,
+        "confirmed": 7
+      },
+      "T1082": {
+        "suspected": 83,
+        "not_detected": 122,
+        "confirmed": 11
+      },
+      "T1083": {
+        "confirmed": 99,
+        "not_detected": 88,
+        "suspected": 29
+      },
+      "T1112": {
+        "suspected": 168,
+        "confirmed": 40,
+        "not_detected": 8
+      },
+      "T1071.001": {
+        "not_detected": 209,
+        "suspected": 6,
+        "confirmed": 1
+      },
+      "T1543.003": {
+        "not_detected": 203,
+        "suspected": 11,
+        "confirmed": 2
+      },
+      "T1569.002": {
+        "not_detected": 202,
+        "confirmed": 6,
+        "suspected": 8
+      },
+      "T1056.001": {
+        "not_detected": 216
+      },
+      "T1113": {
+        "not_detected": 216
+      },
+      "T1087.001": {
+        "not_detected": 216
+      },
+      "T1016": {
+        "not_detected": 213,
+        "suspected": 3
+      },
+      "T1486": {
+        "not_detected": 205,
+        "suspected": 11
+      }
+    }
+  },
+  "weak_label_kinds": {
+    "train": 0,
+    "validation": 0,
+    "calibration": 0
+  },
+  "top_weak_ttps_without_rule": [],
+  "notice": "Rule statuses come from evidence.py chains; weak labels are CAPE signature TTP/MBC annotations. Neither is ground truth. Test partitions were not parsed."
+}

@@ -1,0 +1,17 @@
+<section id="v2compare" style="background:#F7F6F2;color:#14213D;font-family:Inter, Arial, sans-serif;padding:112px 128px 150px;display:flex;flex-direction:column;gap:36px">
+<p style="font-size:26px;color:#2F6FDE;font-weight:600;letter-spacing:2px;text-transform:uppercase">06 · Kết quả mới nhất</p>
+<h2 style="font-family:'Be Vietnam Pro', Arial, sans-serif;font-size:52px;font-weight:700;line-height:1.15">Trên dữ liệu ×5, một mô hình tuyến tính đơn giản đang thắng</h2>
+<div style="display:flex;flex-direction:column;gap:22px">
+<div style="display:grid;grid-template-columns:520px 1fr 260px;gap:24px;align-items:center"><p style="font-size:27px;font-weight:600">TF‑IDF + hồi quy logistic</p><div style="height:52px;width:71.6%;background:#2F6FDE;border-radius:6px"></div><p style="font-size:27px"><b>71,6%</b> · 4 phút</p></div>
+<div style="display:grid;grid-template-columns:520px 1fr 260px;gap:24px;align-items:center"><p style="font-size:27px;font-weight:600">Hybrid Attention, 6 epoch</p><div style="height:52px;width:64.2%;background:#E8A25C;border-radius:6px"></div><p style="font-size:27px"><b>64,2%</b> · ~4 giờ</p></div>
+<div style="display:grid;grid-template-columns:520px 1fr 260px;gap:24px;align-items:center"><p style="font-size:27px;font-weight:600">TF‑IDF, chỉ thông tin tĩnh</p><div style="height:52px;width:63.6%;background:#9DB7E8;border-radius:6px"></div><p style="font-size:27px"><b>63,6%</b> · 15 giây</p></div>
+<div style="display:grid;grid-template-columns:520px 1fr 260px;gap:24px;align-items:center"><p style="font-size:27px;font-weight:600;color:#6B7280">Đoán họ phổ biến nhất</p><div style="height:52px;width:17.9%;background:#DDE3EA;border-radius:6px"></div><p style="font-size:27px;color:#6B7280">17,9%</p></div>
+</div>
+<p style="font-size:26px;color:#6B7280">Validation 670 report. <b>Test chấm một lần</b>: TF‑IDF 73,2% / 70,2%, attention 61,3% / 64,1% (test v1 / v2).</p>
+<div style="display:flex;gap:24px">
+<div style="flex:1;background:#FFFFFF;padding:28px;border-radius:14px;border-left:6px solid #2F6FDE"><p style="font-size:26px;line-height:1.4">Nhãn từ antivirus gắn nhiều với việc <b>có hay không</b> một API cụ thể, nên mô hình tuyến tính học rất nhanh</p></div>
+<div style="flex:1;background:#FFFFFF;padding:28px;border-radius:14px;border-left:6px solid #E8A25C"><p style="font-size:26px;line-height:1.4">Attention nhỏ (d_model 32), mới 6 epoch và <b>vẫn đang tăng</b>: 50% → 64%</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:56px;width:1664px;font-size:24px;color:#6B7280">TAKA10 · Lê Tuấn Lương · 17 · Cấu hình chốt trên validation trước khi đọc test; ghép hai mô hình không giúp thêm</p>
+<aside>Kết quả mới nhất trên dữ liệu gấp năm lần, cùng 670 report validation. Mô hình attention sau 6 epoch đạt 64,2 phần trăm top-1, mất khoảng 4 giờ train. Một baseline đơn giản là TF-IDF cộng hồi quy logistic đạt 71,6 phần trăm, top-3 85,7 phần trăm, chỉ mất khoảng 4 phút. Ngay cả khi chỉ dùng thông tin tĩnh, nó đạt 63,6 phần trăm. Em hiểu kết quả này như sau: nhãn lấy từ antivirus gắn chặt với việc có hay không một API cụ thể, nên mô hình tuyến tính học rất nhanh; còn mô hình attention của em nhỏ và mới chạy 6 epoch, đường cong vẫn đang đi lên. Em trình bày thẳng kết quả này vì nó quyết định hướng tiếp theo: dùng TF-IDF làm mốc so sánh chính. Cấu hình được chốt trên validation rồi mới chấm test đúng một lần: TF-IDF đạt 73,2 và 70,2 phần trăm trên hai tập test, attention 61,3 và 64,1, khớp với validation. Em cũng thử ghép điểm hai mô hình nhưng không cải thiện.</aside>
+</section>

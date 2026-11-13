@@ -1,0 +1,29 @@
+<section id="problem" style="background:#F7F6F2;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<p style="font-size:26px;color:#2F6FDE;font-weight:600;letter-spacing:2px;text-transform:uppercase">01 · Bài toán</p>
+<h2 style="font-family:'Be Vietnam Pro', Arial, sans-serif;font-size:56px;font-weight:700;line-height:1.15">Cho một mẫu mã độc Windows, đoán xem nó thuộc họ nào</h2>
+<div style="display:flex;gap:24px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DDE3EA;border-radius:16px">
+<h3 style="font-family:'Be Vietnam Pro', Arial, sans-serif;font-size:32px;font-weight:600">Đầu vào</h3>
+<p style="font-size:28px;color:#4A5568;line-height:1.4">Report từ sandbox (mẫu đã chạy trong máy ảo) hoặc một file PE</p>
+</div>
+<p style="font-size:56px;color:#2F6FDE;font-weight:700">→</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#14213D;padding:40px;border-radius:16px">
+<h3 style="font-family:'Be Vietnam Pro', Arial, sans-serif;font-size:32px;font-weight:600;color:#F7F6F2">Mô hình</h3>
+<p style="font-size:28px;color:#BFD0EA;line-height:1.4">Học sâu kết hợp Attention, đọc nhiều loại bằng chứng cùng lúc</p>
+</div>
+<p style="font-size:56px;color:#2F6FDE;font-weight:700">→</p>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:40px;border:2px solid #2F6FDE;border-radius:16px">
+<h3 style="font-family:'Be Vietnam Pro', Arial, sans-serif;font-size:32px;font-weight:600">Đầu ra</h3>
+<p style="font-size:28px;color:#14213D">1. Họ A · 0,82</p>
+<p style="font-size:28px;color:#4A5568">2. Họ B · 0,09</p>
+<p style="font-size:28px;color:#4A5568">hoặc UNKNOWN nếu không chắc</p>
+</div>
+</div>
+<div style="display:flex;gap:24px">
+<p style="flex:1;font-size:26px;color:#4A5568;line-height:1.4"><b style="color:#14213D">Họ mã độc:</b> nhóm mẫu chung nguồn gốc và cách hoạt động.</p>
+<p style="flex:1;font-size:26px;color:#4A5568;line-height:1.4"><b style="color:#14213D">Đa nhãn:</b> một mẫu có thể mang nhiều nhãn họ cùng lúc.</p>
+<p style="flex:1;font-size:26px;color:#4A5568;line-height:1.4"><b style="color:#14213D">Mục tiêu:</b> đoán đúng ngay lần đầu từ 85% trở lên trên tập test.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6B7280">TAKA10 · Lê Tuấn Lương · 3 · Tên họ và điểm số ở ô Đầu ra chỉ để minh họa</p>
+<aside>Bài toán rất đơn giản để phát biểu: cho một mẫu mã độc Windows, hệ thống đoán xem nó thuộc họ nào. Đầu vào là report từ sandbox, tức mẫu đã được chạy trong máy ảo và ghi lại hành vi, hoặc chỉ là file PE. Đầu ra là danh sách họ xếp theo điểm, và nếu không đủ chắc thì trả UNKNOWN thay vì đoán bừa. Gọi là đa nhãn vì một mẫu có thể mang nhiều nhãn họ. Mục tiêu đặt ra là đoán đúng ngay lần đầu từ 85% trở lên trên tập test.</aside>
+</section>

@@ -1,0 +1,11 @@
+{"reports": 300}
+T1055 v4 sig_positive 152 confirmed&sig 0 confirmed&no_sig 0 suspected&sig 7
+T1055 v5 sig_positive 152 confirmed&sig 0 confirmed&no_sig 0 suspected&sig 7
+T1486 v4 sig_positive 0 confirmed&sig 0 confirmed&no_sig 1 suspected&sig 0
+T1486 v5 sig_positive 0 confirmed&sig 0 confirmed&no_sig 1 suspected&sig 0
+T1543.003 v4 sig_positive 0 confirmed&sig 0 confirmed&no_sig 6 suspected&sig 0
+T1543.003 v5 sig_positive 0 confirmed&sig 0 confirmed&no_sig 6 suspected&sig 0
+T1547.001 v4 sig_positive 123 confirmed&sig 0 confirmed&no_sig 0 suspected&sig 78
+T1547.001 v5 sig_positive 123 confirmed&sig 15 confirmed&no_sig 0 suspected&sig 63
+top signatures [('network_multiple_direct_ip_connections', 206), ('antidebug_setunhandledexceptionfilter', 165), ('injection_rwx', 145), ('reads_self', 142), ('stealth_network', 131), ('persistence_autorun', 123), ('stealth_timeout', 110), ('antidebug_guardpages', 108), ('deletes_executed_files', 92), ('terminates_remote_process', 75), ('ransomware_file_modifications', 68), ('infostealer_cookies', 54), ('dead_connect', 53), ('modify_proxy', 52), ('exec_crash', 47), ('http_request', 46), ('stealth_window', 43), ('uses_windows_utilities', 37), ('antivm_network_adapters', 30), ('script_tool_executed', 30), ('encrypted_ioc', 29), ('encrypt_pcinfo', 27), ('uses_windows_utilities_to_create_scheduled_task', 24), ('suspicious_command_tools', 24), ('antiav_servicestop', 24)]
+EXIT 0

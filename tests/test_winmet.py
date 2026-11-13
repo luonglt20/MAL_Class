@@ -134,6 +134,39 @@ class WinMETPreparationTests(unittest.TestCase):
             self.assertEqual(result["written"], 1)
             self.assertEqual(len(reports[0].metadata["archive_group_id"]), 16)
 
+    def test_replay_renormalizes_the_same_blocks_and_samples_with_v5(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / "reports.7z"
+            fixture = json.loads((Path(__file__).parent / "fixtures" / "cape_process_injection.json").read_text())
+            hashes = ["e" * 64, "f" * 64]
+            with py7zr.SevenZipFile(archive, "w", password="infected") as bundle:
+                for sample_hash in hashes:
+                    fixture["target"]["file"]["sha256"] = sample_hash
+                    bundle.writestr(json.dumps(fixture), sample_hash + ".json")
+            labels = root / "labels.json"
+            labels.write_text(json.dumps({h: {"avclass": "ExampleFamily"} for h in hashes}))
+            first = prepare_winmet_archive(
+                archive, labels, root / "v4.jsonl", max_reports=1, sampling_method="random-solid-blocks",
+                seed=3, max_solid_blocks=1, max_raw_bytes=1024 * 1024, file_handle_resolution=True)
+            kept = [report.sample_hash for report in iter_prepared(root / "v4.jsonl")]
+            replay = {"block_ids": first["selected_block_ids"], "sample_hashes": kept}
+            second = prepare_winmet_archive(
+                archive, labels, root / "v5.jsonl", sampling_method="replay", replay=replay,
+                max_raw_bytes=1024 * 1024, file_handle_resolution=True, registry_value_resolution=True)
+            rows = list(iter_prepared(root / "v5.jsonl"))
+            self.assertEqual([r.sample_hash for r in rows], kept)
+            self.assertEqual(second["selected_block_ids"], first["selected_block_ids"])
+            self.assertEqual(second["normalization_version"], "cape-resource-relations-v5")
+            self.assertIn("cape_signatures", rows[0].metadata)
+            with self.assertRaisesRegex(ValueError, "did not find"):
+                prepare_winmet_archive(
+                    archive, labels, root / "missing.jsonl", sampling_method="replay",
+                    replay={"block_ids": first["selected_block_ids"], "sample_hashes": ["0" * 64]},
+                    max_raw_bytes=1024 * 1024)
+            with self.assertRaisesRegex(ValueError, "replay sampling requires"):
+                prepare_winmet_archive(archive, labels, root / "x.jsonl", sampling_method="replay")
+
     def test_random_block_sampler_excludes_prior_cohort_blocks(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

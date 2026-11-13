@@ -62,3 +62,31 @@ Training-prior baseline top-1 is 22.10%. Selective accuracy is conditional on ac
 ### Training evidence
 
 The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.118; mAP 0.153→0.221→0.279→0.336). No training was launched in this session.
+
+## 2026-11-13 session (state at shutdown)
+
+### Results (validation-selected, test scored once)
+- Manifest v2 (`artifacts/winmet/resourcev4_expansion_v2_manifest_20261111.json`): 8,500 train / 783 validation (670 with an in-vocabulary family) / 216 calibration / test v1 362 / test v2 779.
+- Hybrid Attention, 6 epochs, `models/winmet_ab_v2_baseline.pt`: validation top-1 64.2%, top-3 78.1%, mAP 0.389. History: `docs/results/20261113/attention_v2_6epoch_history.json`.
+- TF-IDF + one-vs-rest logistic regression (`scripts/classical_family_baseline.py`, all features, C=16): validation top-1 71.6%, top-3 85.7%, mAP 0.557.
+- Late fusion (`scripts/fuse_attention_tfidf.py select`) chose attention weight 0 (also in group cross-fitting). Frozen selection: `docs/results/20261113/fusion_v2_selection.json`.
+- Test scored once (`fuse_attention_tfidf.py test`, lock `artifacts/winmet/fusion_v2_selection.test_evaluated.lock`): TF-IDF 73.2% (v1, 302 rows) / 70.2% (v2, 668 rows); attention 61.3% / 64.1%. These test partitions are now spent for this selection; any later model must be reported as a second evaluation.
+- The cosine_balanced A/B variant was dropped. The Mac sleeps on lid close; use `caffeinate -i -s -w <pid>` with the lid open on AC.
+
+### Fixes
+- `isolated_pe.py`: the PE sandbox now works from `/Users/Shared` by denying reads of the whole user directory (home or `/Users`) and re-allowing only `src/` and `.venv`; the probe also checks a real home file. Previously PE upload failed closed outside home.
+- Slides and report corrected (suspected needs at least half a chain; static-only TF-IDF reaches 63.6%).
+
+### Behavior direction (in progress)
+- Census (`scripts/behavior_label_census.py`): the v4 prepared data has no CAPE TTP labels; rule labels are skewed (T1055 confirmed 3/8,500; T1547.001 never confirmed).
+- Raw WinMET reports do contain 6-20 CAPE signatures each (no TTP field). T1547.001 failed because `handles.py` marked a Run-key value write (`...\Run\<value>` through the handle opened on `...\Run`) as CONFLICT.
+- Normalization v5 (`cape-resource-relations-v5`, opt-in `registry_value_resolution` / `--registry-value-resolution`; v4 stays default): links a value write to its opened key, rejects writes whose path contradicts the handle (a v4 false-positive path), and stores behavioral CAPE signature names in `metadata["cape_signatures"]` (family/YARA/IDS detections excluded).
+- On 300 raw reports: T1547.001 confirmed v4 0 -> v5 15, all 15 with `persistence_autorun`, 0 without (`docs/results/20261113/v4_v5_rule_check_300_raw_reports.log`; signature-to-technique pairing is by name, not an official CAPE mapping).
+- v5 data prepared by replaying the v4 blocks and samples (`scripts/run_v5_reprepare.sh`): `artifacts/winmet/*resourcev5*.jsonl`. v5 manifest `artifacts/winmet/resourcev5_expansion_v2_manifest_20261113.json` (copy in `docs/results/20261113/`) reloads with every partition fingerprint identical to v4.
+
+### Next steps
+1. Re-run `PYTHONPATH=src .venv/bin/python scripts/behavior_label_census.py artifacts/winmet/resourcev5_expansion_v2_manifest_20261113.json --output artifacts/winmet/behavior_label_census_v5.json` (interrupted by shutdown).
+2. Map CAPE signature names to ATT&CK (needs the CAPE community signatures repository; ask before downloading), build behavior targets from signatures, train the behavior head on v5 and compare an order-free bag model with the ordered/graph model on behavior.
+3. Train the family model on v5 (new checkpoint; v4 checkpoints reject v5 traces) and keep TF-IDF + LR as the main baseline.
+
+Presentation sources: report doc https://claude.ai/artifact/SbeDLD93Gc2CWCsD3cTR4X ; slides https://claude.ai/artifact/5Uc72GtfmKPt9gmwg6xTZv (source copy in `docs/presentation/slides/`).

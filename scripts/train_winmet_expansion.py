@@ -9,6 +9,7 @@ from pathlib import Path
 import torch
 
 from malware_hybrid.graph import ExecutionGraphBuilder
+from malware_hybrid.packed_reports import PackedReports
 from malware_hybrid.serialization import report_from_dict
 from malware_hybrid.training import train_model
 
@@ -17,11 +18,13 @@ def _withheld(name):
     return name.startswith('withheld')
 
 
-def load_expansion(source, manifest, *, include_test=False):
+def load_expansion(source, manifest, *, include_test=False, pack=False):
     """Load frozen partitions; withheld partitions stay unparsed unless requested.
 
     ``include_test`` is False, True (the original ``withheld_internal_test``) or a
-    withheld partition name. Manifests with ``sources`` (list of {path, sha256})
+    withheld partition name. ``pack`` stores train and validation reports
+    compressed (see ``PackedReports``) so the raw corpus is never held in RAM;
+    calibration stays a plain list. Manifests with ``sources`` (list of {path, sha256})
     combine several prepared JSONL files; otherwise ``source`` and
     ``source_sha256`` describe one file.
     """
@@ -34,10 +37,13 @@ def load_expansion(source, manifest, *, include_test=False):
             if group in groups:
                 raise ValueError('archive group overlaps partitions')
             groups[group] = name
-    retained = {name: [] for name in manifest['partitions'] if not _withheld(name)}
+    retained = {
+        name: PackedReports() if pack and name in ('train', 'validation') else []
+        for name in manifest['partitions'] if not _withheld(name)
+    }
     if wanted is not None:
         # Only the one-time frozen test evaluator may request a withheld partition.
-        retained[wanted] = []
+        retained[wanted] = PackedReports() if pack else []
     identities = {name: [] for name in manifest['partitions']}
     sources = manifest.get('sources') or [{'path': source, 'sha256': manifest['source_sha256']}]
     seen = set()
@@ -115,7 +121,7 @@ def main():
     if manifest.get('original_split_verified') is not True or manifest.get('old_group_assignments_preserved') is not True:
         parser.error('verified expansion manifest required')
     torch.set_num_threads(2)
-    reports = load_expansion(manifest.get('source'), manifest)
+    reports = load_expansion(manifest.get('source'), manifest, pack=args.pre_encode)
     result = train_model(
         reports['train'], reports['validation'], args.checkpoint,
         epochs=args.epochs, batch_size=args.batch_size, seed=args.seed, device=args.device, d_model=args.d_model,

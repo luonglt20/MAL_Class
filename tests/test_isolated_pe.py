@@ -47,3 +47,15 @@ def test_actual_parser_profile_blocks_probed_operations():
     assert run.returncode == 0, run.stdout
     result = json.loads(run.stdout)
     assert result['supported'] and all(result['checks'].values())
+
+
+def test_protected_read_root_prefers_home_and_covers_shared_copies():
+    from malware_hybrid.isolated_pe import protected_read_root
+    home = Path('/Users/alice')
+    assert protected_read_root(home / 'repo/src', home / 'repo/.venv', home) == home
+    shared = Path('/Users/Shared/repo')
+    assert protected_read_root(shared / 'src', shared / '.venv', home) == Path('/Users')
+    with pytest.raises(RuntimeError):
+        protected_read_root(Path('/opt/repo/src'), Path('/opt/repo/.venv'), home)
+    with pytest.raises(RuntimeError):
+        protected_read_root(home / 'repo/src', home, home)

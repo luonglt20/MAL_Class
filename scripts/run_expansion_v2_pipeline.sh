@@ -19,7 +19,7 @@ V2_REMAINING=$W/volume2_remaining_blocks_resourcev4_20261111.jsonl
 V1_MANIFEST=$W/resourcev4_expansion_training_manifest_20261029.json
 V2_MANIFEST=$W/resourcev4_expansion_v2_manifest_20261111.json
 TAG=v2
-VARIANTS=(b16_cosine b16_cosine_balanced)
+VARIANTS=(baseline cosine_balanced)
 log() { print -r -- "$(date '+%F %T') $*"; }
 
 log "stage 1: waiting for verified $ARCHIVE"
