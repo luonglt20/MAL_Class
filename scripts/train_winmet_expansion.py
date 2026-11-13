@@ -112,6 +112,10 @@ def main():
     parser.add_argument('--lr-schedule', choices=('constant', 'warmup_cosine'), default='constant')
     parser.add_argument('--warmup-fraction', type=float, default=.05)
     parser.add_argument('--balanced-sampling', action='store_true')
+    # Behavior supervision: rule/weak labels (default, head stays untrained on
+    # WinMET) or v5 CAPE behavioral signatures with absent names as negatives.
+    parser.add_argument('--behavior-targets', choices=('evidence', 'cape-signatures'), default='evidence')
+    parser.add_argument('--behavior-min-support', type=int, default=None)
     args = parser.parse_args()
     if args.checkpoint.exists() or args.report.exists():
         parser.error('refusing to overwrite checkpoint or report')
@@ -125,9 +129,12 @@ def main():
     result = train_model(
         reports['train'], reports['validation'], args.checkpoint,
         epochs=args.epochs, batch_size=args.batch_size, seed=args.seed, device=args.device, d_model=args.d_model,
-        family_min_support=5, behavior_min_support=2,
+        family_min_support=5,
+        behavior_min_support=args.behavior_min_support or (200 if args.behavior_targets == 'cape-signatures' else 2),
         calibration_reports=reports['calibration'], test_reports=None,
-        train_behavior_head=False, family_head_variant='labelwise',
+        train_behavior_head=args.behavior_targets == 'cape-signatures',
+        behavior_target_policy='cape_signatures_v1' if args.behavior_targets == 'cape-signatures' else 'evidence_weak_v1',
+        family_head_variant='labelwise',
         family_ranking_weight=.5, modality_dropout=args.modality_dropout,
         selection_metric=args.selection_metric, early_stopping_patience=args.patience,
         temporal_window_policy='per_sample_v1', temporal_relation_values=False,
@@ -139,7 +146,8 @@ def main():
     )
     config = {key: getattr(args, key) for key in ('epochs', 'd_model', 'modality_dropout', 'selection_metric', 'patience', 'seed', 'device',
                                                   'pre_encode', 'mps_empty_cache_every', 'batch_size', 'lr',
-                                                  'lr_schedule', 'warmup_fraction', 'balanced_sampling')}
+                                                  'lr_schedule', 'warmup_fraction', 'balanced_sampling',
+                                                  'behavior_targets', 'behavior_min_support')}
     result = {'manifest': manifest, 'config': config, 'result': result, 'test_metrics': None,
               'notice': 'Expanded weak-label training candidate; held-out event objects and predictions were not evaluated. '
                         'Existing archive groups retained; no UI model promotion.'}
