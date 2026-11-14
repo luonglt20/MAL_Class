@@ -1,0 +1,20 @@
+<section id="errors" style="background:#F7F6F2;color:#14213D;font-family:Inter, Arial, sans-serif;padding:112px 128px 150px;display:flex;flex-direction:column;gap:30px">
+<p style="font-size:26px;color:#2F6FDE;font-weight:600;letter-spacing:2px;text-transform:uppercase">06 · Mô hình sai ở đâu</p>
+<h2 style="font-family:'Be Vietnam Pro', Arial, sans-serif;font-size:52px;font-weight:700;line-height:1.15">Họ đủ mẫu đã đúng 89%; lỗi dồn vào họ ít mẫu và nhãn dễ nhầm</h2>
+<div style="display:flex;gap:56px">
+<div style="flex:1.2;display:flex;flex-direction:column;gap:18px">
+<p style="font-size:24px;color:#6B7280;font-weight:600">Top‑1 theo số mẫu train của họ (validation 670 report)</p>
+<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:20px;align-items:center"><p style="font-size:26px">≥ 200 mẫu</p><div style="height:44px;width:89.1%;background:#2F6FDE;border-radius:6px"></div><p style="font-size:26px;font-weight:700">89,1%</p></div>
+<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:20px;align-items:center"><p style="font-size:26px">50–199</p><div style="height:44px;width:58.1%;background:#E8A25C;border-radius:6px"></div><p style="font-size:26px;font-weight:700">58,1%</p></div>
+<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:20px;align-items:center"><p style="font-size:26px">20–49</p><div style="height:44px;width:55.3%;background:#E8A25C;border-radius:6px"></div><p style="font-size:26px;font-weight:700">55,3%</p></div>
+<div style="display:grid;grid-template-columns:200px 1fr 120px;gap:20px;align-items:center"><p style="font-size:26px">5–19</p><div style="height:44px;width:53.3%;background:#E8A25C;border-radius:6px"></div><p style="font-size:26px;font-weight:700">53,3%</p></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="background:#FFFFFF;padding:26px;border-radius:14px;border-left:6px solid #E8A25C"><p style="font-size:25px;line-height:1.4">Nhầm nhiều nhất thành <b>agenttesla</b>: snakelogger, taskun, noon, msilzilla. Nhiều tên là crypter, nên nhãn có thể <b>trộn vỏ đóng gói với payload</b></p></div>
+<div style="background:#FFFFFF;padding:26px;border-radius:14px;border-left:6px solid #2F6FDE"><p style="font-size:25px;line-height:1.4">MOTIF [15]: so với nhãn chuyên gia, nhãn AVClass chỉ đúng <b>46,78%</b></p></div>
+<div style="background:#FFFFFF;padding:26px;border-radius:14px;border-left:6px solid #14213D"><p style="font-size:25px;line-height:1.4">5 cải tiến không cần train nặng (TF‑IDF, kNN, TLSH, cân bằng lớp, signature) đều <b>không vượt 72–73%</b> có ý nghĩa</p></div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:56px;width:1664px;font-size:24px;color:#6B7280">TAKA10 · Lê Tuấn Lương · 18 · Mô hình TF‑IDF + LR trên validation WinMET v2; kiểm định McNemar cho các cải tiến</p>
+<aside>Câu hỏi quan trọng là mô hình sai ở đâu. Với các họ có từ 200 mẫu train trở lên, mô hình đã đúng 89 phần trăm. Với họ ít mẫu, chỉ còn 53 đến 58 phần trăm. Lỗi thường dồn về họ đông mẫu là agenttesla: snakelogger, taskun, noon, msilzilla bị đoán thành agenttesla. Nhiều tên trong số này là crypter, nên em cho rằng nhãn AVClass đang trộn vỏ đóng gói với payload. Điều này phù hợp với nghiên cứu MOTIF: so với nhãn do chuyên gia gán, nhãn AVClass chỉ đúng khoảng 47 phần trăm. Em đã thử năm cách cải tiến không cần train nặng, có kiểm định thống kê, và không cách nào vượt được khoảng 72 đến 73 phần trăm. Kết luận: trần nằm ở dữ liệu và nhãn, không nằm ở mô hình.</aside>
+</section>

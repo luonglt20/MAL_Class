@@ -71,7 +71,35 @@ Biến thể [relation-value attention](docs/relation-value-attention.md) bổ s
 - Readout top‑1 cố định được lưu ở sidecar `<checkpoint>.readout.json`, kèm `.prototypes.npz` nếu dùng kNN; cả hai khóa SHA‑256 với checkpoint. Readout là head của model hoặc kNN trên tóm tắt ba nhánh attention, với prototype chỉ lấy từ train và ngưỡng fit trên calibration. UI và CSV hiển thị `top1_family/top1_score/top1_accepted` đúng theo quy tắc đã đánh giá. Tạo sidecar bằng `scripts/freeze_top1_readout.py`.
 - Mở rộng dữ liệu: `scripts/build_expansion_v2_manifest.py` giữ nguyên mọi phân vùng v1 và test v1, thêm archive group mới vào train/validation và một test độc lập thứ hai `withheld_test_v2`, đồng thời khử trùng SHA‑256. `scripts/evaluate_winmet_expansion_test.py` chấm một phân vùng test đúng một lần (có lock file).
 
+## Tái lập kết quả chính (14/11/2026)
+
+Báo cáo: [docs/report/TAKA10_bao_cao.pdf](docs/report/TAKA10_bao_cao.pdf) (bản Word cùng thư mục). Nguồn slide: [docs/presentation/slides](docs/presentation/slides). Số liệu tóm tắt: [docs/results/20261113](docs/results/20261113). Trạng thái và bước tiếp theo: [docs/CLAUDE_CODE_HANDOFF.md](docs/CLAUDE_CODE_HANDOFF.md).
+
+Môi trường: macOS arm64, `uv` + `.venv`, chạy mọi lệnh với `PYTHONPATH=src`. Cài thêm `scikit-learn` và `py-tlsh` (extras `classical`, `fuzzy`). Dữ liệu thô không nằm trong git; checksum ở `configs/winmet.lock.json` và `configs/external_datasets.lock.json`.
+
+```bash
+# 1. Baseline TF-IDF + LR trên validation WinMET v2 (khoảng 30 phút CPU)
+PYTHONPATH=src .venv/bin/python scripts/classical_family_baseline.py artifacts/winmet/resourcev4_expansion_v2_manifest_20261111.json --output artifacts/winmet/classical.json
+# 2. Hybrid Attention 6 epoch trên MPS (khoảng 4 giờ; để máy mở nắp và chạy kèm caffeinate)
+PYTHONPATH=src .venv/bin/python scripts/train_winmet_expansion.py artifacts/winmet/resourcev4_expansion_v2_manifest_20261111.json --checkpoint models/attn.pt --report artifacts/winmet/attn.json --epochs 6 --patience 3 --device mps --pre-encode --mps-empty-cache-every 50
+# 3. Chọn cấu hình trên validation, rồi chấm test đúng một lần (có lock file; không chạy lại được)
+PYTHONPATH=src .venv/bin/python scripts/fuse_attention_tfidf.py select <manifest> <checkpoint> --selection <selection.json> --classical-report <classical.json>
+PYTHONPATH=src .venv/bin/python scripts/fuse_attention_tfidf.py test <manifest> <checkpoint> --selection <selection.json> --output <test.json>
+# 4. Phân tích lỗi và các cải tiến không cần train nặng (chỉ validation)
+PYTHONPATH=src .venv/bin/python scripts/family_error_analysis.py <manifest> --output <errors.json>
+PYTHONPATH=src .venv/bin/python scripts/long_tail_boosts.py <manifest> --output <long_tail.json>
+# 5. Chuẩn hóa v5 (sửa handle registry, giữ signature CAPE hành vi) bằng replay đúng các block của v4
+scripts/run_v5_reprepare.sh
+PYTHONPATH=src .venv/bin/python scripts/behavior_signature_baseline.py artifacts/winmet/resourcev5_expansion_v2_manifest_20261113.json --output <behavior.json>
+# 6. Avast-CTU: đọc thẳng từ zip, nhãn chỉ từ public_labels.csv
+PYTHONPATH=src .venv/bin/python scripts/prepare_avast_ctu.py Data/raw/avast_ctu/public_full_reports.zip Data/raw/avast_ctu/public_labels.csv --output artifacts/avast/avast_ctu_v5_le128.jsonl --max-report-mib 128
+```
+
+Kết quả tham chiếu (test chấm một lần): TF-IDF + LR 73,2% / 70,2% top-1 (test v1 / v2), Hybrid Attention 61,3% / 64,1%. Tập test WinMET hiện đã dùng cho lựa chọn ngày 13/11/2026; mô hình mới phải ghi rõ là lần đánh giá thứ hai.
+
 ## Tài liệu và nguồn tham khảo
+
+- Avast-CTU Public CAPE Dataset (arXiv:2209.03188) và MOTIF (arXiv:2111.15031): dữ liệu bổ sung có nhãn tin cậy hơn; chỉ tải report và feature, không tải binary.
 
 - [Trạng thái triển khai](docs/implementation-status.md).
 - [Tải và chuẩn hóa WinMET có giới hạn tài nguyên](docs/winmet-workflow.md).
