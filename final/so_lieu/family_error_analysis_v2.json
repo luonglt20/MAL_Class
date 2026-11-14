@@ -1,0 +1,272 @@
+{
+  "validation_rows": 670,
+  "top1": 0.7164,
+  "errors": 190,
+  "by_true_family_train_support": {
+    "20-49": {
+      "rows": 76,
+      "top1": 0.5526
+    },
+    "200-max": {
+      "rows": 313,
+      "top1": 0.8914
+    },
+    "5-19": {
+      "rows": 90,
+      "top1": 0.5333
+    },
+    "50-199": {
+      "rows": 191,
+      "top1": 0.5812
+    }
+  },
+  "by_trace_length": {
+    "0-99": {
+      "rows": 9,
+      "top1": 0.8889
+    },
+    "100-499": {
+      "rows": 84,
+      "top1": 0.8095
+    },
+    "2000-max": {
+      "rows": 67,
+      "top1": 0.8806
+    },
+    "500-1999": {
+      "rows": 510,
+      "top1": 0.6765
+    }
+  },
+  "by_imphash_overlap": {
+    "imphash_seen_in_train": {
+      "rows": 572,
+      "top1": 0.7378
+    },
+    "imphash_unseen_or_missing": {
+      "rows": 98,
+      "top1": 0.5918
+    }
+  },
+  "by_label_count": {
+    "single_label": {
+      "rows": 670,
+      "top1": 0.7164
+    }
+  },
+  "top_confusions_true_to_predicted": [
+    [
+      "snakelogger",
+      "agenttesla",
+      7
+    ],
+    [
+      "taskun",
+      "agenttesla",
+      7
+    ],
+    [
+      "gamarue",
+      "agenttesla",
+      7
+    ],
+    [
+      "noon",
+      "agenttesla",
+      5
+    ],
+    [
+      "redline",
+      "disabler",
+      5
+    ],
+    [
+      "disabler",
+      "redline",
+      4
+    ],
+    [
+      "injuke",
+      "redline",
+      4
+    ],
+    [
+      "msilzilla",
+      "agenttesla",
+      4
+    ],
+    [
+      "amadey",
+      "redline",
+      4
+    ],
+    [
+      "strab",
+      "formbook",
+      4
+    ],
+    [
+      "crifi",
+      "redline",
+      3
+    ],
+    [
+      "deyma",
+      "amadey",
+      3
+    ],
+    [
+      "injurer",
+      "redline",
+      3
+    ],
+    [
+      "deyma",
+      "redline",
+      3
+    ],
+    [
+      "lazy",
+      "redline",
+      2
+    ],
+    [
+      "agenttesla",
+      "noon",
+      2
+    ],
+    [
+      "redline",
+      "stop",
+      2
+    ],
+    [
+      "sagent",
+      "sload",
+      2
+    ],
+    [
+      "sload",
+      "qbot",
+      2
+    ],
+    [
+      "stop",
+      "mokes",
+      2
+    ]
+  ],
+  "families_with_most_errors": [
+    {
+      "family": "snakelogger",
+      "errors": 11,
+      "rows": 12,
+      "train_support": 101
+    },
+    {
+      "family": "taskun",
+      "errors": 9,
+      "rows": 17,
+      "train_support": 238
+    },
+    {
+      "family": "redline",
+      "errors": 9,
+      "rows": 120,
+      "train_support": 1318
+    },
+    {
+      "family": "noon",
+      "errors": 9,
+      "rows": 17,
+      "train_support": 182
+    },
+    {
+      "family": "gamarue",
+      "errors": 9,
+      "rows": 20,
+      "train_support": 170
+    },
+    {
+      "family": "strab",
+      "errors": 8,
+      "rows": 16,
+      "train_support": 159
+    },
+    {
+      "family": "agenttesla",
+      "errors": 8,
+      "rows": 28,
+      "train_support": 394
+    },
+    {
+      "family": "stop",
+      "errors": 7,
+      "rows": 15,
+      "train_support": 116
+    },
+    {
+      "family": "injuke",
+      "errors": 7,
+      "rows": 8,
+      "train_support": 59
+    },
+    {
+      "family": "mokes",
+      "errors": 6,
+      "rows": 7,
+      "train_support": 71
+    },
+    {
+      "family": "deyma",
+      "errors": 6,
+      "rows": 7,
+      "train_support": 50
+    },
+    {
+      "family": "remcos",
+      "errors": 5,
+      "rows": 6,
+      "train_support": 55
+    },
+    {
+      "family": "msilzilla",
+      "errors": 5,
+      "rows": 5,
+      "train_support": 26
+    },
+    {
+      "family": "crifi",
+      "errors": 5,
+      "rows": 5,
+      "train_support": 34
+    },
+    {
+      "family": "disabler",
+      "errors": 4,
+      "rows": 16,
+      "train_support": 259
+    }
+  ],
+  "tlsh_nearest_neighbour": {
+    "available": true,
+    "rows_with_tlsh": 670,
+    "distance<= 30": {
+      "coverage": 173,
+      "top1": 0.8613
+    },
+    "distance<= 50": {
+      "coverage": 307,
+      "top1": 0.7687
+    },
+    "distance<= 100": {
+      "coverage": 501,
+      "top1": 0.7066
+    },
+    "distance<= 1000000000": {
+      "coverage": 670,
+      "top1": 0.6612
+    }
+  },
+  "notice": "Validation only; AVClass labels are weak; imphash/TLSH come from WinMET metadata."
+}

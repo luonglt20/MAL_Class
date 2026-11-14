@@ -1,0 +1,81 @@
+{
+  "checkpoint": "models/winmet_ab_v2_baseline.pt",
+  "config": {
+    "epochs": 6,
+    "d_model": 32,
+    "modality_dropout": 0.0,
+    "selection_metric": "family_map",
+    "patience": 3,
+    "seed": 44,
+    "device": "mps",
+    "pre_encode": true,
+    "mps_empty_cache_every": 50,
+    "batch_size": 4,
+    "lr": 0.0003,
+    "lr_schedule": "constant",
+    "warmup_fraction": 0.05,
+    "balanced_sampling": false
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.7456412652766002,
+      "validation_loss": null,
+      "family_map": 0.16596672327942558,
+      "family_macro_f1": 0.0783878962020492,
+      "family_top1_accuracy": 0.5,
+      "family_top3_accuracy": 0.6447761194029851,
+      "family_evaluated_samples": 670
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.1657303801472572,
+      "validation_loss": null,
+      "family_map": 0.2601884892836977,
+      "family_macro_f1": 0.15538072082184842,
+      "family_top1_accuracy": 0.5522388059701493,
+      "family_top3_accuracy": 0.7029850746268657,
+      "family_evaluated_samples": 670
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.9958296217875665,
+      "validation_loss": null,
+      "family_map": 0.296772779585051,
+      "family_macro_f1": 0.2051234481134414,
+      "family_top1_accuracy": 0.5865671641791045,
+      "family_top3_accuracy": 0.7432835820895523,
+      "family_evaluated_samples": 670
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.896194910598371,
+      "validation_loss": null,
+      "family_map": 0.34289699217628056,
+      "family_macro_f1": 0.22117585784792193,
+      "family_top1_accuracy": 0.6134328358208955,
+      "family_top3_accuracy": 0.7597014925373134,
+      "family_evaluated_samples": 670
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.8342597067449515,
+      "validation_loss": null,
+      "family_map": 0.3722374178316078,
+      "family_macro_f1": 0.2640853406803247,
+      "family_top1_accuracy": 0.5940298507462687,
+      "family_top3_accuracy": 0.764179104477612,
+      "family_evaluated_samples": 670
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.7808857818800846,
+      "validation_loss": null,
+      "family_map": 0.38939147548613096,
+      "family_macro_f1": 0.28762594242558015,
+      "family_top1_accuracy": 0.6417910447761194,
+      "family_top3_accuracy": 0.7805970149253731,
+      "family_evaluated_samples": 670
+    }
+  ]
+}

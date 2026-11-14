@@ -1,0 +1,35 @@
+{
+  "labels": 153,
+  "features": {
+    "base": {
+      "n_features": 218760,
+      "family_top1_accuracy": 0.7164179104477612,
+      "family_top3_accuracy": 0.8567164179104477,
+      "family_map": 0.5566623726768759,
+      "family_macro_f1": 0.3912474326619079,
+      "family_evaluated_samples": 670
+    },
+    "base+signatures": {
+      "n_features": 218948,
+      "family_top1_accuracy": 0.7179104477611941,
+      "family_top3_accuracy": 0.8597014925373134,
+      "family_map": 0.5575606119387809,
+      "family_macro_f1": 0.3926460340605093,
+      "family_evaluated_samples": 670
+    },
+    "signatures": {
+      "n_features": 188,
+      "family_top1_accuracy": 0.6462686567164179,
+      "family_top3_accuracy": 0.7985074626865671,
+      "family_map": 0.45961749887726777,
+      "family_macro_f1": 0.2744430912088199,
+      "family_evaluated_samples": 670
+    }
+  },
+  "base+signatures_vs_base": {
+    "gained": 1,
+    "lost": 0,
+    "p_value_exact": 1.0
+  },
+  "notice": "Validation only, v5 data; one fixed C, no tuning on validation."
+}

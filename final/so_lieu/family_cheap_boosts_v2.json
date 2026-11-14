@@ -1,0 +1,230 @@
+{
+  "variants": {
+    "lr|base|C=16": {
+      "family_top1_accuracy": 0.7164179104477612,
+      "family_top3_accuracy": 0.8567164179104477,
+      "family_map": 0.556635388167165,
+      "family_macro_f1": 0.3912474326619079,
+      "family_evaluated_samples": 670,
+      "seconds": 135.7
+    },
+    "lr|base|C=32": {
+      "family_top1_accuracy": 0.7134328358208956,
+      "family_top3_accuracy": 0.8552238805970149,
+      "family_map": 0.560487087725903,
+      "family_macro_f1": 0.41594198750034467,
+      "family_evaluated_samples": 670,
+      "seconds": 146.7
+    },
+    "lr|base|C=64": {
+      "family_top1_accuracy": 0.7149253731343284,
+      "family_top3_accuracy": 0.8552238805970149,
+      "family_map": 0.5612049084856156,
+      "family_macro_f1": 0.4332859534010925,
+      "family_evaluated_samples": 670,
+      "seconds": 155.3
+    },
+    "knn|base|k=5": {
+      "family_top1_accuracy": 0.6776119402985075,
+      "family_top3_accuracy": 0.7835820895522388,
+      "family_map": 0.5136817083945996,
+      "family_macro_f1": 0.4429926619938638,
+      "family_evaluated_samples": 670,
+      "seconds": 1.8
+    },
+    "knn|base|k=15": {
+      "family_top1_accuracy": 0.673134328358209,
+      "family_top3_accuracy": 0.8238805970149253,
+      "family_map": 0.5279078169195605,
+      "family_macro_f1": 0.32945605663679123,
+      "family_evaluated_samples": 670,
+      "seconds": 1.7
+    },
+    "lr|base+tri|C=16": {
+      "family_top1_accuracy": 0.7164179104477612,
+      "family_top3_accuracy": 0.8567164179104477,
+      "family_map": 0.5560948701697732,
+      "family_macro_f1": 0.40126390367200154,
+      "family_evaluated_samples": 670,
+      "seconds": 236.7
+    },
+    "lr|base+tri|C=32": {
+      "family_top1_accuracy": 0.7179104477611941,
+      "family_top3_accuracy": 0.8611940298507462,
+      "family_map": 0.5563208091504669,
+      "family_macro_f1": 0.4282100351444819,
+      "family_evaluated_samples": 670,
+      "seconds": 256.3
+    },
+    "lr|base+tri|C=64": {
+      "family_top1_accuracy": 0.7194029850746269,
+      "family_top3_accuracy": 0.8582089552238806,
+      "family_map": 0.5593867201693196,
+      "family_macro_f1": 0.439736334537355,
+      "family_evaluated_samples": 670,
+      "seconds": 273.5
+    },
+    "knn|base+tri|k=5": {
+      "family_top1_accuracy": 0.6805970149253732,
+      "family_top3_accuracy": 0.7925373134328358,
+      "family_map": 0.5104997350421151,
+      "family_macro_f1": 0.43707872354049,
+      "family_evaluated_samples": 670,
+      "seconds": 2.7
+    },
+    "knn|base+tri|k=15": {
+      "family_top1_accuracy": 0.6701492537313433,
+      "family_top3_accuracy": 0.8149253731343283,
+      "family_map": 0.5186935743997803,
+      "family_macro_f1": 0.3394371417707251,
+      "family_evaluated_samples": 670,
+      "seconds": 2.5
+    },
+    "lr|base+reduced|C=16": {
+      "family_top1_accuracy": 0.7164179104477612,
+      "family_top3_accuracy": 0.8641791044776119,
+      "family_map": 0.564515770597673,
+      "family_macro_f1": 0.4021477848325625,
+      "family_evaluated_samples": 670,
+      "seconds": 186.5
+    },
+    "lr|base+reduced|C=32": {
+      "family_top1_accuracy": 0.7149253731343284,
+      "family_top3_accuracy": 0.8611940298507462,
+      "family_map": 0.5632908256427379,
+      "family_macro_f1": 0.42955205771120536,
+      "family_evaluated_samples": 670,
+      "seconds": 202.0
+    },
+    "lr|base+reduced|C=64": {
+      "family_top1_accuracy": 0.7149253731343284,
+      "family_top3_accuracy": 0.8567164179104477,
+      "family_map": 0.5638392482736369,
+      "family_macro_f1": 0.45378718999263434,
+      "family_evaluated_samples": 670,
+      "seconds": 213.1
+    },
+    "knn|base+reduced|k=5": {
+      "family_top1_accuracy": 0.682089552238806,
+      "family_top3_accuracy": 0.7925373134328358,
+      "family_map": 0.5122750024329692,
+      "family_macro_f1": 0.4487238875113456,
+      "family_evaluated_samples": 670,
+      "seconds": 2.7
+    },
+    "knn|base+reduced|k=15": {
+      "family_top1_accuracy": 0.6671641791044776,
+      "family_top3_accuracy": 0.8253731343283582,
+      "family_map": 0.5281392243299169,
+      "family_macro_f1": 0.3392120472961938,
+      "family_evaluated_samples": 670,
+      "seconds": 2.7
+    },
+    "lr|base+tri+reduced|C=16": {
+      "family_top1_accuracy": 0.7179104477611941,
+      "family_top3_accuracy": 0.8611940298507462,
+      "family_map": 0.558910426642281,
+      "family_macro_f1": 0.4080638198630184,
+      "family_evaluated_samples": 670,
+      "seconds": 315.1
+    },
+    "lr|base+tri+reduced|C=32": {
+      "family_top1_accuracy": 0.7164179104477612,
+      "family_top3_accuracy": 0.8626865671641791,
+      "family_map": 0.5602951580848393,
+      "family_macro_f1": 0.4356919976264444,
+      "family_evaluated_samples": 670,
+      "seconds": 326.6
+    },
+    "lr|base+tri+reduced|C=64": {
+      "family_top1_accuracy": 0.7179104477611941,
+      "family_top3_accuracy": 0.8582089552238806,
+      "family_map": 0.5625217572499983,
+      "family_macro_f1": 0.44937974124168945,
+      "family_evaluated_samples": 670,
+      "seconds": 341.3
+    },
+    "knn|base+tri+reduced|k=5": {
+      "family_top1_accuracy": 0.682089552238806,
+      "family_top3_accuracy": 0.7925373134328358,
+      "family_map": 0.5135946515778245,
+      "family_macro_f1": 0.4440059929020058,
+      "family_evaluated_samples": 670,
+      "seconds": 3.7
+    },
+    "knn|base+tri+reduced|k=15": {
+      "family_top1_accuracy": 0.6701492537313433,
+      "family_top3_accuracy": 0.8194029850746268,
+      "family_map": 0.526486458521491,
+      "family_macro_f1": 0.3464731627073829,
+      "family_evaluated_samples": 670,
+      "seconds": 3.6
+    },
+    "rank|lr|base+reduced|C=16+knn|base|k=5": {
+      "family_top1_accuracy": 0.6895522388059702,
+      "family_top3_accuracy": 0.8298507462686567,
+      "family_map": 0.48892591987143075,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    },
+    "rank|lr|base+reduced|C=16+knn|base|k=15": {
+      "family_top1_accuracy": 0.6985074626865672,
+      "family_top3_accuracy": 0.835820895522388,
+      "family_map": 0.4820665756923844,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    },
+    "rank|lr|base+reduced|C=16+knn|base+tri|k=5": {
+      "family_top1_accuracy": 0.7029850746268657,
+      "family_top3_accuracy": 0.8298507462686567,
+      "family_map": 0.4916262957580935,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    },
+    "rank|lr|base+reduced|C=16+knn|base+tri|k=15": {
+      "family_top1_accuracy": 0.7044776119402985,
+      "family_top3_accuracy": 0.8328358208955224,
+      "family_map": 0.4820473689674643,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    },
+    "rank|lr|base+reduced|C=16+knn|base+reduced|k=5": {
+      "family_top1_accuracy": 0.6970149253731344,
+      "family_top3_accuracy": 0.8298507462686567,
+      "family_map": 0.49800311746830406,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    },
+    "rank|lr|base+reduced|C=16+knn|base+reduced|k=15": {
+      "family_top1_accuracy": 0.6985074626865672,
+      "family_top3_accuracy": 0.8417910447761194,
+      "family_map": 0.483153784901006,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    },
+    "rank|lr|base+reduced|C=16+knn|base+tri+reduced|k=5": {
+      "family_top1_accuracy": 0.7044776119402985,
+      "family_top3_accuracy": 0.8283582089552238,
+      "family_map": 0.49420353099912673,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    },
+    "rank|lr|base+reduced|C=16+knn|base+tri+reduced|k=15": {
+      "family_top1_accuracy": 0.7029850746268657,
+      "family_top3_accuracy": 0.8373134328358209,
+      "family_map": 0.4848250008837885,
+      "family_macro_f1": 0.015768357394930724,
+      "family_evaluated_samples": 670,
+      "seconds": 0.0
+    }
+  },
+  "baseline_variant": "lr|base|C=16",
+  "notice": "Validation only, per-variant numbers from the run log; the run was stopped under heavy swap before the group cross-fitted summary was written. Rank-fused scores are ranks, so their macro-F1 at threshold 0.5 is not meaningful."
+}

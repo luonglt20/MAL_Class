@@ -1,0 +1,252 @@
+{
+  "labels": [
+    "accesses_recyclebin",
+    "anomalous_deletefile",
+    "antiav_servicestop",
+    "antidebug_guardpages",
+    "antidebug_setunhandledexceptionfilter",
+    "antisandbox_sleep",
+    "antivm_network_adapters",
+    "cmdline_long_string",
+    "createtoolhelp32snapshot_module_enumeration",
+    "dead_connect",
+    "deletes_executed_files",
+    "deletes_self",
+    "disables_windows_defender",
+    "disables_windowsupdate",
+    "dropper",
+    "encrypt_pcinfo",
+    "encrypted_ioc",
+    "enumerates_running_processes",
+    "exec_crash",
+    "http_request",
+    "https_urls",
+    "infostealer_browser",
+    "infostealer_cookies",
+    "infostealer_ftp",
+    "infostealer_keylog",
+    "infostealer_mail",
+    "injection_rwx",
+    "long_commandline",
+    "modify_proxy",
+    "network_dyndns",
+    "network_multiple_direct_ip_connections",
+    "persistence_autorun",
+    "persistence_autorun_tasks",
+    "polymorphic",
+    "powershell_command_suspicious",
+    "ransomware_file_modifications",
+    "reads_self",
+    "recon_checkip",
+    "recon_fingerprint",
+    "removes_zoneid_ads",
+    "script_created_process",
+    "script_tool_executed",
+    "spoofs_procname",
+    "stealth_network",
+    "stealth_timeout",
+    "stealth_window",
+    "suspicious_command_tools",
+    "terminates_remote_process",
+    "territorial_disputes_sigs",
+    "uses_windows_utilities",
+    "uses_windows_utilities_to_create_scheduled_task",
+    "windows_defender_powershell"
+  ],
+  "min_support": 200,
+  "C": 4.0,
+  "n_train_supervised": 8464,
+  "n_validation_supervised": 782,
+  "encodings": {
+    "unigram": {
+      "n_features": 46827,
+      "fit_seconds": 92.7,
+      "validation": {
+        "signature_map": 0.796066859138958,
+        "micro_f1": 0.8538916704597178,
+        "macro_f1": 0.6960661936820622,
+        "per_label_ap": {
+          "accesses_recyclebin": 0.9708364591147787,
+          "anomalous_deletefile": 0.97487943194237,
+          "antiav_servicestop": 0.9884499928266374,
+          "antidebug_guardpages": 0.998425793123558,
+          "antidebug_setunhandledexceptionfilter": 0.9976298921296806,
+          "antisandbox_sleep": 0.12332351115238574,
+          "antivm_network_adapters": 0.7743191774884537,
+          "cmdline_long_string": 0.9586143081681286,
+          "createtoolhelp32snapshot_module_enumeration": 1.0,
+          "dead_connect": 0.9138541419878793,
+          "deletes_executed_files": 0.9729314980274528,
+          "deletes_self": 0.8903622555012113,
+          "disables_windows_defender": 0.9712424615883763,
+          "disables_windowsupdate": 0.9898747393103724,
+          "dropper": 0.6907962137855711,
+          "encrypt_pcinfo": 0.6913017664224543,
+          "encrypted_ioc": 0.6760144420097041,
+          "enumerates_running_processes": 0.8759516896466742,
+          "exec_crash": 0.8675814137873268,
+          "http_request": 0.882965032080551,
+          "https_urls": 0.9373569811436797,
+          "infostealer_browser": 0.5494697974341974,
+          "infostealer_cookies": 0.8560209414605751,
+          "infostealer_ftp": 0.5723173190458584,
+          "infostealer_keylog": 0.32901048632498886,
+          "infostealer_mail": 0.5926463134454284,
+          "injection_rwx": 0.9970497164108301,
+          "long_commandline": 0.9149306096990489,
+          "modify_proxy": 0.8718962756397216,
+          "network_dyndns": 0.3698752641780405,
+          "network_multiple_direct_ip_connections": 0.9999784024301546,
+          "persistence_autorun": 0.9891405240154388,
+          "persistence_autorun_tasks": 0.8673173287005141,
+          "polymorphic": 0.9423955367703163,
+          "powershell_command_suspicious": 0.799492758374561,
+          "ransomware_file_modifications": 0.9010039430579849,
+          "reads_self": 0.9282369456716739,
+          "recon_checkip": 0.3042409984026484,
+          "recon_fingerprint": 0.2621965626259698,
+          "removes_zoneid_ads": 0.40149132874863785,
+          "script_created_process": 0.9594599138117657,
+          "script_tool_executed": 0.7174428662981094,
+          "spoofs_procname": 0.9594157672391265,
+          "stealth_network": 0.9801063832260076,
+          "stealth_timeout": 0.9510066421017037,
+          "stealth_window": 0.7909162653241743,
+          "suspicious_command_tools": 0.823130660709557,
+          "terminates_remote_process": 0.8900749935827098,
+          "territorial_disputes_sigs": 1.0,
+          "uses_windows_utilities": 0.8039467390780495,
+          "uses_windows_utilities_to_create_scheduled_task": 0.6299380653867837,
+          "windows_defender_powershell": 0.2946161247939907
+        }
+      }
+    },
+    "bigram": {
+      "n_features": 225217,
+      "fit_seconds": 303.1,
+      "validation": {
+        "signature_map": 0.80333619644662,
+        "micro_f1": 0.857531020740875,
+        "macro_f1": 0.7023331462084624,
+        "per_label_ap": {
+          "accesses_recyclebin": 0.9724399164054336,
+          "anomalous_deletefile": 0.9648112504106245,
+          "antiav_servicestop": 0.9898592054825867,
+          "antidebug_guardpages": 0.9988783333991558,
+          "antidebug_setunhandledexceptionfilter": 0.9978449885457699,
+          "antisandbox_sleep": 0.2559211698551577,
+          "antivm_network_adapters": 0.7695209567478253,
+          "cmdline_long_string": 0.9552884862173401,
+          "createtoolhelp32snapshot_module_enumeration": 1.0,
+          "dead_connect": 0.922725986235444,
+          "deletes_executed_files": 0.973674620854921,
+          "deletes_self": 0.8965257482629829,
+          "disables_windows_defender": 0.9717283658592115,
+          "disables_windowsupdate": 0.989875163259619,
+          "dropper": 0.7026538583046127,
+          "encrypt_pcinfo": 0.7028719108905869,
+          "encrypted_ioc": 0.6820045260866225,
+          "enumerates_running_processes": 0.8879809482513518,
+          "exec_crash": 0.8683623864976219,
+          "http_request": 0.8783374123422215,
+          "https_urls": 0.9360715486019687,
+          "infostealer_browser": 0.6228791831811206,
+          "infostealer_cookies": 0.8512255933135036,
+          "infostealer_ftp": 0.6088413553720994,
+          "infostealer_keylog": 0.34244998345441746,
+          "infostealer_mail": 0.615696277023516,
+          "injection_rwx": 0.997426691355673,
+          "long_commandline": 0.9142308589747493,
+          "modify_proxy": 0.8752308530139782,
+          "network_dyndns": 0.40262368038417395,
+          "network_multiple_direct_ip_connections": 0.9999749373433585,
+          "persistence_autorun": 0.9901625494234578,
+          "persistence_autorun_tasks": 0.855767154552779,
+          "polymorphic": 0.950940972375818,
+          "powershell_command_suspicious": 0.8077825815922364,
+          "ransomware_file_modifications": 0.9140864602500357,
+          "reads_self": 0.9303272315501481,
+          "recon_checkip": 0.2954236788299637,
+          "recon_fingerprint": 0.2849551741553664,
+          "removes_zoneid_ads": 0.3975969033178548,
+          "script_created_process": 0.9515737136344372,
+          "script_tool_executed": 0.7288082434338657,
+          "spoofs_procname": 0.9585186703999768,
+          "stealth_network": 0.9813012281647905,
+          "stealth_timeout": 0.9559216035429252,
+          "stealth_window": 0.7863132650594825,
+          "suspicious_command_tools": 0.828877725557555,
+          "terminates_remote_process": 0.8931324248347156,
+          "territorial_disputes_sigs": 1.0,
+          "uses_windows_utilities": 0.8167626358570924,
+          "uses_windows_utilities_to_create_scheduled_task": 0.6158882245359242,
+          "windows_defender_powershell": 0.2813855782281688
+        }
+      }
+    }
+  },
+  "bigram_minus_unigram": {
+    "labels_better": 34,
+    "labels_worse": 16,
+    "paired_bootstrap_map": {
+      "mean": 0.007160771691048892,
+      "ci95": [
+        0.0017828274320540818,
+        0.012599681560308194
+      ],
+      "rounds": 200
+    },
+    "largest_gains": [
+      [
+        0.132597658702772,
+        "antisandbox_sleep"
+      ],
+      [
+        0.07340938574692313,
+        "infostealer_browser"
+      ],
+      [
+        0.036524036326241016,
+        "infostealer_ftp"
+      ],
+      [
+        0.032748416206133446,
+        "network_dyndns"
+      ],
+      [
+        0.02304996357808764,
+        "infostealer_mail"
+      ],
+      [
+        0.022758611529396622,
+        "recon_fingerprint"
+      ],
+      [
+        0.013439497129428601,
+        "infostealer_keylog"
+      ],
+      [
+        0.01308251719205078,
+        "ransomware_file_modifications"
+      ],
+      [
+        0.012815896779042935,
+        "uses_windows_utilities"
+      ],
+      [
+        0.012029258604677517,
+        "enumerates_running_processes"
+      ]
+    ]
+  },
+  "rule_vs_signature_validation": {
+    "T1547.001|persistence_autorun": {
+      "not_detected|no_signature": 425,
+      "suspected|signature": 184,
+      "not_detected|signature": 128,
+      "confirmed|signature": 41,
+      "suspected|no_signature": 4
+    }
+  },
+  "notice": "CAPE signatures are heuristic weak labels, not ground truth. Validation only; one fixed model setting, no tuning on validation."
+}

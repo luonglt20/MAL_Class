@@ -1,0 +1,85 @@
+{
+  "status": "one_time_independent_test",
+  "selection_sha256": "3b23708bc7f1413ceaf8ec7dce5b848976a42a396f16f8d841c0d7502a74f524",
+  "selected_attention_weight": 0.0,
+  "tfidf_config": {
+    "features": "all",
+    "C": 16.0
+  },
+  "label_scope": "153 families with train support >= 5",
+  "partitions": {
+    "withheld_internal_test": {
+      "rows": 362,
+      "attention_only": {
+        "family_map": 0.47527840338136,
+        "family_macro_f1": 0.35492742403228533,
+        "family_top1_accuracy": 0.6125827814569537,
+        "family_top3_accuracy": 0.7980132450331126,
+        "family_evaluated_samples": 302,
+        "family_prior_map": 0.011721782331936036,
+        "family_prior_top1_accuracy": 0.17218543046357615,
+        "family_prior_top3_accuracy": 0.3576158940397351,
+        "family_prior_evaluated_samples": 302
+      },
+      "tfidf_only": {
+        "family_map": 0.6271541377074713,
+        "family_macro_f1": 0.39318972871604446,
+        "family_top1_accuracy": 0.7317880794701986,
+        "family_top3_accuracy": 0.8741721854304636,
+        "family_evaluated_samples": 302,
+        "family_prior_map": 0.011721782331936036,
+        "family_prior_top1_accuracy": 0.17218543046357615,
+        "family_prior_top3_accuracy": 0.3576158940397351,
+        "family_prior_evaluated_samples": 302
+      },
+      "fused_frozen_weight": {
+        "family_map": 0.6271541377074713,
+        "family_macro_f1": 0.39318972871604446,
+        "family_top1_accuracy": 0.7317880794701986,
+        "family_top3_accuracy": 0.8741721854304636,
+        "family_evaluated_samples": 302,
+        "family_prior_map": 0.011721782331936036,
+        "family_prior_top1_accuracy": 0.17218543046357615,
+        "family_prior_top3_accuracy": 0.3576158940397351,
+        "family_prior_evaluated_samples": 302
+      }
+    },
+    "withheld_test_v2": {
+      "rows": 779,
+      "attention_only": {
+        "family_map": 0.3904421477279941,
+        "family_macro_f1": 0.30482781745152476,
+        "family_top1_accuracy": 0.6407185628742516,
+        "family_top3_accuracy": 0.7994011976047904,
+        "family_evaluated_samples": 668,
+        "family_prior_map": 0.00858567682895481,
+        "family_prior_top1_accuracy": 0.20209580838323354,
+        "family_prior_top3_accuracy": 0.3847305389221557,
+        "family_prior_evaluated_samples": 668
+      },
+      "tfidf_only": {
+        "family_map": 0.585578014541369,
+        "family_macro_f1": 0.31831000516262664,
+        "family_top1_accuracy": 0.7020958083832335,
+        "family_top3_accuracy": 0.8607784431137725,
+        "family_evaluated_samples": 668,
+        "family_prior_map": 0.00858567682895481,
+        "family_prior_top1_accuracy": 0.20209580838323354,
+        "family_prior_top3_accuracy": 0.3847305389221557,
+        "family_prior_evaluated_samples": 668
+      },
+      "fused_frozen_weight": {
+        "family_map": 0.585578014541369,
+        "family_macro_f1": 0.31831000516262664,
+        "family_top1_accuracy": 0.7020958083832335,
+        "family_top3_accuracy": 0.8607784431137725,
+        "family_evaluated_samples": 668,
+        "family_prior_map": 0.00858567682895481,
+        "family_prior_top1_accuracy": 0.20209580838323354,
+        "family_prior_top3_accuracy": 0.3847305389221557,
+        "family_prior_evaluated_samples": 668
+      }
+    }
+  },
+  "notice": "Scored once with the model, TF-IDF config and fusion weight frozen on validation. Top-1/top-3 denominators are test rows with an in-vocabulary family."
+}
