@@ -95,6 +95,11 @@ The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.
 - d_model 64 run (same settings, `--d-model 64`) started 2026-11-14 08:08 and was stopped at shutdown during epoch 1 (batch 1696/2125, no checkpoint yet). It fit in memory on MPS (swap ~1.8 GB) and its train loss at batch 1696 was 2.09 versus 2.37 for d_model 32. Log: `artifacts/winmet/winmet_v5_behavior_d64_e10_bsel.stopped_e1.log`. Restart command:
   `PYTHONPATH=src nohup nice -n 10 .venv/bin/python scripts/train_winmet_expansion.py artifacts/winmet/resourcev5_expansion_v2_manifest_20261113.json --checkpoint models/winmet_v5_behavior_d64_e10_bsel.pt --report artifacts/winmet/winmet_v5_behavior_d64_e10_bsel.json --epochs 10 --patience 3 --selection-metric behavior_map --d-model 64 --device mps --pre-encode --mps-empty-cache-every 50 --behavior-targets cape-signatures > artifacts/winmet/winmet_v5_behavior_d64_e10_bsel.log 2>&1 &` (about 50 min preparation + ~30 min/epoch; keep the lid open and run `caffeinate -i -s -w <pid>`).
 
+### Family error analysis (2026-11-14)
+- `scripts/family_cheap_boosts.py`: 28 training-light TF-IDF variants (C, trigrams, argument-free tokens, cosine kNN, rank fusion) do not raise validation top-1 (best 71.9% vs 71.6%; kNN 68.2%; rank fusion 70.4%). Results: `docs/results/20261113/family_cheap_boosts_v2.json`.
+- `scripts/family_error_analysis.py`: top-1 89.1% for families with >= 200 train rows vs 53-58% below; imphash seen in train 73.8% vs unseen 59.2%; TLSH nearest neighbour 86.1% at distance <= 30 (26% coverage). Errors collapse into agenttesla/redline (snakelogger, taskun, gamarue, noon, msilzilla, injuke, amadey...). Results: `docs/results/20261113/family_error_analysis_v2.json`. `py-tlsh` (declared in the `fuzzy` extra) is now installed in `.venv`.
+- Proposed new approach: TLSH-routed hybrid (fix the threshold first, then verify), long-tail handling (more data, group-then-family, prototypes), separating packer from payload using CAPE payload data with family names removed.
+
 ### Next steps
 0. Re-run the d_model 64 behavior run above and compare with d_model 32 (behavior mAP 0.663) and TF-IDF (0.803).
 1. Behavior with attention: a larger model on a GPU or an architecture that uses longer event context; keep the bigram TF-IDF + LR (mAP 0.803) as the behavior baseline.
