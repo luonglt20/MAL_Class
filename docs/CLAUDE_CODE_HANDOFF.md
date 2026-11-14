@@ -92,7 +92,11 @@ The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.
 
 - 10 epochs selected by behavior mAP (`--selection-metric behavior_map`, `models/winmet_v5_behavior_signatures_e10_bsel.pt`): epoch 10, behavior mAP 0.663 / micro-F1 0.727 / macro-F1 0.619 (beats the bigram baseline on 2/52 labels); family top-1 65.5%, mAP 0.464. Epochs 1-6 reproduce the 6-epoch run exactly. The curve flattens (0.646 -> 0.663 over the last 4 epochs).
 
+- d_model 64 run (same settings, `--d-model 64`) started 2026-11-14 08:08 and was stopped at shutdown during epoch 1 (batch 1696/2125, no checkpoint yet). It fit in memory on MPS (swap ~1.8 GB) and its train loss at batch 1696 was 2.09 versus 2.37 for d_model 32. Log: `artifacts/winmet/winmet_v5_behavior_d64_e10_bsel.stopped_e1.log`. Restart command:
+  `PYTHONPATH=src nohup nice -n 10 .venv/bin/python scripts/train_winmet_expansion.py artifacts/winmet/resourcev5_expansion_v2_manifest_20261113.json --checkpoint models/winmet_v5_behavior_d64_e10_bsel.pt --report artifacts/winmet/winmet_v5_behavior_d64_e10_bsel.json --epochs 10 --patience 3 --selection-metric behavior_map --d-model 64 --device mps --pre-encode --mps-empty-cache-every 50 --behavior-targets cape-signatures > artifacts/winmet/winmet_v5_behavior_d64_e10_bsel.log 2>&1 &` (about 50 min preparation + ~30 min/epoch; keep the lid open and run `caffeinate -i -s -w <pid>`).
+
 ### Next steps
+0. Re-run the d_model 64 behavior run above and compare with d_model 32 (behavior mAP 0.663) and TF-IDF (0.803).
 1. Behavior with attention: a larger model on a GPU or an architecture that uses longer event context; keep the bigram TF-IDF + LR (mAP 0.803) as the behavior baseline.
 2. Map CAPE signature names to ATT&CK (needs the CAPE community signatures repository; ask before downloading), build behavior targets from signatures, train the behavior head on v5 and compare an order-free bag model with the ordered/graph model on behavior.
 3. Train the family model on v5 (new checkpoint; v4 checkpoints reject v5 traces) and keep TF-IDF + LR as the main baseline.
