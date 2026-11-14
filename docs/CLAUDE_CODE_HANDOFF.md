@@ -111,3 +111,12 @@ The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.
 3. Train the family model on v5 (new checkpoint; v4 checkpoints reject v5 traces) and keep TF-IDF + LR as the main baseline.
 
 Presentation sources: report doc https://claude.ai/artifact/SbeDLD93Gc2CWCsD3cTR4X ; slides https://claude.ai/artifact/5Uc72GtfmKPt9gmwg6xTZv (source copy in `docs/presentation/slides/`).
+
+## 2026-11-14 shutdown state
+
+- Submission set: `final/` (Word report with real TOC and page numbers, report PDF, 22-slide PDF, speaker-notes PDF, result JSON), pushed to `main`.
+- d_model 64 behavior run (`models/winmet_v5_behavior_d64_e10_bsel.pt`, log `artifacts/winmet/winmet_v5_behavior_d64_e10_bsel.log`): stopped by shutdown during epoch 6 of 10. The checkpoint holds the best epoch so far (epoch 5: family top-1 62.99%, family mAP 0.436; behavior metrics are only in the final report, which was not written). It cannot resume (no optimizer state); a rerun of the same command restarts from epoch 1. At the same epoch d_model 64 beats d_model 32 on family mAP (epoch 4: 0.416 vs 0.331).
+- Avast-CTU pass 1 (reports <= 128 MiB, `artifacts/avast/avast_ctu_v5_le128.jsonl.partial`) was about 45% done (21,500 / 48,309). Continue it with:
+  `PYTHONPATH=src .venv/bin/python scripts/prepare_avast_ctu.py Data/raw/avast_ctu/public_full_reports.zip Data/raw/avast_ctu/public_labels.csv --output artifacts/avast/avast_ctu_v5_le128.jsonl --max-report-mib 128 --workers 2 --resume`
+  then pass 2 (128-512 MiB, one worker, nothing else running): `... --output artifacts/avast/avast_ctu_v5_128to512.jsonl --min-report-mib 128 --max-report-mib 512 --workers 1`.
+- Next on Avast-CTU: build a time-ordered split from `archive_group_id` (detection month), run the TF-IDF + LR baseline first, then attention and the behavior head with CAPE `cape_ttps`; report next to WinMET, never instead of it.

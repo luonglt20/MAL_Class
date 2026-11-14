@@ -81,6 +81,24 @@ def normalize(raw, sha, label, family_names, parser):
     return report, before - len(report.atomic_evidence), leaky_events
 
 
+def resume_partial(path):
+    """Keep only complete JSON lines of an interrupted run; return {sha256: family}."""
+    done, keep = {}, 0
+    with open(path, 'rb') as handle:
+        for line in handle:
+            if not line.endswith(b'\n'):
+                break
+            try:
+                row = json.loads(line)
+            except ValueError:
+                break
+            done[row['sample_hash']] = row.get('family')
+            keep += len(line)
+    with open(path, 'r+b') as handle:  # drop a torn last line left by a kill
+        handle.truncate(keep)
+    return done
+
+
 def _init(zip_path, family_names):
     _STATE['zip'] = zipfile.ZipFile(zip_path)
     _STATE['names'] = family_names
@@ -107,6 +125,8 @@ def main():
                         help='only reports above this size (second pass for large reports)')
     parser.add_argument('--workers', type=int, default=3)
     parser.add_argument('--limit', type=int, default=None, help='first N eligible reports (smoke runs)')
+    parser.add_argument('--resume', action='store_true',
+                        help='continue an interrupted run from <output>.partial, skipping reports already written')
     args = parser.parse_args()
     manifest_path = Path(str(args.output) + '.manifest.json')
     if args.output.exists() or manifest_path.exists():
@@ -132,7 +152,15 @@ def main():
     tasks = tasks[: args.limit] if args.limit else tasks
     written, errors, dropped_tokens, leaky_event_reports = Counter(), Counter(), 0, 0
     temporary = args.output.with_name(args.output.name + '.partial')
-    with temporary.open('w') as sink, Pool(args.workers, _init, (str(args.reports_zip), family_names)) as pool:
+    mode = 'w'
+    if args.resume and temporary.exists():
+        done = resume_partial(temporary)
+        for family in done.values():
+            written[family] += 1
+        tasks = [task for task in tasks if task[1] not in done]
+        mode = 'a'
+        print(json.dumps({'resumed_from': len(done), 'remaining': len(tasks)}), flush=True)
+    with temporary.open(mode) as sink, Pool(args.workers, _init, (str(args.reports_zip), family_names)) as pool:
         for index, (sha, line, dropped, leaky_events, error) in enumerate(pool.imap(_work, tasks, chunksize=4), 1):
             if error:
                 errors[error] += 1

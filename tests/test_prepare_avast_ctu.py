@@ -29,3 +29,13 @@ def test_normalize_removes_leaky_fields_and_uses_csv_labels():
     assert report.metadata['archive_group_id'] == '2019-03'
     assert 'malfamily_tag' not in raw and 'detections' not in raw
     assert leaky == 0
+
+
+def test_resume_partial_keeps_complete_lines_and_drops_a_torn_tail(tmp_path):
+    import json
+    partial = tmp_path / 'out.jsonl.partial'
+    rows = [{'sample_hash': 'a' * 64, 'family': 'zeus'}, {'sample_hash': 'b' * 64, 'family': 'emotet'}]
+    partial.write_text(''.join(json.dumps(r) + '\n' for r in rows) + '{"sample_hash": "c')
+    done = module.resume_partial(partial)
+    assert done == {'a' * 64: 'zeus', 'b' * 64: 'emotet'}
+    assert partial.read_text().count('\n') == 2 and partial.read_text().endswith('\n')
