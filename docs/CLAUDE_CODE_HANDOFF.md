@@ -98,6 +98,7 @@ The stopped run improved every epoch (validation loss 1.605→1.380→1.204→1.
 ### Family error analysis (2026-11-14)
 - `scripts/family_cheap_boosts.py`: 28 training-light TF-IDF variants (C, trigrams, argument-free tokens, cosine kNN, rank fusion) do not raise validation top-1 (best 71.9% vs 71.6%; kNN 68.2%; rank fusion 70.4%). Results: `docs/results/20261113/family_cheap_boosts_v2.json`.
 - `scripts/family_error_analysis.py`: top-1 89.1% for families with >= 200 train rows vs 53-58% below; imphash seen in train 73.8% vs unseen 59.2%; TLSH nearest neighbour 86.1% at distance <= 30 (26% coverage). Errors collapse into agenttesla/redline (snakelogger, taskun, gamarue, noon, msilzilla, injuke, amadey...). Results: `docs/results/20261113/family_error_analysis_v2.json`. `py-tlsh` (declared in the `fuzzy` extra) is now installed in `.venv`.
+- Tried (validation, exact McNemar per report): TLSH routing at distance <= 30 (`scripts/tlsh_routed_hybrid.py`) 72.8% vs 71.6% (+18/-10, p=0.18); class-balanced LR and logit adjustment (`scripts/long_tail_boosts.py`) 71.5-71.8%, tau=1 drops to 62.1%; cross-fitted choice 72.7% (p=0.28). Conclusion: family top-1 is capped near 72-73% with the current features and labels.
 - Proposed new approach: TLSH-routed hybrid (fix the threshold first, then verify), long-tail handling (more data, group-then-family, prototypes), separating packer from payload using CAPE payload data with family names removed.
 
 ### Next steps
