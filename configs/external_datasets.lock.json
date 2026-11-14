@@ -1,0 +1,25 @@
+{
+  "avast_ctu_cape_full": {
+    "source": "https://github.com/avast/avast-ctu-cape-dataset (Google Drive id 1ItUYKtr3hmjos8Hdd_e6rohuYSRgAAId)",
+    "license": "MIT (Licences.txt)",
+    "citation": "arXiv:2209.03188",
+    "downloaded": "2026-11-14",
+    "files": {
+      "Public_Avast_CTU_CAPEv2_Dataset_Full.zip": {"bytes": 13965327423, "sha256": "ce7fcce08e25f681dfb648eb5c1397c7648143daea21d445cb5013ce3f0e69c3"},
+      "public_full_reports.zip": {"bytes": 18595034018, "sha256": "61953b506401dd164274d9732d2d84ad26ba29c6a90d7ad56d0b7608d2046a31", "reports": 48976, "uncompressed_gib": 564.0},
+      "public_labels.csv": {"bytes": 4391379, "sha256": "e4be954df724aa05d2df7b0d38fbb5e6c33f5bfa289274105ab14fd224375b1e"}
+    },
+    "notes": "No executables are included. Reports contain malfamily_tag, detections and CAPE config fields that name families; these must never enter model inputs."
+  },
+  "motif": {
+    "source": "https://github.com/boozallen/MOTIF (dataset/ directory, master branch)",
+    "license": "Booz Allen Public License v1.0",
+    "citation": "arXiv:2111.15031",
+    "downloaded": "2026-11-14",
+    "files": {
+      "motif_dataset.jsonl": {"bytes": 26374237, "sha256": "607f524246f903fd6d60582032384f20b24a7a10d6b7183c597ecb6d65d57c47", "rows": 3095},
+      "motif_families.csv": {"bytes": 31269, "sha256": "b29fcd6baea7a4ef1ff4c87e76f845262c1a35a41cb5e8030582a52dc4c28d4c"}
+    },
+    "notes": "Only EMBER v2 raw features and labels were downloaded; the disarmed binaries archive MOTIF.7z was not."
+  }
+}
