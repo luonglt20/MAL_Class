@@ -1,0 +1,124 @@
+{
+  "checkpoint": "models/winmet_v5_behavior_signatures_e10_bsel.pt",
+  "config": {
+    "epochs": 10,
+    "d_model": 32,
+    "modality_dropout": 0.0,
+    "selection_metric": "behavior_map",
+    "patience": 3,
+    "seed": 44,
+    "device": "mps",
+    "pre_encode": true,
+    "mps_empty_cache_every": 50,
+    "batch_size": 4,
+    "lr": 0.0003,
+    "lr_schedule": "constant",
+    "warmup_fraction": 0.05,
+    "balanced_sampling": false,
+    "behavior_targets": "cape-signatures",
+    "behavior_min_support": null
+  },
+  "selected_epoch": 10,
+  "history": [
+    {
+      "epoch": 1,
+      "family_top1_accuracy": 0.508955223880597,
+      "family_top3_accuracy": 0.6268656716417911,
+      "family_map": 0.1564178389426806,
+      "family_macro_f1": 0.07132340115476157,
+      "behavior_map": 0.45174199950225824,
+      "behavior_micro_f1": 0.6060606060606061,
+      "behavior_macro_f1": 0.34619795609355525
+    },
+    {
+      "epoch": 2,
+      "family_top1_accuracy": 0.582089552238806,
+      "family_top3_accuracy": 0.7134328358208956,
+      "family_map": 0.2280416298622341,
+      "family_macro_f1": 0.13180979915899746,
+      "behavior_map": 0.5265845847443176,
+      "behavior_micro_f1": 0.6505367464905037,
+      "behavior_macro_f1": 0.5096242435200475
+    },
+    {
+      "epoch": 3,
+      "family_top1_accuracy": 0.5940298507462687,
+      "family_top3_accuracy": 0.7432835820895523,
+      "family_map": 0.29174972272261795,
+      "family_macro_f1": 0.19431927690022316,
+      "behavior_map": 0.5808499574692421,
+      "behavior_micro_f1": 0.6918953516281302,
+      "behavior_macro_f1": 0.5433119523275903
+    },
+    {
+      "epoch": 4,
+      "family_top1_accuracy": 0.6134328358208955,
+      "family_top3_accuracy": 0.753731343283582,
+      "family_map": 0.3313540033100684,
+      "family_macro_f1": 0.21047798356305783,
+      "behavior_map": 0.602197013171252,
+      "behavior_micro_f1": 0.7094996124364826,
+      "behavior_macro_f1": 0.565672879356437
+    },
+    {
+      "epoch": 5,
+      "family_top1_accuracy": 0.6134328358208955,
+      "family_top3_accuracy": 0.7701492537313432,
+      "family_map": 0.3739650852784604,
+      "family_macro_f1": 0.25355087035627244,
+      "behavior_map": 0.6200281864151768,
+      "behavior_micro_f1": 0.7123945188511264,
+      "behavior_macro_f1": 0.590868672245387
+    },
+    {
+      "epoch": 6,
+      "family_top1_accuracy": 0.6253731343283582,
+      "family_top3_accuracy": 0.7835820895522388,
+      "family_map": 0.4126887097838967,
+      "family_macro_f1": 0.30610051796162213,
+      "behavior_map": 0.6259944929516669,
+      "behavior_micro_f1": 0.7030320615116785,
+      "behavior_macro_f1": 0.5992906431085421
+    },
+    {
+      "epoch": 7,
+      "family_top1_accuracy": 0.6417910447761194,
+      "family_top3_accuracy": 0.7850746268656716,
+      "family_map": 0.4290839997587067,
+      "family_macro_f1": 0.31713419561845924,
+      "behavior_map": 0.6460457803793701,
+      "behavior_micro_f1": 0.7221190341597351,
+      "behavior_macro_f1": 0.6060383917038539
+    },
+    {
+      "epoch": 8,
+      "family_top1_accuracy": 0.6462686567164179,
+      "family_top3_accuracy": 0.7910447761194029,
+      "family_map": 0.4372552102660536,
+      "family_macro_f1": 0.3176661650826279,
+      "behavior_map": 0.6458763152032257,
+      "behavior_micro_f1": 0.7273449289174807,
+      "behavior_macro_f1": 0.6224301168857489
+    },
+    {
+      "epoch": 9,
+      "family_top1_accuracy": 0.6507462686567164,
+      "family_top3_accuracy": 0.7910447761194029,
+      "family_map": 0.4563316114347498,
+      "family_macro_f1": 0.3480888149558277,
+      "behavior_map": 0.6554896716362428,
+      "behavior_micro_f1": 0.7331018331583623,
+      "behavior_macro_f1": 0.6278354736923445
+    },
+    {
+      "epoch": 10,
+      "family_top1_accuracy": 0.655223880597015,
+      "family_top3_accuracy": 0.8,
+      "family_map": 0.46393406974396073,
+      "family_macro_f1": 0.3477713054457176,
+      "behavior_map": 0.662535386441382,
+      "behavior_micro_f1": 0.7271167940121628,
+      "behavior_macro_f1": 0.6187790105363564
+    }
+  ]
+}
