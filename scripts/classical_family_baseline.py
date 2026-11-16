@@ -99,18 +99,25 @@ def run(train_reports, valid_reports, *, cs=(1.0, 4.0, 16.0), feature_sets=FEATU
     valid_y, valid_mask = family_targets(valid_reports, labels)
     supervised = train_mask[:, 0] > 0
     priors = {label: float(train_y[supervised, i].mean()) for i, label in enumerate(labels)}
-    train_tokens = [report_tokens(r, max_events) for r, keep in zip(train_reports, supervised) if keep]
-    valid_tokens = [report_tokens(r, max_events) for r in valid_reports]
     y = train_y[supervised]
     runs = []
     for features in feature_sets:
         pick = (lambda t: t['events'] + t['evidence']) if features == 'all' else (lambda t, k=features: t[k])
-        train_docs, valid_docs = [pick(t) for t in train_tokens], [pick(t) for t in valid_tokens]
+        # Tokens are produced lazily and vectorized once per feature set, so memory holds only the
+        # sparse matrices; every C reuses the same matrices (identical to re-vectorizing each time).
+        vectorizer = TfidfVectorizer(analyzer=lambda doc: doc, lowercase=False, min_df=2,
+                                     sublinear_tf=True, max_features=300_000, dtype=np.float32)
+        x_train = vectorizer.fit_transform(pick(report_tokens(r, max_events))
+                                           for r, keep in zip(train_reports, supervised) if keep)
+        x_valid = vectorizer.transform(pick(report_tokens(r, max_events)) for r in valid_reports)
         for c in cs:
             started = time.perf_counter()
-            scores, n_features = fit_predict(train_docs, y, valid_docs, c, seed)
+            model = OneVsRestClassifier(
+                # Sequential: joblib memmaps large sparse inputs read-only, which liblinear rejects.
+                LogisticRegression(C=c, solver='liblinear', max_iter=2000, random_state=seed))
+            scores = model.fit(x_train, y).predict_proba(x_valid)
             metrics = evaluate(valid_y, scores, valid_mask, labels, priors)
-            entry = {'features': features, 'C': c, 'n_features': n_features,
+            entry = {'features': features, 'C': c, 'n_features': x_train.shape[1],
                      'fit_seconds': round(time.perf_counter() - started, 1), 'validation': metrics}
             runs.append(entry)
             log(json.dumps({'stage': 'classical', **{k: v for k, v in entry.items() if k != 'validation'},
