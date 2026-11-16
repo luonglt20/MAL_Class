@@ -129,3 +129,5 @@ Presentation sources: report doc https://claude.ai/artifact/SbeDLD93Gc2CWCsD3cTR
 - Speed-ups without result changes: `--encoding-cache` (encoded data reused, losses identical in tests), streamed TF-IDF vectorization, fast `--resume` scan.
 - d_model 64, 10 epochs, behavior-selected (`models/winmet_v5_behavior_d64_e10_bsel_full.pt`, encoding cache `artifacts/cache/`): epoch 10 family top-1 66.4%, family mAP 0.498, behavior mAP 0.696, behavior macro-F1 0.645 (d_model 32: 65.5% / 0.464 / 0.663 / 0.619; TF-IDF 71.6% / 0.557 / 0.803 / 0.702). Beats TF-IDF on 1/52 signatures. History: `docs/results/20261113/attention_v5_behavior_d64_e10_history.json`.
 - Next: train attention + behavior head on Avast-CTU (uses `cape_ttps`/signatures; ~4x WinMET size), freeze the configuration on validation, then score `withheld_test_time` once.
+
+- Ready-to-run next step: `scripts/run_avast_attention.sh` (training plus validation-only selection; the one-time test command is left commented until the selection is reviewed). Start it when the machine can stay on for several hours.
