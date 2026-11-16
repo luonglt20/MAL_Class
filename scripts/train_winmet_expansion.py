@@ -106,6 +106,8 @@ def main():
     # Memory-only options; they do not change the computed results.
     parser.add_argument('--pre-encode', action='store_true', help='tensorize train/validation once and drop raw events')
     parser.add_argument('--mps-empty-cache-every', type=int, default=None, metavar='N')
+    parser.add_argument('--encoding-cache', type=Path, default=None, metavar='DIR',
+                        help='reuse encoded train/validation samples across runs (requires --pre-encode)')
     # Optimization variants for A/B runs; defaults reproduce the original run.
     parser.add_argument('--batch-size', type=int, default=4)
     parser.add_argument('--lr', type=float, default=3e-4)
@@ -141,6 +143,7 @@ def main():
         progress=lambda state: print(json.dumps(state), flush=True),
         pre_encode=args.pre_encode, release_encoded_events=args.pre_encode,
         mps_empty_cache_every=args.mps_empty_cache_every,
+        encoding_cache=args.encoding_cache,
         learning_rate=args.lr, lr_schedule=args.lr_schedule,
         warmup_fraction=args.warmup_fraction, balanced_sampling=args.balanced_sampling,
     )

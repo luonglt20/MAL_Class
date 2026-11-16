@@ -84,15 +84,18 @@ def normalize(raw, sha, label, family_names, parser):
 def resume_partial(path):
     """Keep only complete JSON lines of an interrupted run; return {sha256: family}."""
     done, keep = {}, 0
+    sha = re.compile(rb'"sample_hash": "([0-9a-f]{64})"')
+    fam = re.compile(rb'"family_labels": \["([^"]+)"\]\}\n$')
     with open(path, 'rb') as handle:
         for line in handle:
-            if not line.endswith(b'\n'):
+            # A line is complete only when its newline was written; the hash
+            # and label are read without parsing the whole (~1 MB) report.
+            if not line.endswith(b'}\n'):
                 break
-            try:
-                row = json.loads(line)
-            except ValueError:
+            found, label = sha.search(line), fam.search(line[-400:])
+            if not found:
                 break
-            done[row['sample_hash']] = row.get('family')
+            done[found.group(1).decode()] = label.group(1).decode() if label else None
             keep += len(line)
     with open(path, 'r+b') as handle:  # drop a torn last line left by a kill
         handle.truncate(keep)
