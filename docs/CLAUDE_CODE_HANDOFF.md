@@ -120,3 +120,11 @@ Presentation sources: report doc https://claude.ai/artifact/SbeDLD93Gc2CWCsD3cTR
   `PYTHONPATH=src .venv/bin/python scripts/prepare_avast_ctu.py Data/raw/avast_ctu/public_full_reports.zip Data/raw/avast_ctu/public_labels.csv --output artifacts/avast/avast_ctu_v5_le128.jsonl --max-report-mib 128 --workers 2 --resume`
   then pass 2 (128-512 MiB, one worker, nothing else running): `... --output artifacts/avast/avast_ctu_v5_128to512.jsonl --min-report-mib 128 --max-report-mib 512 --workers 1`.
 - Next on Avast-CTU: build a time-ordered split from `archive_group_id` (detection month), run the TF-IDF + LR baseline first, then attention and the behavior head with CAPE `cape_ttps`; report next to WinMET, never instead of it.
+
+## 2026-11-17 overnight results
+
+- Avast-CTU fully prepared with normalization v5: pass 1 (<= 128 MiB, 48,309 reports) and pass 2 (128-512 MiB, 613 reports); 54 reports > 512 MiB skipped; 0 family-name leaks. Files: `artifacts/avast/avast_ctu_v5_le128.jsonl`, `artifacts/avast/avast_ctu_v5_128to512.jsonl`.
+- Time-ordered manifest `artifacts/avast/avast_ctu_time_manifest.json` (copy in docs/results): train <= 2019-06 (35,778), validation 2019-07..09 (4,796), calibration 2019-10 (3,717), withheld test 2019-11..2020-01 (4,631).
+- TF-IDF + LR on Avast-CTU validation (`artifacts/avast/avast_classical_validation.json`): all features C=16 top-1 94.8%, top-3 99.3%, mAP 0.974, macro-F1 0.888; events only 94.9%; static evidence only 86.4-87.6%; prior 7.9%. Test not scored yet.
+- Speed-ups without result changes: `--encoding-cache` (encoded data reused, losses identical in tests), streamed TF-IDF vectorization, fast `--resume` scan.
+- Next: train attention + behavior head on Avast-CTU (uses `cape_ttps`/signatures; ~4x WinMET size), freeze the configuration on validation, then score `withheld_test_time` once.

@@ -1,0 +1,181 @@
+{
+  "labels": [
+    "adload",
+    "emotet",
+    "harhar",
+    "lokibot",
+    "njrat",
+    "qakbot",
+    "swisyn",
+    "trickbot",
+    "ursnif",
+    "zeus"
+  ],
+  "n_train_supervised": 35778,
+  "n_validation": 4796,
+  "selection_metric": "family_map",
+  "selected": {
+    "features": "all",
+    "C": 16.0
+  },
+  "runs": [
+    {
+      "features": "events",
+      "C": 1.0,
+      "n_features": 300000,
+      "fit_seconds": 34.8,
+      "validation": {
+        "family_map": 0.9661476405194781,
+        "family_macro_f1": 0.8198711846202219,
+        "family_top1_accuracy": 0.939115929941618,
+        "family_top3_accuracy": 0.9793577981651376,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "events",
+      "C": 4.0,
+      "n_features": 300000,
+      "fit_seconds": 36.5,
+      "validation": {
+        "family_map": 0.9667984601834189,
+        "family_macro_f1": 0.8831292254135912,
+        "family_top1_accuracy": 0.9470391993327774,
+        "family_top3_accuracy": 0.9797748123436196,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "events",
+      "C": 16.0,
+      "n_features": 300000,
+      "fit_seconds": 44.3,
+      "validation": {
+        "family_map": 0.9655181889381389,
+        "family_macro_f1": 0.8887990284182475,
+        "family_top1_accuracy": 0.9489157631359466,
+        "family_top3_accuracy": 0.981442869057548,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "evidence",
+      "C": 1.0,
+      "n_features": 10866,
+      "fit_seconds": 7.4,
+      "validation": {
+        "family_map": 0.7909099703128322,
+        "family_macro_f1": 0.7518572822086567,
+        "family_top1_accuracy": 0.8755212677231026,
+        "family_top3_accuracy": 0.9687239366138448,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "evidence",
+      "C": 4.0,
+      "n_features": 10866,
+      "fit_seconds": 8.4,
+      "validation": {
+        "family_map": 0.7943853557364442,
+        "family_macro_f1": 0.7796241072536356,
+        "family_top1_accuracy": 0.8694745621351125,
+        "family_top3_accuracy": 0.9726855713094246,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "evidence",
+      "C": 16.0,
+      "n_features": 10866,
+      "fit_seconds": 10.3,
+      "validation": {
+        "family_map": 0.8006298537201317,
+        "family_macro_f1": 0.7676194939438591,
+        "family_top1_accuracy": 0.8642618849040867,
+        "family_top3_accuracy": 0.975604670558799,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "all",
+      "C": 1.0,
+      "n_features": 300000,
+      "fit_seconds": 40.1,
+      "validation": {
+        "family_map": 0.9698832769447252,
+        "family_macro_f1": 0.8161039827463498,
+        "family_top1_accuracy": 0.9401584653878232,
+        "family_top3_accuracy": 0.9920767306088407,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "all",
+      "C": 4.0,
+      "n_features": 300000,
+      "fit_seconds": 44.1,
+      "validation": {
+        "family_map": 0.9730275497653876,
+        "family_macro_f1": 0.8833392893925858,
+        "family_top1_accuracy": 0.9443286071726439,
+        "family_top3_accuracy": 0.9927022518765638,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    },
+    {
+      "features": "all",
+      "C": 16.0,
+      "n_features": 300000,
+      "fit_seconds": 50.8,
+      "validation": {
+        "family_map": 0.9735639759386526,
+        "family_macro_f1": 0.8882869671008198,
+        "family_top1_accuracy": 0.9482902418682235,
+        "family_top3_accuracy": 0.9931192660550459,
+        "family_evaluated_samples": 4796,
+        "family_prior_map": 0.1,
+        "family_prior_top1_accuracy": 0.07923269391159299,
+        "family_prior_top3_accuracy": 0.6132193494578816,
+        "family_prior_evaluated_samples": 4796
+      }
+    }
+  ],
+  "manifest": "artifacts/avast/avast_ctu_time_manifest.json",
+  "load_seconds": 3264.2,
+  "max_events": null,
+  "total_seconds": 7965.2,
+  "notice": "Validation only. Withheld test partitions were not parsed or scored."
+}
