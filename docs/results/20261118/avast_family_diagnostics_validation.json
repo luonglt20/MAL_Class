@@ -1,0 +1,168 @@
+{
+  "status": "validation_only_diagnostics",
+  "manifest": "artifacts/avast/avast_ctu_time_manifest.json",
+  "checkpoint": "models/avast_attention_d64_bsel.pt",
+  "tfidf_config": {
+    "features": "all",
+    "C": 16.0
+  },
+  "labels": [
+    "adload",
+    "emotet",
+    "harhar",
+    "lokibot",
+    "njrat",
+    "qakbot",
+    "swisyn",
+    "trickbot",
+    "ursnif",
+    "zeus"
+  ],
+  "event_counts": {
+    "njrat": {
+      "median": 1799.5,
+      "p90": 1970.9,
+      "max": 2036,
+      "share_at_cap": 0.0
+    },
+    "swisyn": {
+      "median": 1849.0,
+      "p90": 2008.0,
+      "max": 2014,
+      "share_at_cap": 0.0
+    },
+    "ursnif": {
+      "median": 709.0,
+      "p90": 1787.6,
+      "max": 2048,
+      "share_at_cap": 0.0547945205479452
+    },
+    "qakbot": {
+      "median": 1843.0,
+      "p90": 1921.0,
+      "max": 2030,
+      "share_at_cap": 0.0
+    },
+    "trickbot": {
+      "median": 79.0,
+      "p90": 866.4000000000019,
+      "max": 1940,
+      "share_at_cap": 0.0
+    },
+    "lokibot": {
+      "median": 1941.0,
+      "p90": 2005.0,
+      "max": 2048,
+      "share_at_cap": 0.002150537634408602
+    },
+    "emotet": {
+      "median": 1414.0,
+      "p90": 1912.2,
+      "max": 2033,
+      "share_at_cap": 0.0
+    },
+    "zeus": {
+      "median": 677.5,
+      "p90": 2047.0,
+      "max": 2048,
+      "share_at_cap": 0.08333333333333333
+    },
+    "adload": {
+      "median": 782.5,
+      "p90": 910.0,
+      "max": 1065,
+      "share_at_cap": 0.0
+    },
+    "harhar": {
+      "median": 358.0,
+      "p90": 372.4,
+      "max": 376,
+      "share_at_cap": 0.0
+    }
+  },
+  "tfidf_per_family": {
+    "adload": {
+      "rows": 30,
+      "top1": 1.0
+    },
+    "emotet": {
+      "rows": 380,
+      "top1": 0.6789473684210526
+    },
+    "harhar": {
+      "rows": 3,
+      "top1": 1.0
+    },
+    "lokibot": {
+      "rows": 465,
+      "top1": 0.8666666666666667
+    },
+    "njrat": {
+      "rows": 418,
+      "top1": 0.9688995215311005
+    },
+    "qakbot": {
+      "rows": 151,
+      "top1": 0.9867549668874173
+    },
+    "swisyn": {
+      "rows": 2410,
+      "top1": 0.9983402489626556
+    },
+    "trickbot": {
+      "rows": 818,
+      "top1": 0.9828850855745721
+    },
+    "ursnif": {
+      "rows": 73,
+      "top1": 0.6301369863013698
+    },
+    "zeus": {
+      "rows": 48,
+      "top1": 0.9166666666666666
+    }
+  },
+  "attention_per_family": {
+    "adload": {
+      "rows": 30,
+      "top1": 0.9666666666666667
+    },
+    "emotet": {
+      "rows": 380,
+      "top1": 0.6078947368421053
+    },
+    "harhar": {
+      "rows": 3,
+      "top1": 1.0
+    },
+    "lokibot": {
+      "rows": 465,
+      "top1": 0.886021505376344
+    },
+    "njrat": {
+      "rows": 418,
+      "top1": 0.9569377990430622
+    },
+    "qakbot": {
+      "rows": 151,
+      "top1": 0.9801324503311258
+    },
+    "swisyn": {
+      "rows": 2410,
+      "top1": 0.9991701244813278
+    },
+    "trickbot": {
+      "rows": 818,
+      "top1": 0.9743276283618582
+    },
+    "ursnif": {
+      "rows": 73,
+      "top1": 0.6301369863013698
+    },
+    "zeus": {
+      "rows": 48,
+      "top1": 0.8958333333333334
+    }
+  },
+  "notice": "Validation only; the withheld test partition was not loaded."
+}
