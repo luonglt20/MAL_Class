@@ -1,0 +1,6314 @@
+{
+ "config": {
+  "epochs": 8,
+  "patience": 3,
+  "selection_metric": "behavior_map",
+  "d_model": 64,
+  "behavior_targets": "cape-signatures",
+  "pre_encode": true,
+  "batch_size": 4,
+  "lr": 0.0003,
+  "seed": 44,
+  "finalize_device": "cpu"
+ },
+ "history": [
+  {
+   "behavior_map": 0.45575890323844137,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.08888888888888889,
+     "precision": 0.0449438202247191,
+     "average_precision": 0.029986947374226847
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.03571428571428571,
+     "average_precision": 0.5548684454326478
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 0.9896907216494846,
+     "precision": 0.6666666666666666,
+     "average_precision": 0.6430790151051273
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.23076923076923078,
+     "precision": 0.06976744186046512,
+     "average_precision": 0.12134174452199038
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.6605080831408776,
+     "precision": 0.4696223316912972,
+     "average_precision": 0.5253930496692738
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.821826280623608,
+     "precision": 0.6222596964586846,
+     "average_precision": 0.6498433425586928
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.0375,
+     "average_precision": 0.5489158163265306
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.23529411764705882,
+     "precision": 0.046511627906976744,
+     "average_precision": 0.20835508098648522
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.375,
+     "precision": 0.033707865168539325,
+     "average_precision": 0.2702445002619143
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.03409090909090909,
+     "average_precision": 0.6875
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.5454545454545454,
+     "precision": 0.4637002341920375,
+     "average_precision": 0.4105936137712165
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.017404904904904907
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.1111111111111111,
+     "precision": 0.02702702702702703,
+     "average_precision": 0.016830966926979288
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.03636363636363636,
+     "precision": 0.2,
+     "average_precision": 0.049017820378562046
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.46153846153846156,
+     "precision": 0.2608695652173913,
+     "average_precision": 0.36479413390222515
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.8901098901098901,
+     "precision": 0.5547945205479452,
+     "average_precision": 0.5329378386674806
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.8270676691729323,
+     "precision": 0.4198473282442748,
+     "average_precision": 0.5648704426659757
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9236111111111112,
+     "precision": 0.726775956284153,
+     "average_precision": 0.8674507089213973
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.11299435028248588,
+     "precision": 0.3076923076923077,
+     "average_precision": 0.24252322261476472
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.03571428571428571,
+     "average_precision": 0.527121514809346
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.44946236559139785,
+     "precision": 0.7946768060836502,
+     "average_precision": 0.6906398508450807
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.6666666666666666,
+     "precision": 0.4897959183673469,
+     "average_precision": 0.6082814173383987
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.7390396659707724,
+     "precision": 0.3964165733482643,
+     "average_precision": 0.5971067742659376
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.9947575360419397,
+     "precision": 0.9242571846078909,
+     "average_precision": 0.972246716441511
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.013386122204544496
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.5692307692307692,
+     "precision": 0.7551020408163265,
+     "average_precision": 0.6851291733725322
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.8624,
+     "precision": 0.9497797356828194,
+     "average_precision": 0.9748925697182674
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 0.08695652173913043,
+     "precision": 0.2,
+     "average_precision": 0.18406485224276659
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.712,
+     "precision": 0.6768060836501901,
+     "average_precision": 0.7293667865866328
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.7620481927710844,
+     "precision": 0.5634743875278396,
+     "average_precision": 0.6169449641781022
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.6180257510729614,
+     "precision": 0.5454545454545454,
+     "average_precision": 0.6318414484680441
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.6772727272727272,
+     "precision": 0.5559701492537313,
+     "average_precision": 0.645209446136048
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.9315068493150684,
+     "precision": 0.28936170212765955,
+     "average_precision": 0.3716408308442826
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.6712328767123288,
+     "precision": 0.5653846153846154,
+     "average_precision": 0.6143616507902941
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.4166666666666667,
+     "precision": 0.08771929824561403,
+     "average_precision": 0.1164218652400343
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8,
+     "precision": 0.5467625899280576,
+     "average_precision": 0.4913735505811431
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.650319829424307,
+     "precision": 0.4825949367088608,
+     "average_precision": 0.5470457038567238
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.7580405739732805,
+     "precision": 0.8170666666666667,
+     "average_precision": 0.8409199400398415
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.41935483870967744,
+     "precision": 0.03724928366762178,
+     "average_precision": 0.08433700673060174
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.6384479717813051,
+     "precision": 0.4496894409937888,
+     "average_precision": 0.5398058025476753
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.6737357259380098,
+     "precision": 0.5680880330123796,
+     "average_precision": 0.7056202866400352
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.5944055944055944,
+     "average_precision": 0.558510966592987
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9885267275097783,
+     "precision": 0.9307635649398478,
+     "average_precision": 0.9773957746004904
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.005907855494395531
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.6995515695067265,
+     "precision": 0.7123287671232876,
+     "average_precision": 0.7658576039568236
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.6497890295358649,
+     "precision": 0.6875,
+     "average_precision": 0.7098658829709509
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.020321105548652085
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.2,
+     "precision": 0.058823529411764705,
+     "average_precision": 0.03318123757365676
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.13333333333333333,
+     "precision": 0.06666666666666667,
+     "average_precision": 0.05471341737263912
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.01524390243902439,
+     "precision": 0.2,
+     "average_precision": 0.1522163120628069
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.2079646017699115,
+     "precision": 0.7704918032786885,
+     "average_precision": 0.5763830250438786
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.031496062992125984,
+     "precision": 0.17647058823529413,
+     "average_precision": 0.16949363008898602
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.021220159151193633,
+     "precision": 0.18604651162790697,
+     "average_precision": 0.15151533425247135
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.5803571428571429,
+     "precision": 0.7768924302788844,
+     "average_precision": 0.7123875848412631
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.9765625,
+     "precision": 0.26595744680851063,
+     "average_precision": 0.45274847765683124
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.008797653958944282,
+     "precision": 0.14285714285714285,
+     "average_precision": 0.12030318717802618
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.6411682892906815,
+     "precision": 0.4524043179587831,
+     "average_precision": 0.5267661765972621
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.3562005277044855,
+     "precision": 0.28125,
+     "average_precision": 0.2686670924315914
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9069767441860465,
+     "precision": 0.43820224719101125,
+     "average_precision": 0.7133531922813667
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.35153501099694295
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.771712158808933,
+     "precision": 0.47480916030534354,
+     "average_precision": 0.5779343299853019
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.6296296296296297,
+     "precision": 0.5151515151515151,
+     "average_precision": 0.45667640680385657
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.4367283950617284,
+     "precision": 0.8179190751445087,
+     "average_precision": 0.7226900378550876
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.16058394160583941,
+     "precision": 0.11764705882352941,
+     "average_precision": 0.12104676931115566
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.44,
+     "precision": 0.4723926380368098,
+     "average_precision": 0.3730677446078441
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.8782191182889568,
+     "precision": 0.9340761374187558,
+     "average_precision": 0.9673669530614462
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.013933669280570224
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.77491961414791,
+     "precision": 0.49385245901639346,
+     "average_precision": 0.6538621246489683
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.030738903597087426
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.602112676056338,
+     "precision": 0.9606741573033708,
+     "average_precision": 0.6961067781349181
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.7101449275362319,
+     "precision": 0.5444444444444444,
+     "average_precision": 0.5411685725518397
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 0.4563758389261745,
+     "precision": 0.2809917355371901,
+     "average_precision": 0.3538586514381663
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.7636363636363637,
+     "precision": 0.6983372921615202,
+     "average_precision": 0.6950026074022723
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.1111111111111111,
+     "precision": 0.17647058823529413,
+     "average_precision": 0.16216489615595128
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.6642093623295245,
+     "precision": 0.805183199285076,
+     "average_precision": 0.8126353409689343
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.0008349487428011713
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": null,
+     "average_precision": 0.020619543742211345
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.09333333333333334,
+     "precision": 0.6363636363636364,
+     "average_precision": 0.4270206369327826
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.8828250401284109,
+     "precision": 0.49796287913082843,
+     "average_precision": 0.5217949967576643
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.5193548387096775,
+     "precision": 0.62890625,
+     "average_precision": 0.6318589332193129
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.6084656084656085,
+     "precision": 0.5348837209302325,
+     "average_precision": 0.5442526772190632
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9927536231884058,
+     "precision": 0.9256756756756757,
+     "average_precision": 0.8973269870576636
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.975346687211094,
+     "precision": 0.97556142668428,
+     "average_precision": 0.9747685524731511
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.9134078212290503,
+     "precision": 0.4186939820742638,
+     "average_precision": 0.5457122388659962
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.5657894736842105,
+     "precision": 0.49142857142857144,
+     "average_precision": 0.46226015869402387
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.027777777777777776,
+     "average_precision": 0.02471590909090909
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.6944444444444444,
+     "precision": 0.5,
+     "average_precision": 0.6067724767351736
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.8731609461244941,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.410958904109589,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5868421052631579,
+     "precision": 0.9570815450643777,
+     "average_precision": 0.834030501972856
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.789247311827957,
+     "precision": 0.9267676767676768,
+     "average_precision": 0.9398625349520031
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9688995215311005,
+     "precision": 0.7105263157894737,
+     "average_precision": 0.9199056855174458
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9801324503311258,
+     "precision": 0.9932885906040269,
+     "average_precision": 0.9926670748551202
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9975103734439834,
+     "precision": 0.9995841995841996,
+     "average_precision": 0.9999056602070941
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9278728606356969,
+     "precision": 0.9705882352941176,
+     "average_precision": 0.9785651416965523
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.9726027397260274,
+     "precision": 0.20402298850574713,
+     "average_precision": 0.4965976594243236
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8333333333333334,
+     "precision": 0.13468013468013468,
+     "average_precision": 0.5700752026195468
+    }
+   },
+   "family_calibrated_map": 0.8731609461244941,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.410958904109589,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5868421052631579,
+     "precision": 0.9570815450643777,
+     "average_precision": 0.834030501972856
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.789247311827957,
+     "precision": 0.9267676767676768,
+     "average_precision": 0.9398625349520031
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9688995215311005,
+     "precision": 0.7105263157894737,
+     "average_precision": 0.9199056855174458
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9801324503311258,
+     "precision": 0.9932885906040269,
+     "average_precision": 0.9926670748551202
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9975103734439834,
+     "precision": 0.9995841995841996,
+     "average_precision": 0.9999056602070941
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9278728606356969,
+     "precision": 0.9705882352941176,
+     "average_precision": 0.9785651416965523
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.9726027397260274,
+     "precision": 0.20402298850574713,
+     "average_precision": 0.4965976594243236
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8333333333333334,
+     "precision": 0.13468013468013468,
+     "average_precision": 0.5700752026195468
+    }
+   },
+   "family_balanced_accuracy": 0.9440788096425086,
+   "loss": 0.6600696734844818,
+   "family_subset_accuracy": 0.8642618849040867,
+   "family_macro_f1": 0.748556785200163,
+   "family_micro_f1": 0.8853959411062475,
+   "family_calibrated_macro_f1": 0.748556785200163,
+   "family_calibrated_micro_f1": 0.8853959411062475,
+   "family_top1_accuracy": 0.9072143452877398,
+   "family_top3_accuracy": 0.9530859049207673,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.7240001475343325,
+   "behavior_macro_f1": 0.41341545727242235,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 1,
+   "train_loss": 0.5743577794371253
+  },
+  {
+   "behavior_map": 0.5404288389736822,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.37777777777777777,
+     "precision": 0.05704697986577181,
+     "average_precision": 0.057087107452356275
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.022900763358778626,
+     "average_precision": 0.7509832841691249
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.708029197080292,
+     "average_precision": 0.6961602617657003
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.6153846153846154,
+     "precision": 0.058394160583941604,
+     "average_precision": 0.24163528475152074
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.8036951501154734,
+     "precision": 0.5201793721973094,
+     "average_precision": 0.5791510592552933
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.8396436525612472,
+     "precision": 0.6720142602495544,
+     "average_precision": 0.7880765991139692
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.0380952380952381,
+     "average_precision": 0.76
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.5882352941176471,
+     "precision": 0.06289308176100629,
+     "average_precision": 0.2642067937383949
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.02185792349726776,
+     "average_precision": 0.3869611282039368
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.022900763358778626,
+     "average_precision": 1.0
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.8898071625344353,
+     "precision": 0.3877551020408163,
+     "average_precision": 0.5308814933288041
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.020618556701030927,
+     "average_precision": 0.023759955674789918
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.014492753623188406,
+     "average_precision": 0.0218213074601908
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.07272727272727272,
+     "precision": 0.06896551724137931,
+     "average_precision": 0.05175442574276525
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.8461538461538461,
+     "precision": 0.06707317073170732,
+     "average_precision": 0.5209538872642258
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.9010989010989011,
+     "precision": 0.543046357615894,
+     "average_precision": 0.5775778255644373
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.8721804511278195,
+     "precision": 0.4496124031007752,
+     "average_precision": 0.7225661606033605
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9236111111111112,
+     "precision": 0.5911111111111111,
+     "average_precision": 0.9296988773018652
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.8248587570621468,
+     "precision": 0.25749559082892415,
+     "average_precision": 0.3083646410224206
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.025423728813559324,
+     "average_precision": 0.7506715916722633
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.7075268817204301,
+     "precision": 0.7615740740740741,
+     "average_precision": 0.812372928021417
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8888888888888888,
+     "precision": 0.6037735849056604,
+     "average_precision": 0.7929693530249339
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.9144050104384134,
+     "precision": 0.49048152295632697,
+     "average_precision": 0.6849470021941304
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.9955439056356488,
+     "precision": 0.9620060790273556,
+     "average_precision": 0.9924624876347863
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.2727272727272727,
+     "precision": 0.023255813953488372,
+     "average_precision": 0.023549347649392684
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.5897435897435898,
+     "precision": 0.5528846153846154,
+     "average_precision": 0.5978651973627978
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.9316,
+     "precision": 0.9506122448979591,
+     "average_precision": 0.981230315959143
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.17037037037037037,
+     "average_precision": 0.2176098191859244
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.78,
+     "precision": 0.4936708860759494,
+     "average_precision": 0.611827769198013
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.858433734939759,
+     "precision": 0.5804480651731161,
+     "average_precision": 0.8238868276194525
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.8497854077253219,
+     "precision": 0.5561797752808989,
+     "average_precision": 0.7781859343149736
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.8863636363636364,
+     "precision": 0.5873493975903614,
+     "average_precision": 0.8267281035967239
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.9726027397260274,
+     "precision": 0.2581818181818182,
+     "average_precision": 0.6041800508828105
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.8812785388127854,
+     "precision": 0.6107594936708861,
+     "average_precision": 0.8038428460634655
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.9166666666666666,
+     "precision": 0.044534412955465584,
+     "average_precision": 0.07877983517639826
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8210526315789474,
+     "precision": 0.5652173913043478,
+     "average_precision": 0.5280362731248648
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.8315565031982942,
+     "precision": 0.5587392550143266,
+     "average_precision": 0.7347626458031453
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.9386442355269669,
+     "precision": 0.8852076528231452,
+     "average_precision": 0.94222420403925
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.5483870967741935,
+     "precision": 0.0389908256880734,
+     "average_precision": 0.1417365232408236
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.8148148148148148,
+     "precision": 0.46998982706002035,
+     "average_precision": 0.5886103481170982
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.8123980424143556,
+     "precision": 0.5851938895417156,
+     "average_precision": 0.7382138742572091
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9555555555555556,
+     "precision": 0.6099290780141844,
+     "average_precision": 0.6046689959553877
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9940026075619296,
+     "precision": 0.963356077836745,
+     "average_precision": 0.9930709374133592
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.004611174462307462
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.8161434977578476,
+     "precision": 0.7027027027027027,
+     "average_precision": 0.7599810118432943
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.759493670886076,
+     "precision": 0.625,
+     "average_precision": 0.7152161111522486
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.041666666666666664,
+     "precision": 0.008130081300813009,
+     "average_precision": 0.01737478644973176
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.2,
+     "precision": 0.020833333333333332,
+     "average_precision": 0.02035596713809105
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.26666666666666666,
+     "precision": 0.031007751937984496,
+     "average_precision": 0.11510017550766997
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.2865853658536585,
+     "precision": 0.3868312757201646,
+     "average_precision": 0.3472664258659957
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.40707964601769914,
+     "precision": 0.8070175438596491,
+     "average_precision": 0.6208165617748931
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.5065616797900262,
+     "precision": 0.23479318734793186,
+     "average_precision": 0.2668263643038235
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.259946949602122,
+     "precision": 0.32666666666666666,
+     "average_precision": 0.2832980896490933
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.6755952380952381,
+     "precision": 0.7668918918918919,
+     "average_precision": 0.7201149356768249
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.984375,
+     "precision": 0.24803149606299213,
+     "average_precision": 0.6905561058725681
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.20821114369501467,
+     "precision": 0.14978902953586498,
+     "average_precision": 0.1553075853305064
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.8247566063977747,
+     "precision": 0.48967795210569776,
+     "average_precision": 0.5696174830691744
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.8443271767810027,
+     "precision": 0.37122969837587005,
+     "average_precision": 0.4818437270610777
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9767441860465116,
+     "precision": 0.7924528301886793,
+     "average_precision": 0.9765407260906135
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8463855421686747,
+     "precision": 0.4370139968895801,
+     "average_precision": 0.49422365103339405
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.9454094292803971,
+     "precision": 0.4163934426229508,
+     "average_precision": 0.6361498499908267
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.7407407407407407,
+     "precision": 0.28169014084507044,
+     "average_precision": 0.3972940613717166
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.5879629629629629,
+     "precision": 0.6468590831918506,
+     "average_precision": 0.7198185885419106
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.6277372262773723,
+     "precision": 0.24089635854341737,
+     "average_precision": 0.34916362897346526
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.4514285714285714,
+     "precision": 0.29699248120300753,
+     "average_precision": 0.325807242915138
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.9589698821475339,
+     "precision": 0.7934272300469484,
+     "average_precision": 0.9670921798466056
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.01622436633928474
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.8906752411575563,
+     "precision": 0.47594501718213056,
+     "average_precision": 0.7981680477625019
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.16666666666666666,
+     "precision": 0.014492753623188406,
+     "average_precision": 0.018552404928531226
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.6302816901408451,
+     "precision": 0.9179487179487179,
+     "average_precision": 0.7402778996919833
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.7753623188405797,
+     "precision": 0.6114285714285714,
+     "average_precision": 0.6313523827196422
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.305327868852459,
+     "average_precision": 0.6047528473452422
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.8857142857142857,
+     "precision": 0.7662921348314606,
+     "average_precision": 0.8591049492370095
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.29218106995884774,
+     "precision": 0.461038961038961,
+     "average_precision": 0.38369255311130956
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.8643568005897531,
+     "precision": 0.8312655086848635,
+     "average_precision": 0.8650666468839281
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.0004769345169976267
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.4,
+     "precision": 0.022222222222222223,
+     "average_precision": 0.06246589353504209
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.46266666666666667,
+     "precision": 0.6485981308411215,
+     "average_precision": 0.5939547709584002
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.6613162118780096,
+     "precision": 0.5070769230769231,
+     "average_precision": 0.6169949807702279
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.5387096774193548,
+     "precision": 0.605072463768116,
+     "average_precision": 0.6951519808982812
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.8042328042328042,
+     "precision": 0.5692883895131086,
+     "average_precision": 0.6299718415534646
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9927536231884058,
+     "precision": 0.9133333333333333,
+     "average_precision": 0.9835677790849191
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.9801893022232006,
+     "precision": 0.9680434782608696,
+     "average_precision": 0.9924236509541234
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.888268156424581,
+     "precision": 0.4536376604850214,
+     "average_precision": 0.7264626865720343
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.3352941176470588,
+     "average_precision": 0.48475277974893427
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.009345794392523364,
+     "average_precision": 0.026250000000000002
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8611111111111112,
+     "precision": 0.5961538461538461,
+     "average_precision": 0.7891938562565993
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.8745567538335687,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 1.0,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5394736842105263,
+     "precision": 0.9903381642512077,
+     "average_precision": 0.7890600091513568
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.8688172043010752,
+     "precision": 0.8614072494669509,
+     "average_precision": 0.9434844590826426
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9808612440191388,
+     "precision": 0.6184012066365008,
+     "average_precision": 0.9352553641634515
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 0.98,
+     "average_precision": 0.9966008155384714
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9966804979253112,
+     "precision": 1.0,
+     "average_precision": 0.999956118941127
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9327628361858191,
+     "precision": 0.9350490196078431,
+     "average_precision": 0.9737945758697915
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.3972602739726027,
+     "precision": 0.5686274509803921,
+     "average_precision": 0.5698165729920406
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8541666666666666,
+     "precision": 0.17982456140350878,
+     "average_precision": 0.5375996225968058
+    }
+   },
+   "family_calibrated_map": 0.8745567538335687,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 1.0,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5394736842105263,
+     "precision": 0.9903381642512077,
+     "average_precision": 0.7890600091513568
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.8688172043010752,
+     "precision": 0.8614072494669509,
+     "average_precision": 0.9434844590826426
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9808612440191388,
+     "precision": 0.6184012066365008,
+     "average_precision": 0.9352553641634515
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 0.98,
+     "average_precision": 0.9966008155384714
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9966804979253112,
+     "precision": 1.0,
+     "average_precision": 0.999956118941127
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9327628361858191,
+     "precision": 0.9350490196078431,
+     "average_precision": 0.9737945758697915
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.3972602739726027,
+     "precision": 0.5686274509803921,
+     "average_precision": 0.5698165729920406
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8541666666666666,
+     "precision": 0.17982456140350878,
+     "average_precision": 0.5375996225968058
+    }
+   },
+   "family_balanced_accuracy": 0.9189468444426645,
+   "loss": 0.6395205846641817,
+   "family_subset_accuracy": 0.9040867389491243,
+   "family_macro_f1": 0.7979000468384876,
+   "family_micro_f1": 0.9034033014061544,
+   "family_calibrated_macro_f1": 0.7979000468384876,
+   "family_calibrated_micro_f1": 0.9034033014061544,
+   "family_top1_accuracy": 0.9174311926605505,
+   "family_top3_accuracy": 0.9518348623853211,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.7351067323481116,
+   "behavior_macro_f1": 0.469525535088729,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 2,
+   "train_loss": 0.3480213161816122
+  },
+  {
+   "behavior_map": 0.5794575374911488,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.4888888888888889,
+     "precision": 0.3492063492063492,
+     "average_precision": 0.4045313868718106
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.16666666666666666,
+     "average_precision": 0.750561797752809
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 0.979381443298969,
+     "precision": 0.7196969696969697,
+     "average_precision": 0.6943948658340089
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.23076923076923078,
+     "precision": 0.17647058823529413,
+     "average_precision": 0.2804008458931425
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.7136258660508084,
+     "precision": 0.5797373358348968,
+     "average_precision": 0.6201504139311216
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.8296213808463252,
+     "precision": 0.782563025210084,
+     "average_precision": 0.853020700097047
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.17647058823529413,
+     "average_precision": 0.782258064516129
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.35294117647058826,
+     "precision": 0.23076923076923078,
+     "average_precision": 0.3126182169671553
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.375,
+     "precision": 0.046153846153846156,
+     "average_precision": 0.39800689337101336
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.125,
+     "average_precision": 1.0
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.7052341597796143,
+     "precision": 0.4980544747081712,
+     "average_precision": 0.5572655185689571
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.25,
+     "precision": 0.047619047619047616,
+     "average_precision": 0.03843710913070669
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.2222222222222222,
+     "precision": 0.06896551724137931,
+     "average_precision": 0.12987780421869152
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.01818181818181818,
+     "precision": 0.2,
+     "average_precision": 0.06580929259482009
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.6923076923076923,
+     "precision": 0.6923076923076923,
+     "average_precision": 0.6178864378487913
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.8681318681318682,
+     "precision": 0.572463768115942,
+     "average_precision": 0.5550385549715728
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.8822055137844611,
+     "precision": 0.5432098765432098,
+     "average_precision": 0.783719479982606
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9236111111111112,
+     "precision": 0.7869822485207101,
+     "average_precision": 0.9455508743412773
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.3050847457627119,
+     "precision": 0.34615384615384615,
+     "average_precision": 0.2915302800369662
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.125,
+     "average_precision": 0.7504108463434676
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.6946236559139785,
+     "precision": 0.7672209026128266,
+     "average_precision": 0.8201141154727096
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8055555555555556,
+     "precision": 0.4915254237288136,
+     "average_precision": 0.8303476915527359
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.8517745302713987,
+     "precision": 0.6107784431137725,
+     "average_precision": 0.805099798663564
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.9963302752293578,
+     "precision": 0.979891724671307,
+     "average_precision": 0.99513385587519
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.01383014436134706
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.6,
+     "precision": 0.6923076923076923,
+     "average_precision": 0.711151910407519
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.9416,
+     "precision": 0.9759535655058044,
+     "average_precision": 0.9909202622862688
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 0.043478260869565216,
+     "precision": 0.16666666666666666,
+     "average_precision": 0.26357068919151916
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.74,
+     "precision": 0.7115384615384616,
+     "average_precision": 0.7570809601371659
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8283132530120482,
+     "precision": 0.6944444444444444,
+     "average_precision": 0.8833309904436943
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.7982832618025751,
+     "precision": 0.7322834645669292,
+     "average_precision": 0.8366199205721915
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.8545454545454545,
+     "precision": 0.7203065134099617,
+     "average_precision": 0.8751136187627175
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.952054794520548,
+     "precision": 0.3582474226804124,
+     "average_precision": 0.6550072140293797
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.8538812785388128,
+     "precision": 0.7164750957854407,
+     "average_precision": 0.886251860817924
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.1,
+     "average_precision": 0.19621180910143057
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8,
+     "precision": 0.5801526717557252,
+     "average_precision": 0.520569460402254
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.8592750533049041,
+     "precision": 0.5550964187327824,
+     "average_precision": 0.7601148214832051
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.9574468085106383,
+     "precision": 0.9188034188034188,
+     "average_precision": 0.9563579331959436
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.45161290322580644,
+     "precision": 0.08917197452229299,
+     "average_precision": 0.20647887239714766
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.8395061728395061,
+     "precision": 0.5085470085470085,
+     "average_precision": 0.5617143820623622
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.8597063621533442,
+     "precision": 0.6036655211912944,
+     "average_precision": 0.7264207778269655
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9222222222222223,
+     "precision": 0.6384615384615384,
+     "average_precision": 0.5942011296230237
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9940026075619296,
+     "precision": 0.9829809179989686,
+     "average_precision": 0.9962129927878804
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.002285590565389886
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.7309417040358744,
+     "precision": 0.7616822429906542,
+     "average_precision": 0.7943579762362081
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.6751054852320675,
+     "precision": 0.7476635514018691,
+     "average_precision": 0.7547082791678218
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.041666666666666664,
+     "precision": 0.014492753623188406,
+     "average_precision": 0.022212734311674323
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": null,
+     "average_precision": 0.038159361074892414
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.13333333333333333,
+     "precision": 0.125,
+     "average_precision": 0.13997254128757425
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.3323170731707317,
+     "precision": 0.6264367816091954,
+     "average_precision": 0.5302520492807561
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.11504424778761062,
+     "precision": 0.7878787878787878,
+     "average_precision": 0.6011754961776892
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.6456692913385826,
+     "precision": 0.29531812725090034,
+     "average_precision": 0.3003636365463513
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.3076923076923077,
+     "precision": 0.7785234899328859,
+     "average_precision": 0.5053232519515155
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.4791666666666667,
+     "precision": 0.817258883248731,
+     "average_precision": 0.7420407883570603
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.984375,
+     "precision": 0.32558139534883723,
+     "average_precision": 0.720556054216592
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.09090909090909091,
+     "precision": 0.2605042016806723,
+     "average_precision": 0.2081290687886842
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.741307371349096,
+     "precision": 0.5598739495798319,
+     "average_precision": 0.617519610847786
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.5514511873350924,
+     "precision": 0.6490683229813664,
+     "average_precision": 0.7106710932154068
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9767441860465116,
+     "precision": 0.9767441860465116,
+     "average_precision": 0.9785459878483134
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8975903614457831,
+     "precision": 0.519163763066202,
+     "average_precision": 0.528308416615036
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.8808933002481389,
+     "precision": 0.5469953775038521,
+     "average_precision": 0.7113609764066231
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.6888888888888889,
+     "precision": 0.4626865671641791,
+     "average_precision": 0.502016598797478
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.6141975308641975,
+     "precision": 0.7343173431734318,
+     "average_precision": 0.7933829597252015
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.6277372262773723,
+     "precision": 0.39090909090909093,
+     "average_precision": 0.4584536494868914
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.52,
+     "precision": 0.4080717488789238,
+     "average_precision": 0.380430835021779
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.879528590135312,
+     "precision": 0.9088858818222824,
+     "average_precision": 0.9718360947491967
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.09090909090909091,
+     "precision": 0.01639344262295082,
+     "average_precision": 0.01348396416473364
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.8617363344051447,
+     "precision": 0.7015706806282722,
+     "average_precision": 0.8602807123503728
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": null,
+     "average_precision": 0.01794044975322077
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.6056338028169014,
+     "precision": 0.945054945054945,
+     "average_precision": 0.7070156017128979
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.7318840579710145,
+     "precision": 0.5519125683060109,
+     "average_precision": 0.6250323495022092
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 0.825503355704698,
+     "precision": 0.4606741573033708,
+     "average_precision": 0.6457170265408475
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.8909090909090909,
+     "precision": 0.7392241379310345,
+     "average_precision": 0.8957842308651871
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.29218106995884774,
+     "precision": 0.8452380952380952,
+     "average_precision": 0.4897731804756885
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.8599336527828971,
+     "precision": 0.8416305916305916,
+     "average_precision": 0.8542931915627174
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.0005638746229060273
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.1,
+     "precision": 0.022727272727272728,
+     "average_precision": 0.04976378733316342
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.32266666666666666,
+     "precision": 0.8461538461538461,
+     "average_precision": 0.6466928076993991
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.5275190516511431,
+     "average_precision": 0.5778438819620332
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.5161290322580645,
+     "precision": 0.7511737089201878,
+     "average_precision": 0.685922319832152
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.5925925925925926,
+     "precision": 0.5283018867924528,
+     "average_precision": 0.6070134924508162
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9855072463768116,
+     "precision": 0.9927007299270073,
+     "average_precision": 0.983923159712753
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.985031917235307,
+     "precision": 0.9715588363004777,
+     "average_precision": 0.9941265491342861
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.8296089385474861,
+     "precision": 0.5129533678756477,
+     "average_precision": 0.7475055297026956
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.6381578947368421,
+     "precision": 0.4429223744292237,
+     "average_precision": 0.46448669950328597
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.034482758620689655,
+     "average_precision": 0.03120243531202435
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.5625,
+     "average_precision": 0.8290528721343989
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.9029251645464654,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 1.0,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5026315789473684,
+     "precision": 0.9794871794871794,
+     "average_precision": 0.8261926161447065
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.6,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.7870967741935484,
+     "precision": 0.9891891891891892,
+     "average_precision": 0.9424727882669889
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9808612440191388,
+     "precision": 0.5959302325581395,
+     "average_precision": 0.9305763937501739
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 1.0,
+     "average_precision": 0.9911442107995846
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9966804979253112,
+     "precision": 0.9995838535164377,
+     "average_precision": 0.9999308689861367
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9266503667481663,
+     "precision": 0.932349323493235,
+     "average_precision": 0.9497192483610005
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.2876712328767123,
+     "precision": 0.9545454545454546,
+     "average_precision": 0.6630099265496533
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8125,
+     "precision": 0.2532467532467532,
+     "average_precision": 0.7262055926064104
+    }
+   },
+   "family_calibrated_map": 0.9029251645464654,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 1.0,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5026315789473684,
+     "precision": 0.9794871794871794,
+     "average_precision": 0.8261926161447065
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.6,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.7870967741935484,
+     "precision": 0.9891891891891892,
+     "average_precision": 0.9424727882669889
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9808612440191388,
+     "precision": 0.5959302325581395,
+     "average_precision": 0.9305763937501739
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 1.0,
+     "average_precision": 0.9911442107995846
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9966804979253112,
+     "precision": 0.9995838535164377,
+     "average_precision": 0.9999308689861367
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9266503667481663,
+     "precision": 0.932349323493235,
+     "average_precision": 0.9497192483610005
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.2876712328767123,
+     "precision": 0.9545454545454546,
+     "average_precision": 0.6630099265496533
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8125,
+     "precision": 0.2532467532467532,
+     "average_precision": 0.7262055926064104
+    }
+   },
+   "family_balanced_accuracy": 0.9064922362399825,
+   "loss": 0.7693628418079991,
+   "family_subset_accuracy": 0.8984570475396163,
+   "family_macro_f1": 0.7757898100762188,
+   "family_micro_f1": 0.9075036374974018,
+   "family_calibrated_macro_f1": 0.7757898100762188,
+   "family_calibrated_micro_f1": 0.9075036374974018,
+   "family_top1_accuracy": 0.9095079232693911,
+   "family_top3_accuracy": 0.9580900750625522,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.7952504074405382,
+   "behavior_macro_f1": 0.5145540612945765,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 3,
+   "train_loss": 0.27594150391518196
+  },
+  {
+   "behavior_map": 0.5983565874622286,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.4222222222222222,
+     "precision": 0.8636363636363636,
+     "average_precision": 0.5610666826846086
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.05454545454545454,
+     "average_precision": 0.6514556040756915
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 0.9896907216494846,
+     "precision": 0.7218045112781954,
+     "average_precision": 0.7073528111853613
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.5384615384615384,
+     "precision": 0.22580645161290322,
+     "average_precision": 0.3365411718189376
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.5612009237875288,
+     "precision": 0.5148305084745762,
+     "average_precision": 0.601198884865227
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.8017817371937639,
+     "precision": 0.8285385500575374,
+     "average_precision": 0.8940625303335998
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.057692307692307696,
+     "average_precision": 0.6581967213114754
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.5882352941176471,
+     "precision": 0.14084507042253522,
+     "average_precision": 0.2666786917888015
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.375,
+     "precision": 0.031578947368421054,
+     "average_precision": 0.3254138782554181
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.046153846153846156,
+     "average_precision": 0.8666666666666667
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.7134986225895317,
+     "precision": 0.5307377049180327,
+     "average_precision": 0.5662669937906635
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.25,
+     "precision": 0.07692307692307693,
+     "average_precision": 0.08579033579033579
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.2222222222222222,
+     "precision": 0.09523809523809523,
+     "average_precision": 0.14995991515106807
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.0820912601085643
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.7692307692307693,
+     "precision": 0.43478260869565216,
+     "average_precision": 0.7562246171838425
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.8241758241758241,
+     "precision": 0.5555555555555556,
+     "average_precision": 0.5917056537731976
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.8421052631578947,
+     "precision": 0.5428109854604201,
+     "average_precision": 0.7491926866238733
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9305555555555556,
+     "precision": 0.9436619718309859,
+     "average_precision": 0.9583092769987164
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.4858757062146893,
+     "precision": 0.3049645390070922,
+     "average_precision": 0.2913980759016756
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.04477611940298507,
+     "average_precision": 0.651085776330076
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.8559139784946237,
+     "precision": 0.7975951903807615,
+     "average_precision": 0.9103326805395869
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8611111111111112,
+     "precision": 0.6078431372549019,
+     "average_precision": 0.8753525234711973
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.8475991649269311,
+     "precision": 0.7777777777777778,
+     "average_precision": 0.8663837567709257
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.9973787680209698,
+     "precision": 0.9806701030927835,
+     "average_precision": 0.9973749760533726
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.01468673881198478
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.6358974358974359,
+     "precision": 0.6595744680851063,
+     "average_precision": 0.7299848196017451
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.9532,
+     "precision": 0.9690931272875153,
+     "average_precision": 0.9888149109749995
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 0.21739130434782608,
+     "precision": 0.2777777777777778,
+     "average_precision": 0.2492850072796869
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.64,
+     "precision": 0.6751054852320675,
+     "average_precision": 0.6997385322821307
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8614457831325302,
+     "precision": 0.680952380952381,
+     "average_precision": 0.8980819640554946
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.8197424892703863,
+     "precision": 0.7047970479704797,
+     "average_precision": 0.8796091086681578
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.8681818181818182,
+     "precision": 0.6725352112676056,
+     "average_precision": 0.907942624387382
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.9383561643835616,
+     "precision": 0.3881019830028329,
+     "average_precision": 0.7859703025829667
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.867579908675799,
+     "precision": 0.7063197026022305,
+     "average_precision": 0.9053586474782601
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.4166666666666667,
+     "precision": 0.1724137931034483,
+     "average_precision": 0.29837072680884114
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8,
+     "precision": 0.5846153846153846,
+     "average_precision": 0.537042395847974
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.8656716417910447,
+     "precision": 0.6014814814814815,
+     "average_precision": 0.7882880460740131
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.9609104403760514,
+     "precision": 0.9177693761814745,
+     "average_precision": 0.9586268390362782
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.3870967741935484,
+     "precision": 0.06976744186046512,
+     "average_precision": 0.11794897744468695
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.8712522045855379,
+     "precision": 0.5283422459893048,
+     "average_precision": 0.6147742405212548
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.8841761827079935,
+     "precision": 0.6383981154299175,
+     "average_precision": 0.8068691784554237
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9111111111111111,
+     "precision": 0.6307692307692307,
+     "average_precision": 0.5963173978091778
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9973924380704041,
+     "precision": 0.9848094747682801,
+     "average_precision": 0.9974450037046834
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.0027902182504962016
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.7802690582959642,
+     "precision": 0.7467811158798283,
+     "average_precision": 0.8076549899807641
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.70042194092827,
+     "precision": 0.7312775330396476,
+     "average_precision": 0.7736155638719846
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.028755902578362642
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": null,
+     "average_precision": 0.152917699485343
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.2,
+     "precision": 0.07692307692307693,
+     "average_precision": 0.1165371120180918
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.7073170731707317,
+     "precision": 0.251900108577633,
+     "average_precision": 0.5914676818082766
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.33185840707964603,
+     "precision": 0.8620689655172413,
+     "average_precision": 0.699922405631061
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.7847769028871391,
+     "precision": 0.2969215491559086,
+     "average_precision": 0.3290739801842465
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.5809018567639257,
+     "precision": 0.2896825396825397,
+     "average_precision": 0.559088806616401
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.6726190476190477,
+     "precision": 0.8071428571428572,
+     "average_precision": 0.7998534454360843
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.96875,
+     "precision": 0.36470588235294116,
+     "average_precision": 0.8124144932235348
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.17302052785923755,
+     "precision": 0.29207920792079206,
+     "average_precision": 0.2448992607205132
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.8595271210013908,
+     "precision": 0.5364583333333334,
+     "average_precision": 0.6181454432440229
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.8364116094986808,
+     "precision": 0.5859519408502772,
+     "average_precision": 0.7756084309639851
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9767441860465116,
+     "precision": 0.8571428571428571,
+     "average_precision": 0.9837939728093117
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.9879518072289156,
+     "precision": 0.5222929936305732,
+     "average_precision": 0.521248511315105
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.8808933002481389,
+     "precision": 0.568,
+     "average_precision": 0.7391693895671283
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.6814814814814815,
+     "precision": 0.5897435897435898,
+     "average_precision": 0.5408080455266338
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.6975308641975309,
+     "precision": 0.7471074380165289,
+     "average_precision": 0.8120784188756347
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.5620437956204379,
+     "precision": 0.2730496453900709,
+     "average_precision": 0.31507185088269013
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.5085714285714286,
+     "precision": 0.3755274261603376,
+     "average_precision": 0.3534354762885328
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.9594063727629856,
+     "precision": 0.8612852664576802,
+     "average_precision": 0.9829088188281225
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.09090909090909091,
+     "precision": 0.011904761904761904,
+     "average_precision": 0.012214513293996403
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.887459807073955,
+     "precision": 0.6865671641791045,
+     "average_precision": 0.877874219408697
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.023748762959310825
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.6373239436619719,
+     "precision": 0.8916256157635468,
+     "average_precision": 0.7322308521684551
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.6956521739130435,
+     "precision": 0.631578947368421,
+     "average_precision": 0.6935528581720513
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 0.959731543624161,
+     "precision": 0.5125448028673835,
+     "average_precision": 0.6834210102792503
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.8753246753246753,
+     "precision": 0.6633858267716536,
+     "average_precision": 0.8825746544507242
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.3374485596707819,
+     "precision": 0.9534883720930233,
+     "average_precision": 0.7631080665475423
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.9111684482123111,
+     "precision": 0.8422487223168654,
+     "average_precision": 0.8695178309518117
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.00046687587029262893
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.2,
+     "precision": 0.031746031746031744,
+     "average_precision": 0.0197074990848313
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.5533333333333333,
+     "precision": 0.7450628366247756,
+     "average_precision": 0.7150980808125452
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.9004815409309791,
+     "precision": 0.4754237288135593,
+     "average_precision": 0.6318119392305165
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.5193548387096775,
+     "precision": 0.7970297029702971,
+     "average_precision": 0.6537687177239802
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.5925925925925926,
+     "precision": 0.632768361581921,
+     "average_precision": 0.6322366430518608
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9782608695652174,
+     "precision": 0.9926470588235294,
+     "average_precision": 0.9640752703067784
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.9929561963460268,
+     "precision": 0.9657460929137229,
+     "average_precision": 0.9945611371264715
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.7402234636871509,
+     "precision": 0.5711206896551724,
+     "average_precision": 0.7703603049747465
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.6052631578947368,
+     "precision": 0.6258503401360545,
+     "average_precision": 0.4798159116021196
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.045454545454545456,
+     "average_precision": 0.04268094774423888
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8333333333333334,
+     "precision": 0.6382978723404256,
+     "average_precision": 0.8776794620493124
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.9196002441925415,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6447368421052632,
+     "precision": 0.9683794466403162,
+     "average_precision": 0.8715478253237766
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.5,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.8387096774193549,
+     "precision": 0.9263657957244655,
+     "average_precision": 0.9487291481146061
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9617224880382775,
+     "precision": 0.8392484342379958,
+     "average_precision": 0.9539859442147149
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 1.0,
+     "average_precision": 0.9960243117267578
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9966804979253112,
+     "precision": 1.0,
+     "average_precision": 0.9999537929478686
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9535452322738386,
+     "precision": 0.8914285714285715,
+     "average_precision": 0.9839577712630053
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.5205479452054794,
+     "precision": 0.7037037037037037,
+     "average_precision": 0.7129885549358923
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.9166666666666666,
+     "precision": 0.23404255319148937,
+     "average_precision": 0.7288150933987937
+    }
+   },
+   "family_calibrated_map": 0.9196002441925415,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 0.9999999999999999
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6447368421052632,
+     "precision": 0.9683794466403162,
+     "average_precision": 0.8715478253237766
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.5,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.8387096774193549,
+     "precision": 0.9263657957244655,
+     "average_precision": 0.9487291481146061
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9617224880382775,
+     "precision": 0.8392484342379958,
+     "average_precision": 0.9539859442147149
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 1.0,
+     "average_precision": 0.9960243117267578
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9966804979253112,
+     "precision": 1.0,
+     "average_precision": 0.9999537929478686
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9535452322738386,
+     "precision": 0.8914285714285715,
+     "average_precision": 0.9839577712630053
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.5205479452054794,
+     "precision": 0.7037037037037037,
+     "average_precision": 0.7129885549358923
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.9166666666666666,
+     "precision": 0.23404255319148937,
+     "average_precision": 0.7288150933987937
+    }
+   },
+   "family_balanced_accuracy": 0.9360669276145032,
+   "loss": 0.5371420476422873,
+   "family_subset_accuracy": 0.9222268557130943,
+   "family_macro_f1": 0.8095102990076141,
+   "family_micro_f1": 0.9286084343591338,
+   "family_calibrated_macro_f1": 0.8095102990076141,
+   "family_calibrated_micro_f1": 0.9286084343591338,
+   "family_top1_accuracy": 0.933069224353628,
+   "family_top3_accuracy": 0.9710175145954962,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.7982629752951312,
+   "behavior_macro_f1": 0.5296866961837254,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 4,
+   "train_loss": 0.23850561634251144
+  },
+  {
+   "behavior_map": 0.618653083391371,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.7555555555555555,
+     "precision": 0.14782608695652175,
+     "average_precision": 0.5680511905349506
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.08823529411764706,
+     "average_precision": 0.6582644628099174
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.7028985507246377,
+     "average_precision": 0.7105814053751698
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.6153846153846154,
+     "precision": 0.17777777777777778,
+     "average_precision": 0.373516326492009
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.6535796766743649,
+     "precision": 0.6261061946902655,
+     "average_precision": 0.6734734939339262
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.910913140311804,
+     "precision": 0.7349505840071878,
+     "average_precision": 0.8572168060785125
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.1111111111111111,
+     "average_precision": 0.775
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.6470588235294118,
+     "precision": 0.23404255319148937,
+     "average_precision": 0.3604017247011034
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.03773584905660377,
+     "average_precision": 0.42344098828694543
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.07692307692307693,
+     "average_precision": 0.9166666666666666
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.8181818181818182,
+     "precision": 0.4900990099009901,
+     "average_precision": 0.608330648251623
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.1,
+     "average_precision": 0.1959031994924318
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.05454545454545454,
+     "average_precision": 0.18822822621120605
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.23636363636363636,
+     "precision": 0.06666666666666667,
+     "average_precision": 0.09665354696896135
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.9230769230769231,
+     "precision": 0.12121212121212122,
+     "average_precision": 0.7308989539361599
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.945054945054945,
+     "precision": 0.38222222222222224,
+     "average_precision": 0.5251818160081043
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.9122807017543859,
+     "precision": 0.4795783926218709,
+     "average_precision": 0.7216359082375254
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9652777777777778,
+     "precision": 0.7637362637362637,
+     "average_precision": 0.9604832159588832
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.7344632768361582,
+     "precision": 0.24667931688804554,
+     "average_precision": 0.26160963330478776
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.08333333333333333,
+     "average_precision": 0.6946942446043165
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.7483870967741936,
+     "precision": 0.8592592592592593,
+     "average_precision": 0.8982659961389213
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8888888888888888,
+     "precision": 0.37209302325581395,
+     "average_precision": 0.8269013887211482
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.8977035490605428,
+     "precision": 0.6697819314641744,
+     "average_precision": 0.8652358532024021
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.9976408912188729,
+     "precision": 0.9844800827728919,
+     "average_precision": 0.9959927613143961
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.01676439762291547
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.6410256410256411,
+     "precision": 0.6510416666666666,
+     "average_precision": 0.7283897201592114
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.9536,
+     "precision": 0.9726642186862505,
+     "average_precision": 0.9936727882336641
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.17692307692307693,
+     "average_precision": 0.18144270445360927
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.772,
+     "precision": 0.6967509025270758,
+     "average_precision": 0.785297515427545
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8403614457831325,
+     "precision": 0.6838235294117647,
+     "average_precision": 0.8782113591319867
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.8111587982832618,
+     "precision": 0.7875,
+     "average_precision": 0.8660488835584379
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.8590909090909091,
+     "precision": 0.7714285714285715,
+     "average_precision": 0.9044678715320044
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.952054794520548,
+     "precision": 0.4124629080118694,
+     "average_precision": 0.8232949081927852
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.863013698630137,
+     "precision": 0.7907949790794979,
+     "average_precision": 0.9015426242386987
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.5833333333333334,
+     "precision": 0.0707070707070707,
+     "average_precision": 0.300167774597671
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8105263157894737,
+     "precision": 0.5703703703703704,
+     "average_precision": 0.5000727644582458
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.8550106609808102,
+     "precision": 0.6446945337620579,
+     "average_precision": 0.8062773647663395
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.9346857991093518,
+     "precision": 0.9440279860069966,
+     "average_precision": 0.9609811270596379
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.6451612903225806,
+     "precision": 0.06993006993006994,
+     "average_precision": 0.2779363402628784
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.8412698412698413,
+     "precision": 0.5605170387779084,
+     "average_precision": 0.6821693068910192
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.8580750407830342,
+     "precision": 0.7060402684563758,
+     "average_precision": 0.8360154802533674
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.6296296296296297,
+     "average_precision": 0.5665102098777698
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9960886571056062,
+     "precision": 0.9873352287412768,
+     "average_precision": 0.9963657793592554
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.005682329347436261
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.8385650224215246,
+     "precision": 0.7110266159695817,
+     "average_precision": 0.823345538876761
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.7805907172995781,
+     "precision": 0.7007575757575758,
+     "average_precision": 0.7859978102150289
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.125,
+     "precision": 0.045454545454545456,
+     "average_precision": 0.04122659142970839
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.4,
+     "precision": 0.1111111111111111,
+     "average_precision": 0.2827686377166968
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.07246376811594203,
+     "average_precision": 0.1996511306591517
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.5762195121951219,
+     "precision": 0.590625,
+     "average_precision": 0.6762744193503872
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.42920353982300885,
+     "precision": 0.7886178861788617,
+     "average_precision": 0.6400138618729075
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.6614173228346457,
+     "precision": 0.2863636363636364,
+     "average_precision": 0.3024929875166371
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.5278514588859416,
+     "precision": 0.5182291666666666,
+     "average_precision": 0.6259838319741793
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.7142857142857143,
+     "precision": 0.7868852459016393,
+     "average_precision": 0.8081256327363864
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.984375,
+     "precision": 0.41042345276872966,
+     "average_precision": 0.8534296202864339
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.2756598240469208,
+     "precision": 0.2493368700265252,
+     "average_precision": 0.2569045395111792
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.7635605006954103,
+     "precision": 0.5501002004008017,
+     "average_precision": 0.5783277859346644
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.8918205804749341,
+     "precision": 0.6282527881040892,
+     "average_precision": 0.8684415624571693
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9767441860465116,
+     "precision": 0.9333333333333333,
+     "average_precision": 0.9807180834869434
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.9548192771084337,
+     "precision": 0.4937694704049844,
+     "average_precision": 0.4995860380635267
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.9032258064516129,
+     "precision": 0.5768621236133122,
+     "average_precision": 0.7392199851237767
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.7185185185185186,
+     "precision": 0.4597156398104265,
+     "average_precision": 0.535912963407027
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.6975308641975309,
+     "precision": 0.7635135135135135,
+     "average_precision": 0.8343194340527705
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.7372262773722628,
+     "precision": 0.38549618320610685,
+     "average_precision": 0.5103023274256846
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.6171428571428571,
+     "precision": 0.4235294117647059,
+     "average_precision": 0.4215301800008777
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.9541684853775644,
+     "precision": 0.9021873710276517,
+     "average_precision": 0.9853597090791764
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.09090909090909091,
+     "precision": 0.006756756756756757,
+     "average_precision": 0.011620567986079855
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.8681672025723473,
+     "precision": 0.6923076923076923,
+     "average_precision": 0.8723525592731189
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.07142857142857142,
+     "average_precision": 0.06172107900415992
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.6373239436619719,
+     "precision": 0.8829268292682927,
+     "average_precision": 0.7312043957392307
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.8260869565217391,
+     "precision": 0.5022026431718062,
+     "average_precision": 0.6556394001316594
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 0.785234899328859,
+     "precision": 0.46062992125984253,
+     "average_precision": 0.6074091758905771
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.8883116883116883,
+     "precision": 0.8123515439429929,
+     "average_precision": 0.9221775807892459
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.4773662551440329,
+     "precision": 0.8923076923076924,
+     "average_precision": 0.8827356452046706
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.9222263177294507,
+     "precision": 0.8597938144329897,
+     "average_precision": 0.8682139753937279
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.0014792124258210448
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.3,
+     "precision": 0.0375,
+     "average_precision": 0.03651414268625077
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.7053333333333334,
+     "precision": 0.6101499423298731,
+     "average_precision": 0.7560361837152034
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.804975922953451,
+     "precision": 0.525130890052356,
+     "average_precision": 0.6535187520859118
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.6516129032258065,
+     "precision": 0.5872093023255814,
+     "average_precision": 0.7168325865399052
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.7142857142857143,
+     "precision": 0.5113636363636364,
+     "average_precision": 0.6162250399639891
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9927536231884058,
+     "precision": 0.9133333333333333,
+     "average_precision": 0.9891282367232054
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.987012987012987,
+     "precision": 0.9754187513595823,
+     "average_precision": 0.9842153134962404
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.8016759776536313,
+     "precision": 0.4720394736842105,
+     "average_precision": 0.7523001584069714
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.7105263157894737,
+     "precision": 0.3517915309446254,
+     "average_precision": 0.47214958963667436
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.03333333333333333,
+     "average_precision": 0.2611111111111111
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8333333333333334,
+     "precision": 0.35294117647058826,
+     "average_precision": 0.8223611710139034
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.9406572423593922,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6473684210526316,
+     "precision": 0.968503937007874,
+     "average_precision": 0.894759124017775
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.7978494623655914,
+     "precision": 0.8812351543942993,
+     "average_precision": 0.9312625273779035
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9736842105263158,
+     "precision": 0.7090592334494773,
+     "average_precision": 0.9485637897754621
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9801324503311258,
+     "precision": 1.0,
+     "average_precision": 0.9951985209094675
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9987551867219917,
+     "precision": 0.9983409373703858,
+     "average_precision": 0.9998171728627467
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9755501222493888,
+     "precision": 0.9300699300699301,
+     "average_precision": 0.977762480568637
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.8082191780821918,
+     "precision": 0.8676470588235294,
+     "average_precision": 0.9017030333067003
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8541666666666666,
+     "precision": 0.45054945054945056,
+     "average_precision": 0.7575057747752284
+    }
+   },
+   "family_calibrated_map": 0.9406572423593922,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6473684210526316,
+     "precision": 0.968503937007874,
+     "average_precision": 0.894759124017775
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.7978494623655914,
+     "precision": 0.8812351543942993,
+     "average_precision": 0.9312625273779035
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9736842105263158,
+     "precision": 0.7090592334494773,
+     "average_precision": 0.9485637897754621
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9801324503311258,
+     "precision": 1.0,
+     "average_precision": 0.9951985209094675
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9987551867219917,
+     "precision": 0.9983409373703858,
+     "average_precision": 0.9998171728627467
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9755501222493888,
+     "precision": 0.9300699300699301,
+     "average_precision": 0.977762480568637
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.8082191780821918,
+     "precision": 0.8676470588235294,
+     "average_precision": 0.9017030333067003
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8541666666666666,
+     "precision": 0.45054945054945056,
+     "average_precision": 0.7575057747752284
+    }
+   },
+   "family_balanced_accuracy": 0.9477514216798937,
+   "loss": 0.529916438101453,
+   "family_subset_accuracy": 0.9253544620517098,
+   "family_macro_f1": 0.8801650903565623,
+   "family_micro_f1": 0.9343277397969754,
+   "family_calibrated_macro_f1": 0.8801650903565623,
+   "family_calibrated_micro_f1": 0.9343277397969754,
+   "family_top1_accuracy": 0.9376563803169308,
+   "family_top3_accuracy": 0.9735195996663887,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.8002356420089637,
+   "behavior_macro_f1": 0.534487265810901,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 5,
+   "train_loss": 0.2125372532529724
+  },
+  {
+   "behavior_map": 0.6361049557112649,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.6222222222222222,
+     "precision": 0.3181818181818182,
+     "average_precision": 0.5649732492634212
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.15,
+     "average_precision": 0.6887836970474968
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.7185185185185186,
+     "average_precision": 0.7028721835220078
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.6153846153846154,
+     "precision": 0.17777777777777778,
+     "average_precision": 0.43648566608176753
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.6166281755196305,
+     "precision": 0.5920177383592018,
+     "average_precision": 0.6888938343766751
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.9253897550111359,
+     "precision": 0.7506775067750677,
+     "average_precision": 0.9084506101414905
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.15,
+     "average_precision": 0.7259615384615384
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.6470588235294118,
+     "precision": 0.23404255319148937,
+     "average_precision": 0.42892060258049747
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.05128205128205128,
+     "average_precision": 0.3566811087811661
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.15,
+     "average_precision": 0.9166666666666666
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.7658402203856749,
+     "precision": 0.4982078853046595,
+     "average_precision": 0.5593827211774511
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.10526315789473684,
+     "average_precision": 0.12582381529231923
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.125,
+     "average_precision": 0.19957176270237797
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.10909090909090909,
+     "precision": 0.08695652173913043,
+     "average_precision": 0.09906406010269558
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.8461538461538461,
+     "precision": 0.7333333333333333,
+     "average_precision": 0.844876744876745
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.9340659340659341,
+     "precision": 0.4187192118226601,
+     "average_precision": 0.5496890687797676
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.8947368421052632,
+     "precision": 0.4322033898305085,
+     "average_precision": 0.8145728185238038
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9375,
+     "precision": 0.8282208588957055,
+     "average_precision": 0.9595619958504463
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.5649717514124294,
+     "precision": 0.30120481927710846,
+     "average_precision": 0.2796604826908178
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.15,
+     "average_precision": 0.7511135857461024
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.8731182795698925,
+     "precision": 0.8169014084507042,
+     "average_precision": 0.9301114011664795
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8888888888888888,
+     "precision": 0.5333333333333333,
+     "average_precision": 0.8738364405298532
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.8893528183716075,
+     "precision": 0.7208121827411168,
+     "average_precision": 0.8835963945728931
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.999213630406291,
+     "precision": 0.9814624098867147,
+     "average_precision": 0.9977353357724676
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.2727272727272727,
+     "precision": 0.07894736842105263,
+     "average_precision": 0.0553874156563022
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.6871794871794872,
+     "precision": 0.4944649446494465,
+     "average_precision": 0.7282926790250441
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.9568,
+     "precision": 0.9707792207792207,
+     "average_precision": 0.993280059117201
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 0.9130434782608695,
+     "precision": 0.17647058823529413,
+     "average_precision": 0.2035155330253714
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.72,
+     "precision": 0.656934306569343,
+     "average_precision": 0.741067417248772
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8373493975903614,
+     "precision": 0.6932668329177057,
+     "average_precision": 0.8944022397933864
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.7982832618025751,
+     "precision": 0.8122270742358079,
+     "average_precision": 0.8969320058904208
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.8590909090909091,
+     "precision": 0.8008474576271186,
+     "average_precision": 0.9197116812617858
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.9383561643835616,
+     "precision": 0.36243386243386244,
+     "average_precision": 0.8454109820934582
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.8538812785388128,
+     "precision": 0.8060344827586207,
+     "average_precision": 0.9090720739855247
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.6666666666666666,
+     "precision": 0.20512820512820512,
+     "average_precision": 0.4202994624855591
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8210526315789474,
+     "precision": 0.5777777777777777,
+     "average_precision": 0.48665994162897713
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.8443496801705757,
+     "precision": 0.6935201401050788,
+     "average_precision": 0.7973027642091329
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.9396338446313706,
+     "precision": 0.9340875553369404,
+     "average_precision": 0.9539360977518863
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.5806451612903226,
+     "precision": 0.0967741935483871,
+     "average_precision": 0.2690991030267233
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.8359788359788359,
+     "precision": 0.5787545787545788,
+     "average_precision": 0.6430349255897634
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.8499184339314845,
+     "precision": 0.7421652421652422,
+     "average_precision": 0.8323112339529938
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.6390977443609023,
+     "average_precision": 0.5724588685506049
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9989569752281616,
+     "precision": 0.9873711340206186,
+     "average_precision": 0.9982965212792436
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.007574988283080769
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.8565022421524664,
+     "precision": 0.6631944444444444,
+     "average_precision": 0.8283110568806767
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.7890295358649789,
+     "precision": 0.6470588235294118,
+     "average_precision": 0.7864603013394333
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.16666666666666666,
+     "precision": 0.09523809523809523,
+     "average_precision": 0.045468191770088005
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.4,
+     "precision": 0.5,
+     "average_precision": 0.4678246522489593
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.13333333333333333,
+     "precision": 0.08,
+     "average_precision": 0.1910632347479355
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.6615853658536586,
+     "precision": 0.4676724137931034,
+     "average_precision": 0.6983033662683604
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.4823008849557522,
+     "precision": 0.8195488721804511,
+     "average_precision": 0.686973078995445
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.3228346456692913,
+     "precision": 0.29285714285714287,
+     "average_precision": 0.28750509644351707
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.5809018567639257,
+     "precision": 0.4965986394557823,
+     "average_precision": 0.6391920114284956
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.7916666666666666,
+     "precision": 0.8012048192771084,
+     "average_precision": 0.8392669297309556
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.96875,
+     "precision": 0.3780487804878049,
+     "average_precision": 0.8587528803352141
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.1935483870967742,
+     "precision": 0.34554973821989526,
+     "average_precision": 0.2869987286445321
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.8178025034770514,
+     "precision": 0.5833333333333334,
+     "average_precision": 0.6940798856751841
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.8733509234828496,
+     "precision": 0.8487179487179487,
+     "average_precision": 0.9194694995349187
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9767441860465116,
+     "precision": 0.9767441860465116,
+     "average_precision": 0.979830605799598
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.9548192771084337,
+     "precision": 0.5162866449511401,
+     "average_precision": 0.5309550007527122
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.8808933002481389,
+     "precision": 0.5762987012987013,
+     "average_precision": 0.7316741096981396
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.7703703703703704,
+     "precision": 0.41935483870967744,
+     "average_precision": 0.5277592996228325
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.6728395061728395,
+     "precision": 0.7364864864864865,
+     "average_precision": 0.8331804812495657
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.6715328467153284,
+     "precision": 0.40350877192982454,
+     "average_precision": 0.5025126904229156
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.5714285714285714,
+     "precision": 0.43859649122807015,
+     "average_precision": 0.43063119877937645
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.9441292012221737,
+     "precision": 0.915749364944962,
+     "average_precision": 0.9877288507982654
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.18181818181818182,
+     "precision": 0.023255813953488372,
+     "average_precision": 0.021546549105040044
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.864951768488746,
+     "precision": 0.7911764705882353,
+     "average_precision": 0.8862917094889863
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.16666666666666666,
+     "precision": 0.2,
+     "average_precision": 0.04570096622480471
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.6619718309859155,
+     "precision": 0.746031746031746,
+     "average_precision": 0.7700569228569034
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.8188405797101449,
+     "precision": 0.5736040609137056,
+     "average_precision": 0.7155326208760846
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 0.9664429530201343,
+     "precision": 0.49146757679180886,
+     "average_precision": 0.6998546757795263
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.8831168831168831,
+     "precision": 0.7870370370370371,
+     "average_precision": 0.9230459615592642
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.6954732510288066,
+     "precision": 0.7316017316017316,
+     "average_precision": 0.801139249736593
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.9229635090305934,
+     "precision": 0.8724738675958188,
+     "average_precision": 0.8692258263831643
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.00128358761719314
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.4,
+     "precision": 0.09523809523809523,
+     "average_precision": 0.17147124315146758
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.6986666666666667,
+     "precision": 0.6429447852760736,
+     "average_precision": 0.7844549586497882
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.7889245585874799,
+     "precision": 0.5256684491978609,
+     "average_precision": 0.6399794725637082
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.7225806451612903,
+     "precision": 0.5941644562334217,
+     "average_precision": 0.7913522478457442
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.7936507936507936,
+     "precision": 0.5813953488372093,
+     "average_precision": 0.6999507800361249
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9927536231884058,
+     "precision": 0.9716312056737588,
+     "average_precision": 0.9748292492145907
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.9916354831609069,
+     "precision": 0.9719525350593312,
+     "average_precision": 0.9906207668218947
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.8547486033519553,
+     "precision": 0.5368421052631579,
+     "average_precision": 0.8036148156221938
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.7236842105263158,
+     "precision": 0.3492063492063492,
+     "average_precision": 0.5159965543225326
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.05555555555555555,
+     "average_precision": 0.165
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.8611111111111112,
+     "precision": 0.47692307692307695,
+     "average_precision": 0.8609100592951361
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.93828227583491,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 0.8529411764705882,
+     "average_precision": 0.9866666666666667
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6078947368421053,
+     "precision": 0.9829787234042553,
+     "average_precision": 0.8004366500790701
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.9075268817204301,
+     "precision": 0.8007590132827325,
+     "average_precision": 0.9565664503164568
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9712918660287081,
+     "precision": 0.8423236514522822,
+     "average_precision": 0.9669163539409731
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 0.9932432432432432,
+     "average_precision": 0.9964070282913143
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9979253112033195,
+     "precision": 1.0,
+     "average_precision": 0.9999748692722934
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9755501222493888,
+     "precision": 0.8956228956228957,
+     "average_precision": 0.9801924133650606
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.821917808219178,
+     "precision": 0.6060606060606061,
+     "average_precision": 0.8550218940198562
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8958333333333334,
+     "precision": 0.3282442748091603,
+     "average_precision": 0.8406404323974079
+    }
+   },
+   "family_calibrated_map": 0.93828227583491,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 0.8529411764705882,
+     "average_precision": 0.9866666666666667
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6078947368421053,
+     "precision": 0.9829787234042553,
+     "average_precision": 0.8004366500790701
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.9075268817204301,
+     "precision": 0.8007590132827325,
+     "average_precision": 0.9565664503164568
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9712918660287081,
+     "precision": 0.8423236514522822,
+     "average_precision": 0.9669163539409731
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 0.9932432432432432,
+     "average_precision": 0.9964070282913143
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9979253112033195,
+     "precision": 1.0,
+     "average_precision": 0.9999748692722934
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9755501222493888,
+     "precision": 0.8956228956228957,
+     "average_precision": 0.9801924133650606
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.821917808219178,
+     "precision": 0.6060606060606061,
+     "average_precision": 0.8550218940198562
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8958333333333334,
+     "precision": 0.3282442748091603,
+     "average_precision": 0.8406404323974079
+    }
+   },
+   "family_balanced_accuracy": 0.9512086483052536,
+   "loss": 0.5295780982305253,
+   "family_subset_accuracy": 0.9280650542118432,
+   "family_macro_f1": 0.850473816405677,
+   "family_micro_f1": 0.9320069736437289,
+   "family_calibrated_macro_f1": 0.850473816405677,
+   "family_calibrated_micro_f1": 0.9320069736437289,
+   "family_top1_accuracy": 0.9434945788156798,
+   "family_top3_accuracy": 0.969349457881568,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.8174519905218858,
+   "behavior_macro_f1": 0.5671412620214136,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 6,
+   "train_loss": 0.1946648755498374
+  },
+  {
+   "behavior_map": 0.6378449841517111,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.6444444444444445,
+     "precision": 0.27358490566037735,
+     "average_precision": 0.5802550781079213
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.09375,
+     "average_precision": 0.7518248175182481
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 0.9896907216494846,
+     "precision": 0.7164179104477612,
+     "average_precision": 0.6827899901759433
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.6153846153846154,
+     "precision": 0.12903225806451613,
+     "average_precision": 0.3671927573672815
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.558891454965358,
+     "precision": 0.5931372549019608,
+     "average_precision": 0.6536361756420894
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.9242761692650334,
+     "precision": 0.7996146435452793,
+     "average_precision": 0.9430745293484659
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.12903225806451613,
+     "average_precision": 0.7541666666666667
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.5882352941176471,
+     "precision": 0.1282051282051282,
+     "average_precision": 0.3770881596059968
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.047058823529411764,
+     "average_precision": 0.3823309229284706
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.09375,
+     "average_precision": 1.0
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.8044077134986226,
+     "precision": 0.5,
+     "average_precision": 0.6045460576265413
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.1,
+     "average_precision": 0.11934972435911378
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.07894736842105263,
+     "average_precision": 0.18840120926138526
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.10909090909090909,
+     "precision": 0.08571428571428572,
+     "average_precision": 0.09661561625640233
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.8461538461538461,
+     "precision": 0.4583333333333333,
+     "average_precision": 0.8217026838812513
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.9010989010989011,
+     "precision": 0.5578231292517006,
+     "average_precision": 0.5598490374439823
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.924812030075188,
+     "precision": 0.43309859154929575,
+     "average_precision": 0.8067587904338149
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9583333333333334,
+     "precision": 0.8414634146341463,
+     "average_precision": 0.962826195605024
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.5084745762711864,
+     "precision": 0.3191489361702128,
+     "average_precision": 0.31115362200465396
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.09375,
+     "average_precision": 0.7516
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.7397849462365591,
+     "precision": 0.9197860962566845,
+     "average_precision": 0.9128702891643014
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.5151515151515151,
+     "average_precision": 0.940730556061944
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.8914405010438413,
+     "precision": 0.7104825291181365,
+     "average_precision": 0.8613061675979795
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.9892529488859764,
+     "precision": 0.987958115183246,
+     "average_precision": 0.9981503373998217
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.2727272727272727,
+     "precision": 0.037037037037037035,
+     "average_precision": 0.04007481332469456
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.6666666666666666,
+     "precision": 0.5603448275862069,
+     "average_precision": 0.722146931385816
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.9532,
+     "precision": 0.9651680842446334,
+     "average_precision": 0.9926183179075162
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 0.782608695652174,
+     "precision": 0.16363636363636364,
+     "average_precision": 0.18412994239808783
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.752,
+     "precision": 0.6762589928057554,
+     "average_precision": 0.7131083652643098
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8343373493975904,
+     "precision": 0.6925,
+     "average_precision": 0.8903559917835732
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.7982832618025751,
+     "precision": 0.8651162790697674,
+     "average_precision": 0.8915147463138319
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.8454545454545455,
+     "precision": 0.8611111111111112,
+     "average_precision": 0.9064781562941481
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.952054794520548,
+     "precision": 0.396011396011396,
+     "average_precision": 0.8128547284087426
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.8356164383561644,
+     "precision": 0.8511627906976744,
+     "average_precision": 0.8943745644297035
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.6666666666666666,
+     "precision": 0.13333333333333333,
+     "average_precision": 0.3368056352260067
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8105263157894737,
+     "precision": 0.5789473684210527,
+     "average_precision": 0.4930177406533471
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.8763326226012793,
+     "precision": 0.6715686274509803,
+     "average_precision": 0.83152499402326
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.8693715982187036,
+     "precision": 0.9523035230352304,
+     "average_precision": 0.9610314600673674
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.6451612903225806,
+     "precision": 0.13071895424836602,
+     "average_precision": 0.2935256455316659
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.8359788359788359,
+     "precision": 0.5895522388059702,
+     "average_precision": 0.6723909600966312
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.8776508972267537,
+     "precision": 0.727027027027027,
+     "average_precision": 0.8477758168459487
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.6343283582089553,
+     "average_precision": 0.5614682473106657
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9514993481095176,
+     "precision": 0.9929251700680272,
+     "average_precision": 0.9986180144728728
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.005885561355842517
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.8251121076233184,
+     "precision": 0.6996197718631179,
+     "average_precision": 0.8033772950208885
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.759493670886076,
+     "precision": 0.6642066420664207,
+     "average_precision": 0.7726888111039942
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.20833333333333334,
+     "precision": 0.15151515151515152,
+     "average_precision": 0.1406773602133
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.4,
+     "precision": 0.14285714285714285,
+     "average_precision": 0.19419027019603805
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.26666666666666666,
+     "precision": 0.11764705882352941,
+     "average_precision": 0.19348697710603133
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.6158536585365854,
+     "precision": 0.5941176470588235,
+     "average_precision": 0.7226586328606276
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.14601769911504425,
+     "precision": 0.8461538461538461,
+     "average_precision": 0.6298059456925202
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.4435695538057743,
+     "precision": 0.34004024144869216,
+     "average_precision": 0.3579648724543898
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.5755968169761273,
+     "precision": 0.5384615384615384,
+     "average_precision": 0.6664456728960862
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.6785714285714286,
+     "precision": 0.794425087108014,
+     "average_precision": 0.8309470269673068
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.984375,
+     "precision": 0.41721854304635764,
+     "average_precision": 0.8293717658565529
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.28152492668621704,
+     "precision": 0.3779527559055118,
+     "average_precision": 0.277973859005205
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.7399165507649513,
+     "precision": 0.5990990990990991,
+     "average_precision": 0.6956701850524406
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.9023746701846965,
+     "precision": 0.8382352941176471,
+     "average_precision": 0.9366978641797372
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9767441860465116,
+     "precision": 0.7777777777777778,
+     "average_precision": 0.9439356287395235
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.9487951807228916,
+     "precision": 0.5285234899328859,
+     "average_precision": 0.5141397791926569
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.8982630272952854,
+     "precision": 0.5718799368088467,
+     "average_precision": 0.7334192915170062
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.762962962962963,
+     "precision": 0.5885714285714285,
+     "average_precision": 0.6201245786653564
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.6604938271604939,
+     "precision": 0.8246628131021194,
+     "average_precision": 0.8435217720166907
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.7007299270072993,
+     "precision": 0.366412213740458,
+     "average_precision": 0.5307821380782254
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.4514285714285714,
+     "precision": 0.35585585585585583,
+     "average_precision": 0.3263439766928315
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.9450021824530772,
+     "precision": 0.9123472397808681,
+     "average_precision": 0.9852982618283761
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.09090909090909091,
+     "precision": 0.00980392156862745,
+     "average_precision": 0.01357381754327471
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.8745980707395499,
+     "precision": 0.7331536388140162,
+     "average_precision": 0.8881555668831224
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.16666666666666666,
+     "precision": 0.058823529411764705,
+     "average_precision": 0.04886847531666687
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.6514084507042254,
+     "precision": 0.7142857142857143,
+     "average_precision": 0.7565871662626141
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.8188405797101449,
+     "precision": 0.6141304347826086,
+     "average_precision": 0.7371889182276112
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 0.9664429530201343,
+     "precision": 0.5124555160142349,
+     "average_precision": 0.6672808704677525
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.9116883116883117,
+     "precision": 0.7630434782608696,
+     "average_precision": 0.9148046928397234
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.4156378600823045,
+     "precision": 0.9439252336448598,
+     "average_precision": 0.8886006760945145
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.8068558791006266,
+     "precision": 0.8759503801520608,
+     "average_precision": 0.876391996912458
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": null,
+     "average_precision": 0.0005731481789304407
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.3,
+     "precision": 0.05454545454545454,
+     "average_precision": 0.13121925515758734
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.6573333333333333,
+     "precision": 0.6529801324503312,
+     "average_precision": 0.7642735185637651
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.7126805778491172,
+     "precision": 0.5807717462393721,
+     "average_precision": 0.6729450367632405
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.6967741935483871,
+     "precision": 0.8059701492537313,
+     "average_precision": 0.8464521899097592
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.7777777777777778,
+     "precision": 0.5951417004048583,
+     "average_precision": 0.7113427902431857
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9927536231884058,
+     "precision": 0.9716312056737588,
+     "average_precision": 0.9953412587287743
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.9839313229143738,
+     "precision": 0.9819859402460457,
+     "average_precision": 0.9920860766062711
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.8016759776536313,
+     "precision": 0.5857142857142857,
+     "average_precision": 0.8055510672096204
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.7039473684210527,
+     "precision": 0.4841628959276018,
+     "average_precision": 0.5592640380080296
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.05,
+     "average_precision": 0.25980392156862747
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.53125,
+     "average_precision": 0.9347671568262228
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.9382138555072512,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.967741935483871,
+     "average_precision": 0.9989247311827957
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5894736842105263,
+     "precision": 0.9572649572649573,
+     "average_precision": 0.8126687651922051
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.864516129032258,
+     "precision": 0.9013452914798207,
+     "average_precision": 0.9507169693559018
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9712918660287081,
+     "precision": 0.812,
+     "average_precision": 0.9572883465001784
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 0.9932432432432432,
+     "average_precision": 0.9972953109927373
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9983402489626556,
+     "precision": 0.9995845450768591,
+     "average_precision": 0.999962393792845
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9572127139364304,
+     "precision": 0.9388489208633094,
+     "average_precision": 0.977653434906203
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.7808219178082192,
+     "precision": 0.8382352941176471,
+     "average_precision": 0.8489519371725097
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.9166666666666666,
+     "precision": 0.32592592592592595,
+     "average_precision": 0.8386766659771369
+    }
+   },
+   "family_calibrated_map": 0.9382138555072512,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 0.967741935483871,
+     "average_precision": 0.9989247311827957
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.5894736842105263,
+     "precision": 0.9572649572649573,
+     "average_precision": 0.8126687651922051
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.864516129032258,
+     "precision": 0.9013452914798207,
+     "average_precision": 0.9507169693559018
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9712918660287081,
+     "precision": 0.812,
+     "average_precision": 0.9572883465001784
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9735099337748344,
+     "precision": 0.9932432432432432,
+     "average_precision": 0.9972953109927373
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9983402489626556,
+     "precision": 0.9995845450768591,
+     "average_precision": 0.999962393792845
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9572127139364304,
+     "precision": 0.9388489208633094,
+     "average_precision": 0.977653434906203
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.7808219178082192,
+     "precision": 0.8382352941176471,
+     "average_precision": 0.8489519371725097
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.9166666666666666,
+     "precision": 0.32592592592592595,
+     "average_precision": 0.8386766659771369
+    }
+   },
+   "family_balanced_accuracy": 0.9491389318951156,
+   "loss": 0.5686255979168411,
+   "family_subset_accuracy": 0.9316096747289407,
+   "family_macro_f1": 0.8699892939013176,
+   "family_micro_f1": 0.9377213080608207,
+   "family_calibrated_macro_f1": 0.8699892939013176,
+   "family_calibrated_micro_f1": 0.9377213080608207,
+   "family_top1_accuracy": 0.9397414512093412,
+   "family_top3_accuracy": 0.9706005004170142,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.8126278582755323,
+   "behavior_macro_f1": 0.5542276353970039,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 7,
+   "train_loss": 0.17702326828940804
+  },
+  {
+   "behavior_map": 0.6480239623825244,
+   "behavior_map_labels": 87,
+   "per_technique": {
+    "anomalous_deletefile": {
+     "support": 45,
+     "evaluated": 4763,
+     "recall": 0.6444444444444445,
+     "precision": 0.453125,
+     "average_precision": 0.6177562199794753
+    },
+    "antianalysis_detectfile": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.10714285714285714,
+     "average_precision": 0.7511961722488039
+    },
+    "antiav_bitdefender_libs": {
+     "support": 97,
+     "evaluated": 4763,
+     "recall": 0.9896907216494846,
+     "precision": 0.7218045112781954,
+     "average_precision": 0.6957692514767323
+    },
+    "antidbg_devices": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.6153846153846154,
+     "precision": 0.13559322033898305,
+     "average_precision": 0.44727808695088905
+    },
+    "antidebug_guardpages": {
+     "support": 433,
+     "evaluated": 4763,
+     "recall": 0.7136258660508084,
+     "precision": 0.6491596638655462,
+     "average_precision": 0.7459223839477556
+    },
+    "antidebug_setunhandledexceptionfilter": {
+     "support": 898,
+     "evaluated": 4763,
+     "recall": 0.910913140311804,
+     "precision": 0.8059113300492611,
+     "average_precision": 0.9268424773709116
+    },
+    "antiemu_wine_func": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.125,
+     "average_precision": 0.7708333333333333
+    },
+    "antiemu_wine_reg": {
+     "support": 17,
+     "evaluated": 4763,
+     "recall": 0.6470588235294118,
+     "precision": 0.22448979591836735,
+     "average_precision": 0.4648500417167834
+    },
+    "antisandbox_sboxie_libs": {
+     "support": 8,
+     "evaluated": 4763,
+     "recall": 0.5,
+     "precision": 0.0392156862745098,
+     "average_precision": 0.5042540775642705
+    },
+    "antisandbox_sboxie_mutex": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.11538461538461539,
+     "average_precision": 1.0
+    },
+    "antisandbox_sleep": {
+     "support": 363,
+     "evaluated": 4763,
+     "recall": 0.8099173553719008,
+     "precision": 0.47419354838709676,
+     "average_precision": 0.5663262326764081
+    },
+    "antisandbox_suspend": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.25,
+     "precision": 0.02702702702702703,
+     "average_precision": 0.101553309440729
+    },
+    "antisandbox_unhook": {
+     "support": 9,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.05084745762711865,
+     "average_precision": 0.15931716517153668
+    },
+    "api_spamming": {
+     "support": 55,
+     "evaluated": 4763,
+     "recall": 0.8181818181818182,
+     "precision": 0.17110266159695817,
+     "average_precision": 0.1737112631821273
+    },
+    "banker_zeus_mutex": {
+     "support": 13,
+     "evaluated": 4763,
+     "recall": 0.6923076923076923,
+     "precision": 0.47368421052631576,
+     "average_precision": 0.6784666314078079
+    },
+    "cmdline_terminate": {
+     "support": 91,
+     "evaluated": 4763,
+     "recall": 0.8681318681318682,
+     "precision": 0.5374149659863946,
+     "average_precision": 0.5390868277207519
+    },
+    "copies_self": {
+     "support": 399,
+     "evaluated": 4763,
+     "recall": 0.9298245614035088,
+     "precision": 0.4298957126303592,
+     "average_precision": 0.7925052289267414
+    },
+    "createtoolhelp32snapshot_module_enumeration": {
+     "support": 144,
+     "evaluated": 4763,
+     "recall": 0.9305555555555556,
+     "precision": 0.9054054054054054,
+     "average_precision": 0.9601564875387731
+    },
+    "dead_connect": {
+     "support": 177,
+     "evaluated": 4763,
+     "recall": 0.711864406779661,
+     "precision": 0.2876712328767123,
+     "average_precision": 0.2924530183278416
+    },
+    "deepfreeze_mutex": {
+     "support": 4,
+     "evaluated": 4763,
+     "recall": 0.75,
+     "precision": 0.1,
+     "average_precision": 0.7510660980810234
+    },
+    "deletes_self": {
+     "support": 465,
+     "evaluated": 4763,
+     "recall": 0.853763440860215,
+     "precision": 0.8411016949152542,
+     "average_precision": 0.9384431839512464
+    },
+    "disables_windows_defender": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.5,
+     "average_precision": 0.921335796535639
+    },
+    "dropper": {
+     "support": 479,
+     "evaluated": 4763,
+     "recall": 0.872651356993737,
+     "precision": 0.7108843537414966,
+     "average_precision": 0.8812850601282517
+    },
+    "dynamic_function_loading": {
+     "support": 3815,
+     "evaluated": 4763,
+     "recall": 0.9947575360419397,
+     "precision": 0.9846912298910223,
+     "average_precision": 0.9977314744097915
+    },
+    "encrypted_ioc": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.45454545454545453,
+     "precision": 0.050505050505050504,
+     "average_precision": 0.038315807811002196
+    },
+    "encrypts_pcinfo": {
+     "support": 195,
+     "evaluated": 4763,
+     "recall": 0.6512820512820513,
+     "precision": 0.5934579439252337,
+     "average_precision": 0.7455870134119144
+    },
+    "enumerates_running_processes": {
+     "support": 2500,
+     "evaluated": 4763,
+     "recall": 0.944,
+     "precision": 0.9780356402818069,
+     "average_precision": 0.9922216745100313
+    },
+    "explorer_http": {
+     "support": 23,
+     "evaluated": 4763,
+     "recall": 0.9565217391304348,
+     "precision": 0.18181818181818182,
+     "average_precision": 0.19923901766014768
+    },
+    "http_request": {
+     "support": 250,
+     "evaluated": 4763,
+     "recall": 0.752,
+     "precision": 0.7286821705426356,
+     "average_precision": 0.7734611630759216
+    },
+    "infostealer_browser": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.8524096385542169,
+     "precision": 0.6868932038834952,
+     "average_precision": 0.892735735422154
+    },
+    "infostealer_ftp": {
+     "support": 233,
+     "evaluated": 4763,
+     "recall": 0.8369098712446352,
+     "precision": 0.7587548638132295,
+     "average_precision": 0.878817383895301
+    },
+    "infostealer_im": {
+     "support": 220,
+     "evaluated": 4763,
+     "recall": 0.8954545454545455,
+     "precision": 0.7755905511811023,
+     "average_precision": 0.9136541857101831
+    },
+    "infostealer_keylog": {
+     "support": 146,
+     "evaluated": 4763,
+     "recall": 0.9383561643835616,
+     "precision": 0.36533333333333334,
+     "average_precision": 0.8047673836847966
+    },
+    "infostealer_mail": {
+     "support": 219,
+     "evaluated": 4763,
+     "recall": 0.8812785388127854,
+     "precision": 0.7909836065573771,
+     "average_precision": 0.9004871035466215
+    },
+    "injection_createremotethread": {
+     "support": 12,
+     "evaluated": 4763,
+     "recall": 0.5833333333333334,
+     "precision": 0.08433734939759036,
+     "average_precision": 0.30586964691275537
+    },
+    "injection_network_traffic": {
+     "support": 95,
+     "evaluated": 4763,
+     "recall": 0.8,
+     "precision": 0.5714285714285714,
+     "average_precision": 0.48533406789811834
+    },
+    "injection_runpe": {
+     "support": 469,
+     "evaluated": 4763,
+     "recall": 0.8784648187633263,
+     "precision": 0.6634460547504025,
+     "average_precision": 0.8270852793819067
+    },
+    "injection_rwx": {
+     "support": 2021,
+     "evaluated": 4763,
+     "recall": 0.929737753587333,
+     "precision": 0.9451710261569416,
+     "average_precision": 0.9644606946846624
+    },
+    "injectioncreateremotethread": {
+     "support": 31,
+     "evaluated": 4763,
+     "recall": 0.6451612903225806,
+     "precision": 0.12903225806451613,
+     "average_precision": 0.41213979094699793
+    },
+    "injectioninterprocess": {
+     "support": 567,
+     "evaluated": 4763,
+     "recall": 0.8324514991181657,
+     "precision": 0.6137841352405722,
+     "average_precision": 0.6512567635504505
+    },
+    "injectionprocesshollowing": {
+     "support": 613,
+     "evaluated": 4763,
+     "recall": 0.8727569331158238,
+     "precision": 0.7567185289957568,
+     "average_precision": 0.8426704839853623
+    },
+    "internet_dropper": {
+     "support": 90,
+     "evaluated": 4763,
+     "recall": 0.9333333333333333,
+     "precision": 0.6363636363636364,
+     "average_precision": 0.566049163599224
+    },
+    "invalid_authenticode_signature": {
+     "support": 3835,
+     "evaluated": 4763,
+     "recall": 0.9994784876140809,
+     "precision": 0.9896720888200361,
+     "average_precision": 0.9981960827387248
+    },
+    "long_commandline": {
+     "support": 3,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": 0.0,
+     "average_precision": 0.011843867981975398
+    },
+    "mimics_agent": {
+     "support": 223,
+     "evaluated": 4763,
+     "recall": 0.7847533632286996,
+     "precision": 0.7231404958677686,
+     "average_precision": 0.8091323539737614
+    },
+    "modify_proxy": {
+     "support": 237,
+     "evaluated": 4763,
+     "recall": 0.7341772151898734,
+     "precision": 0.696,
+     "average_precision": 0.7766561960812585
+    },
+    "move_file_on_reboot": {
+     "support": 24,
+     "evaluated": 4763,
+     "recall": 0.2916666666666667,
+     "precision": 0.15217391304347827,
+     "average_precision": 0.1645612564049747
+    },
+    "multiple_useragents": {
+     "support": 5,
+     "evaluated": 4763,
+     "recall": 0.8,
+     "precision": 0.14285714285714285,
+     "average_precision": 0.2055922680922681
+    },
+    "network_bind": {
+     "support": 15,
+     "evaluated": 4763,
+     "recall": 0.26666666666666666,
+     "precision": 0.10810810810810811,
+     "average_precision": 0.1992946495669581
+    },
+    "network_cnc_http": {
+     "support": 328,
+     "evaluated": 4763,
+     "recall": 0.6615853658536586,
+     "precision": 0.5318627450980392,
+     "average_precision": 0.7213607895563761
+    },
+    "network_country_distribution": {
+     "support": 226,
+     "evaluated": 4763,
+     "recall": 0.1415929203539823,
+     "precision": 0.8648648648648649,
+     "average_precision": 0.6713399319468202
+    },
+    "network_dns_doh_tls": {
+     "support": 381,
+     "evaluated": 4763,
+     "recall": 0.7191601049868767,
+     "precision": 0.3051224944320713,
+     "average_precision": 0.42624686777716236
+    },
+    "network_http": {
+     "support": 377,
+     "evaluated": 4763,
+     "recall": 0.5596816976127321,
+     "precision": 0.5288220551378446,
+     "average_precision": 0.6640273303547337
+    },
+    "network_multiple_direct_ip_connections": {
+     "support": 336,
+     "evaluated": 4763,
+     "recall": 0.6636904761904762,
+     "precision": 0.832089552238806,
+     "average_precision": 0.8279804799232716
+    },
+    "njrat_regkeys": {
+     "support": 128,
+     "evaluated": 4763,
+     "recall": 0.953125,
+     "precision": 0.4280701754385965,
+     "average_precision": 0.8041075675387772
+    },
+    "origin_resource_langid": {
+     "support": 341,
+     "evaluated": 4763,
+     "recall": 0.20234604105571846,
+     "precision": 0.42857142857142855,
+     "average_precision": 0.250703198343017
+    },
+    "packer_entropy": {
+     "support": 719,
+     "evaluated": 4763,
+     "recall": 0.8025034770514604,
+     "precision": 0.619098712446352,
+     "average_precision": 0.6946085574433505
+    },
+    "packer_unknown_pe_section_name": {
+     "support": 379,
+     "evaluated": 4763,
+     "recall": 0.9076517150395779,
+     "precision": 0.882051282051282,
+     "average_precision": 0.935307543600309
+    },
+    "packer_upx": {
+     "support": 43,
+     "evaluated": 4763,
+     "recall": 0.9767441860465116,
+     "precision": 0.9545454545454546,
+     "average_precision": 0.9789086882110137
+    },
+    "pe_compile_timestomping": {
+     "support": 332,
+     "evaluated": 4763,
+     "recall": 0.9518072289156626,
+     "precision": 0.5284280936454849,
+     "average_precision": 0.5223485709737159
+    },
+    "persistence_autorun": {
+     "support": 403,
+     "evaluated": 4763,
+     "recall": 0.890818858560794,
+     "precision": 0.5904605263157895,
+     "average_precision": 0.7416454916722753
+    },
+    "persistence_autorun_tasks": {
+     "support": 135,
+     "evaluated": 4763,
+     "recall": 0.8148148148148148,
+     "precision": 0.5472636815920398,
+     "average_precision": 0.6350215652881703
+    },
+    "process_creation_suspicious_location": {
+     "support": 648,
+     "evaluated": 4763,
+     "recall": 0.7407407407407407,
+     "precision": 0.7804878048780488,
+     "average_precision": 0.8414098778393717
+    },
+    "process_interest": {
+     "support": 137,
+     "evaluated": 4763,
+     "recall": 0.6496350364963503,
+     "precision": 0.4238095238095238,
+     "average_precision": 0.5260828169907502
+    },
+    "process_needed": {
+     "support": 175,
+     "evaluated": 4763,
+     "recall": 0.6285714285714286,
+     "precision": 0.4280155642023346,
+     "average_precision": 0.3932390193266308
+    },
+    "reads_self": {
+     "support": 2291,
+     "evaluated": 4763,
+     "recall": 0.9402007856831078,
+     "precision": 0.9463971880492091,
+     "average_precision": 0.989547626715256
+    },
+    "recon_checkip": {
+     "support": 11,
+     "evaluated": 4763,
+     "recall": 0.36363636363636365,
+     "precision": 0.01652892561983471,
+     "average_precision": 0.019129271341301025
+    },
+    "recon_fingerprint": {
+     "support": 311,
+     "evaluated": 4763,
+     "recall": 0.8713826366559485,
+     "precision": 0.7404371584699454,
+     "average_precision": 0.8703651943701926
+    },
+    "recon_programs": {
+     "support": 6,
+     "evaluated": 4763,
+     "recall": 0.3333333333333333,
+     "precision": 0.058823529411764705,
+     "average_precision": 0.09896618671319571
+    },
+    "removes_zoneid_ads": {
+     "support": 284,
+     "evaluated": 4763,
+     "recall": 0.6514084507042254,
+     "precision": 0.6335616438356164,
+     "average_precision": 0.7331877028461492
+    },
+    "script_tool_executed": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.7971014492753623,
+     "precision": 0.5612244897959183,
+     "average_precision": 0.697283894820573
+    },
+    "spawns_dev_util": {
+     "support": 149,
+     "evaluated": 4763,
+     "recall": 0.9664429530201343,
+     "precision": 0.5475285171102662,
+     "average_precision": 0.745422285004202
+    },
+    "spoofs_procname": {
+     "support": 385,
+     "evaluated": 4763,
+     "recall": 0.9272727272727272,
+     "precision": 0.6574585635359116,
+     "average_precision": 0.8969671921913498
+    },
+    "static_authenticode": {
+     "support": 243,
+     "evaluated": 4763,
+     "recall": 0.9588477366255144,
+     "precision": 0.9549180327868853,
+     "average_precision": 0.9755363984357919
+    },
+    "static_pe_anomaly": {
+     "support": 2713,
+     "evaluated": 4763,
+     "recall": 0.9310726133431626,
+     "precision": 0.8779979144942649,
+     "average_precision": 0.9004557798615294
+    },
+    "static_pe_pdbpath": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 0.0,
+     "precision": null,
+     "average_precision": 0.0008590438813978053
+    },
+    "stealth_file": {
+     "support": 10,
+     "evaluated": 4763,
+     "recall": 0.3,
+     "precision": 0.09090909090909091,
+     "average_precision": 0.24470435411651736
+    },
+    "stealth_network": {
+     "support": 750,
+     "evaluated": 4763,
+     "recall": 0.7413333333333333,
+     "precision": 0.6212290502793296,
+     "average_precision": 0.7984899643814501
+    },
+    "stealth_timeout": {
+     "support": 1246,
+     "evaluated": 4763,
+     "recall": 0.848314606741573,
+     "precision": 0.5232673267326733,
+     "average_precision": 0.6871763736238877
+    },
+    "stealth_window": {
+     "support": 310,
+     "evaluated": 4763,
+     "recall": 0.5903225806451613,
+     "precision": 0.9242424242424242,
+     "average_precision": 0.789260697988516
+    },
+    "suspicious_command_tools": {
+     "support": 189,
+     "evaluated": 4763,
+     "recall": 0.7724867724867724,
+     "precision": 0.5770750988142292,
+     "average_precision": 0.6770194166483741
+    },
+    "suspicious_ping_use": {
+     "support": 138,
+     "evaluated": 4763,
+     "recall": 0.9855072463768116,
+     "precision": 0.9784172661870504,
+     "average_precision": 0.9938899582727264
+    },
+    "unpacker": {
+     "support": 4543,
+     "evaluated": 4763,
+     "recall": 0.9793088267664539,
+     "precision": 0.9847277556440903,
+     "average_precision": 0.9937097526135362
+    },
+    "uses_windows_utilities": {
+     "support": 358,
+     "evaluated": 4763,
+     "recall": 0.776536312849162,
+     "precision": 0.5708418891170431,
+     "average_precision": 0.8123484136271549
+    },
+    "uses_windows_utilities_to_create_scheduled_task": {
+     "support": 152,
+     "evaluated": 4763,
+     "recall": 0.7302631578947368,
+     "precision": 0.44223107569721115,
+     "average_precision": 0.5666091542115768
+    },
+    "vawtrak_behavior": {
+     "support": 2,
+     "evaluated": 4763,
+     "recall": 1.0,
+     "precision": 0.05555555555555555,
+     "average_precision": 0.2857142857142857
+    },
+    "windows_defender_powershell": {
+     "support": 36,
+     "evaluated": 4763,
+     "recall": 0.9444444444444444,
+     "precision": 0.5151515151515151,
+     "average_precision": 0.9295346264998218
+    }
+   },
+   "annotation_notice": "Metrics use supplied labels; weak labels are not independent ground truth.",
+   "family_map": 0.9212003674295224,
+   "family_map_labels": 10,
+   "per_family": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 0.9666666666666667,
+     "average_precision": 0.9899457994579945
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6,
+     "precision": 0.9827586206896551,
+     "average_precision": 0.7775733198559435
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.8924731182795699,
+     "precision": 0.8574380165289256,
+     "average_precision": 0.9609704974635875
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9593301435406698,
+     "precision": 0.8871681415929203,
+     "average_precision": 0.9598710713556097
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9801324503311258,
+     "precision": 1.0,
+     "average_precision": 0.9937767393959196
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9987551867219917,
+     "precision": 0.9991697799916978,
+     "average_precision": 0.9999785103859891
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9682151589242054,
+     "precision": 0.946236559139785,
+     "average_precision": 0.9848852877007174
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.6027397260273972,
+     "precision": 0.55,
+     "average_precision": 0.6800662601055595
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8958333333333334,
+     "precision": 0.3644067796610169,
+     "average_precision": 0.8649361885739023
+    }
+   },
+   "family_calibrated_map": 0.9212003674295224,
+   "family_calibrated_map_labels": 10,
+   "per_family_calibrated": {
+    "adload": {
+     "support": 30,
+     "evaluated": 4796,
+     "recall": 0.9666666666666667,
+     "precision": 0.9666666666666667,
+     "average_precision": 0.9899457994579945
+    },
+    "emotet": {
+     "support": 380,
+     "evaluated": 4796,
+     "recall": 0.6,
+     "precision": 0.9827586206896551,
+     "average_precision": 0.7775733198559435
+    },
+    "harhar": {
+     "support": 3,
+     "evaluated": 4796,
+     "recall": 1.0,
+     "precision": 1.0,
+     "average_precision": 1.0
+    },
+    "lokibot": {
+     "support": 465,
+     "evaluated": 4796,
+     "recall": 0.8924731182795699,
+     "precision": 0.8574380165289256,
+     "average_precision": 0.9609704974635875
+    },
+    "njrat": {
+     "support": 418,
+     "evaluated": 4796,
+     "recall": 0.9593301435406698,
+     "precision": 0.8871681415929203,
+     "average_precision": 0.9598710713556097
+    },
+    "qakbot": {
+     "support": 151,
+     "evaluated": 4796,
+     "recall": 0.9801324503311258,
+     "precision": 1.0,
+     "average_precision": 0.9937767393959196
+    },
+    "swisyn": {
+     "support": 2410,
+     "evaluated": 4796,
+     "recall": 0.9987551867219917,
+     "precision": 0.9991697799916978,
+     "average_precision": 0.9999785103859891
+    },
+    "trickbot": {
+     "support": 818,
+     "evaluated": 4796,
+     "recall": 0.9682151589242054,
+     "precision": 0.946236559139785,
+     "average_precision": 0.9848852877007174
+    },
+    "ursnif": {
+     "support": 73,
+     "evaluated": 4796,
+     "recall": 0.6027397260273972,
+     "precision": 0.55,
+     "average_precision": 0.6800662601055595
+    },
+    "zeus": {
+     "support": 48,
+     "evaluated": 4796,
+     "recall": 0.8958333333333334,
+     "precision": 0.3644067796610169,
+     "average_precision": 0.8649361885739023
+    }
+   },
+   "family_balanced_accuracy": 0.9399940258985959,
+   "loss": 0.6145965813357923,
+   "family_subset_accuracy": 0.9307756463719766,
+   "family_macro_f1": 0.8547473014808608,
+   "family_micro_f1": 0.9406611742621754,
+   "family_calibrated_macro_f1": 0.8547473014808608,
+   "family_calibrated_micro_f1": 0.9406611742621754,
+   "family_top1_accuracy": 0.9418265221017514,
+   "family_top3_accuracy": 0.969349457881568,
+   "family_evaluated_samples": 4796,
+   "family_prior_map": 0.1,
+   "family_prior_top1_accuracy": 0.07923269391159299,
+   "family_prior_top3_accuracy": 0.6132193494578816,
+   "family_prior_evaluated_samples": 4796,
+   "behavior_micro_f1": 0.8193984644643234,
+   "behavior_macro_f1": 0.5674467014279638,
+   "behavior_head_trained": true,
+   "behavior_strong_labeled_observations": 414381,
+   "behavior_weak_positive_observations": 0,
+   "behavior_evaluable_techniques": 87,
+   "malware_supervised_samples": 0,
+   "epoch": 8,
+   "train_loss": 0.16560863199916576
+  }
+ ],
+ "selected_epoch": 8,
+ "notice": "Calibration finalized in a separate process after the in-run calibration step ran out of MPS memory; weights are the selected epoch saved during training. Withheld partitions were not loaded."
+}
