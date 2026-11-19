@@ -18,13 +18,15 @@ def _withheld(name):
     return name.startswith('withheld')
 
 
-def load_expansion(source, manifest, *, include_test=False, pack=False):
+def load_expansion(source, manifest, *, include_test=False, pack=False, only=None):
     """Load frozen partitions; withheld partitions stay unparsed unless requested.
 
     ``include_test`` is False, True (the original ``withheld_internal_test``) or a
     withheld partition name. ``pack`` stores train and validation reports
     compressed (see ``PackedReports``) so the raw corpus is never held in RAM;
-    calibration stays a plain list. Manifests with ``sources`` (list of {path, sha256})
+    calibration stays a plain list. ``only`` (names of non-withheld partitions)
+    builds report objects for those partitions alone; every row is still
+    checksummed and fingerprinted. Manifests with ``sources`` (list of {path, sha256})
     combine several prepared JSONL files; otherwise ``source`` and
     ``source_sha256`` describe one file.
     """
@@ -39,7 +41,7 @@ def load_expansion(source, manifest, *, include_test=False, pack=False):
             groups[group] = name
     retained = {
         name: PackedReports() if pack and name in ('train', 'validation') else []
-        for name in manifest['partitions'] if not _withheld(name)
+        for name in manifest['partitions'] if not _withheld(name) and (only is None or name in only)
     }
     if wanted is not None:
         # Only the one-time frozen test evaluator may request a withheld partition.

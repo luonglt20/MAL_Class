@@ -108,8 +108,11 @@ def run(train, valid, *, min_support=200, c=4.0, seed=44, log=print):
     results, scores = {}, {}
     for encoding in ENCODINGS:
         started = time.perf_counter()
-        train_docs = [event_tokens(r, encoding) for r, k in zip(train, keep) if k]
-        valid_docs = [event_tokens(r, encoding) for r in valid]
+        log(json.dumps({'stage': 'behavior_fit_started', 'encoding': encoding}))
+        # Each vectorizer pass consumes its input once. Avoid keeping the
+        # token lists for both partitions alive during classifier fitting.
+        train_docs = (event_tokens(r, encoding) for r, k in zip(train, keep) if k)
+        valid_docs = (event_tokens(r, encoding) for r in valid)
         scores[encoding], n_features = classical.fit_predict(train_docs, train_y[keep], valid_docs, c, seed)
         results[encoding] = {'n_features': n_features, 'fit_seconds': round(time.perf_counter() - started, 1),
                              'validation': evaluate(valid_y, scores[encoding], valid_mask, labels)}
@@ -141,7 +144,7 @@ def main():
     if args.output.exists():
         parser.error('refusing to overwrite output')
     manifest = json.loads(args.manifest.read_text())
-    reports = load_expansion(manifest.get('source'), manifest, pack=True)  # no withheld partitions
+    reports = load_expansion(manifest.get('source'), manifest, pack=True, only=('train', 'validation'))
     result = run(reports['train'], reports['validation'], min_support=args.min_support, c=args.C,
                  log=lambda line: print(line, flush=True))
     result['notice'] = ('CAPE signatures are heuristic weak labels, not ground truth. Validation only; '

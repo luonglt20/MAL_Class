@@ -19,8 +19,17 @@ def validate_inputs(checkpoint, checksum, manifest, training_report):
     if training_report.get('manifest') != manifest:
         raise ValueError('training manifest mismatch')
     result = training_report.get('result') or {}
-    if (not result.get('epochs_completed') or result.get('epochs_completed') != result.get('epochs_requested')
-            or not result.get('conformal')):
+    completed = result.get('epochs_completed')
+    requested = result.get('epochs_requested')
+    if requested is None:
+        # Recovery reports store the original budget under config.
+        requested = (training_report.get('config') or {}).get('epochs')
+        history = result.get('history') or []
+        if [entry.get('epoch') for entry in history] != list(range(1, len(history) + 1)) or len(history) != completed:
+            raise ValueError('completed training history required for recovered checkpoint')
+        if result.get('selected_epoch') not in range(1, len(history) + 1):
+            raise ValueError('selected epoch missing from recovered history')
+    if not completed or completed != requested or not result.get('conformal'):
         raise ValueError('completed training and calibration report required')
     if Path(result.get('checkpoint', '')).resolve() != checkpoint.resolve():
         raise ValueError('checkpoint path differs from training report')
@@ -44,7 +53,7 @@ def main():
     training = json.loads(args.training_report.read_text())
     validate_inputs(args.checkpoint, args.checkpoint_sha256, manifest, training)
     torch.set_num_threads(2)
-    reports = load_expansion(manifest.get('source'), manifest)
+    reports = load_expansion(manifest.get('source'), manifest, pack=True, only=('train', 'validation'))
     model, tensorizer = load_checkpoint(args.checkpoint, args.device)
     if _family_training_priors(tensorizer, reports['train']) != model.family_training_priors:
         raise ValueError('model priors differ from preserved training partition')
@@ -52,9 +61,11 @@ def main():
         raise ValueError('selected epoch differs from training report')
     device = torch.device(args.device)
     weights = _training_loss_weights(tensorizer, reports['train'], device)
+    print(json.dumps({'stage': 'evaluate', 'mode': 'baseline'}), flush=True)
     baseline = _family_metrics(model, reports['validation'], tensorizer, device, args.batch_size, weights)
     controls = {}
     for mode in args.modes:
+        print(json.dumps({'stage': 'evaluate', 'mode': mode}), flush=True)
         metric = _family_metrics(model, reports['validation'], tensorizer, device, args.batch_size, weights,
                                 disable_cross_branch_attention=mode == 'disable_cross_branch_attention',
                                 encoded_ablation=mode if mode in ENCODED_ABLATIONS else None)

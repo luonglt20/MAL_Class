@@ -1,5 +1,6 @@
 import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -47,3 +48,42 @@ def test_cross_fitting_chooses_weights_without_the_scored_fold():
     metrics, chosen, n_groups = fusion.cross_fitted(good, noise, targets, mask, groups, LABELS, PRIORS)
     assert n_groups == 4 and set(chosen) == {0, 1}
     assert metrics['family_top1_accuracy'] == 1.0
+
+
+@pytest.mark.parametrize('features', ['all', 'events', 'evidence'])
+def test_tfidf_streams_tokens_and_preserves_scores_and_group_order(monkeypatch, features):
+    def report(label, supervised=True):
+        return SimpleNamespace(families=[label], family_supervised=supervised)
+
+    train = [report(label) for label in LABELS for _ in range(4)]
+    train.append(report('ignored', supervised=False))
+    groups = [[report('beta'), report('alpha')], [report('alpha')]]
+    calls = []
+
+    def tokens(row):
+        calls.append(row)
+        return {'events': ['event:' + row.families[0]],
+                'evidence': ['static:' + row.families[0]]}
+
+    monkeypatch.setattr(fusion.classical, 'report_tokens', tokens)
+    pick = (lambda t: t['events'] + t['evidence']) if features == 'all' else (lambda t: t[features])
+    targets, _ = fusion.classical.family_targets(train[:-1], LABELS)
+    expected, _ = fusion.classical.fit_predict(
+        [pick(tokens(r)) for r in train[:-1]], targets,
+        [pick(tokens(r)) for group in groups for r in group], 4.0, 44)
+    calls.clear()
+    original_fit = fusion.classical.fit_predict
+
+    def streaming_fit(train_docs, train_y, valid_docs, c, seed):
+        assert calls == []  # Tokenization must wait for vectorizer consumption.
+        assert iter(train_docs) is train_docs
+        assert iter(valid_docs) is valid_docs
+        return original_fit(train_docs, train_y, valid_docs, c, seed)
+
+    monkeypatch.setattr(fusion.classical, 'fit_predict', streaming_fit)
+    scores, priors = fusion.tfidf_scores(train, groups, LABELS, features, 4.0, 44)
+    np.testing.assert_array_equal(scores[0], expected[:2])
+    np.testing.assert_array_equal(scores[1], expected[2:])
+    assert priors == PRIORS
+    assert len(calls) == 11
+    assert all(row.family_supervised for row in calls)

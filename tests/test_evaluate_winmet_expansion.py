@@ -31,3 +31,18 @@ def test_expanded_evaluation_requires_pinned_completed_calibrated_candidate(tmp_
     uncalibrated['result']['conformal'] = None
     with pytest.raises(ValueError, match='calibration'):
         validate_inputs(checkpoint, checksum, manifest, uncalibrated)
+
+
+def test_recovered_report_requires_full_epoch_history(tmp_path):
+    checkpoint = tmp_path / 'model.pt'
+    payload = b'checkpoint fixture'
+    checkpoint.write_bytes(payload)
+    checksum = hashlib.sha256(payload).hexdigest()
+    manifest = {'partitions': {'train': {'rows': 10}}}
+    result = {'checkpoint': str(checkpoint), 'epochs_completed': 2, 'selected_epoch': 2,
+              'conformal': {'alpha': .1}, 'history': [{'epoch': 1}, {'epoch': 2}]}
+    report = {'manifest': manifest, 'result': result, 'config': {'epochs': 2}}
+    validate_inputs(checkpoint, checksum, manifest, report)
+    result['history'][1]['epoch'] = 1
+    with pytest.raises(ValueError, match='completed training history'):
+        validate_inputs(checkpoint, checksum, manifest, report)

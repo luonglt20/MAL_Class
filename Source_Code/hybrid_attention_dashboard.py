@@ -159,12 +159,17 @@ def _csv_cell(value):
 def render_batch_results(rows: list[dict], download_key: str):
     frame = pd.DataFrame(rows)
     priority = [
-        "filename", "verdict", "top1_family", "top1_score", "top1_accepted", "primary_family", "family_candidates",
+        "filename", "verdict", "primary_family", "family_confidence", "model_mode", "model_id",
+        "top1_family", "top1_score", "top1_accepted", "family_candidates",
         "family_abstained", "family_abstain_reason", "model_input_supported",
         "model_known_token_fraction", "confirmed_behaviors", "suspected_behaviors", "error",
     ]
     first = [column for column in priority if column in frame.columns]
     frame = frame[first + [column for column in frame.columns if column not in first]]
+    st.caption(
+        "Nếu verdict là UNKNOWN, họ và điểm bên cạnh chỉ dùng để tham khảo khi giả định "
+        "file là mã độc. Cột model_mode cho biết phân tích tĩnh (static) hay dùng dấu vết thực thi (hybrid)."
+    )
     st.dataframe(frame, use_container_width=True, hide_index=True)
     successful = frame[frame["error"] == ""]
     col_a, col_b, col_c = st.columns(3)

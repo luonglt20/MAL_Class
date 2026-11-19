@@ -65,12 +65,13 @@ def tfidf_scores(train_reports, eval_sets, labels, features, c, seed):
     pick = (lambda t: t['events'] + t['evidence']) if features == 'all' else (lambda t: t[features])
     train_y, train_mask = classical.family_targets(train_reports, labels)
     keep = train_mask[:, 0] > 0
-    train_docs = [pick(classical.report_tokens(r)) for r, k in zip(train_reports, keep) if k]
-    docs = [[pick(classical.report_tokens(r)) for r in reports] for reports in eval_sets]
-    flat = [doc for group in docs for doc in group]
+    # Vectorization consumes each iterable once. Keep only one report's tokens
+    # live rather than materializing the full corpus on memory-limited hosts.
+    train_docs = (pick(classical.report_tokens(r)) for r, k in zip(train_reports, keep) if k)
+    flat = (pick(classical.report_tokens(r)) for reports in eval_sets for r in reports)
     scores, _ = classical.fit_predict(train_docs, train_y[keep], flat, c, seed)
     result, start = [], 0
-    for group in docs:
+    for group in eval_sets:
         result.append(scores[start:start + len(group)])
         start += len(group)
     return result, {label: float(train_y[keep, i].mean()) for i, label in enumerate(labels)}
